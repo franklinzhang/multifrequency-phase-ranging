@@ -147,6 +147,23 @@ def valley_sum_mse(surface: CostSurface, sigma, lam_floor: float | None = None):
     return out
 
 
+def valley_mixture_mse(surface: CostSurface, sigma):
+    """Valley sum where every valley competes with the true lobe: weights p_k / (1 + Σ p_j).
+
+    Equal to the valley sum while slips are rare; once the pairwise probabilities add up
+    past one it stays a proper mixture, the true lobe keeping weight 1 / (1 + Σ p_j).
+    """
+    m = moments(surface.f)
+    sig = np.atleast_1d(np.asarray(sigma, dtype=float))
+    out = m["hmse_factor"] * sig**2
+    v = surface.valleys
+    if v.size:
+        p = 2.0 * q_func(np.sqrt(v[None, :, 1]) / (2.0 * sig[:, None]))
+        tot = 1.0 + p.sum(axis=1)
+        out = out + np.sum(p * v[None, :, 0] ** 2, axis=1) / tot
+    return out
+
+
 def leave_sigma(surface: CostSurface, factor: float = 2.0, lo: float = 1e-3, hi: float = 3.0) -> float:
     """Smallest σ where the valley-sum prediction reaches factor × HMSE."""
     sig = np.geomspace(lo, hi, 2000)

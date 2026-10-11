@@ -87,3 +87,12 @@ def test_coherent_ml_recovers_range_at_high_snr():
     grid = estimators.make_grid(0, 25, M["lambda_m"])
     err = estimators.coherent_ml(phi, F, grid) - d0
     assert np.max(np.abs(err)) < 1e-4
+
+
+def test_valley_mixture_matches_union_when_slips_are_rare_and_stays_bounded():
+    surf = bounds.CostSurface.build(F, 15.0, step=1e-3)
+    small = 0.3 * M["sigma_jump"]
+    union = bounds.valley_sum_mse(surf, small)[0]
+    assert bounds.valley_mixture_mse(surf, small)[0] == pytest.approx(union, rel=0.01)
+    huge = 50.0
+    assert bounds.valley_mixture_mse(surf, huge)[0] < 15.0**2
