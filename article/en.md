@@ -31,9 +31,10 @@ The article is written for engineers and for estimation theorists. The mathemati
 9. [Why the shelf can vanish: layers of ambiguity](#9-why-the-shelf-can-vanish-layers-of-ambiguity)
 10. [Placing the tones](#10-placing-the-tones)
 11. [Engineering budget card](#11-engineering-budget-card)
-12. [Why this bound has been studied so little](#12-why-this-bound-has-been-studied-so-little)
-13. [Limits and open questions](#13-limits-and-open-questions)
-14. [Appendices](#appendices)
+12. [Three design questions](#12-three-design-questions)
+13. [Why this bound has been studied so little](#13-why-this-bound-has-been-studied-so-little)
+14. [Limits and open questions](#14-limits-and-open-questions)
+15. [Appendices](#appendices)
 
 ---
 
@@ -328,7 +329,87 @@ The idea is simple. Put most tones at the edges to make $S$ large, and put two t
 
 ---
 
-## 12 Why this bound has been studied so little
+## 12 Three design questions
+
+### 12.1 Does changing the starting frequency matter?
+
+With $N$ and the spacing $\Delta f$ fixed, changing only the starting frequency $f_0$ (and thus $\bar f$) **does matter, a lot** — even with no propagation model. The second moment $S$ is set only by the spacings and is independent of $f_0$:
+
+$$
+S = (\Delta f)^2\,\frac{N(N^2-1)}{12}\quad\text{(equal spacing)},
+\qquad R = 1 + \frac{N\bar f^2}{S},
+\qquad \sigma_{\mathrm{jump}} = \frac{\pi\sqrt S}{\bar f}.
+$$
+
+| Quantity | Scaling with $\bar f$ | Meaning |
+| --- | --- | --- |
+| $S$, bandwidth line MMSE | unchanged | coarse-ruler precision depends only on spacing |
+| $R$, gap between the two lines | $\propto \bar f^2$ | the higher the carrier, the more the fine ruler is worth relative to the coarse one |
+| HMSE, wavelength $\lambda$ | $\propto 1/\bar f^2$, $1/\bar f$ | finer ruler, cheaper per-wavelength slip |
+| $\sigma_{\mathrm{jump}}$ (radians) | $\propto 1/\bar f$ | tighter phase-noise threshold |
+| SNR at the threshold | $\propto \bar f^2$ | higher carriers need more SNR to keep the fine ruler |
+
+Numbers for $N = 8$, $\Delta f = 10$ MHz:
+
+| $f_0$ | $\bar f$ | $R$ | $\sigma_{\mathrm{jump}}$ | threshold / tone | foot / tone | carrier RMS @ 35 dB |
+| --- | --- | --- | --- | --- | --- | --- |
+| 900 MHz | 935 | 32.2 dB | 0.218 rad | 10.2 dB | 24.0 dB | 0.23 mm |
+| 2400 MHz | 2435 | 40.5 dB | 0.084 rad | 18.5 dB | 32.4 dB | 0.09 mm |
+| 5800 MHz | 5835 | 48.1 dB | 0.035 rad | 26.1 dB | 40.0 dB | 0.04 mm |
+| 24 GHz | 24035 | 60.4 dB | 0.0085 rad | 38.4 dB | 52.2 dB | 0.009 mm |
+
+Moving from 2.4 GHz to 5.8 GHz with the same 8×10 MHz raises the threshold centre from 18.5 to 26.1 dB per tone and the foot from 32.4 to 40.0 dB. The absolute precision of the bandwidth line is unchanged (9.3 mm RMS at 35 dB), but keeping the finer carrier ruler costs about 8 dB more SNR. At 24 GHz the threshold itself is 38 dB — the fine ruler is almost unusable.
+
+> If what you hold fixed is the **relative** bandwidth $B/\bar f$ rather than the absolute spacing, then $R$ and the threshold SNR stay put. The effect above comes from “absolute spacing fixed, carrier up → relative bandwidth down”.
+
+### 12.2 Drawing N out of M equal-spaced candidates: is uniform random best?
+
+**No.** Two different “uniforms” must be kept apart.
+
+1. **Deterministic equal spacing** (every $M/N$-th candidate): the classic design with the nicest shelf, but not Pareto optimal.
+2. **Uniform random draws**: on the two objectives (how late the threshold arrives, how large the error is below it) the median is worse than equal spacing. About 11–13% of random samples strictly beat equal spacing on both objectives, but the Pareto front is occupied almost entirely by “dense at the edges + a few anchors in the middle”, not by random samples.
+
+Numbers for 8 tones drawn from 2400–2470 MHz at 1 MHz steps ($M = 71$):
+
+| Design | $\sigma$ at leaving the carrier line | predicted MSE at $\sigma = 0.2$ rad |
+| --- | --- | --- |
+| Uniform random (median) | 0.014 | −11.6 dB·m² |
+| Equal spacing | 0.017 | −13.4 dB·m² |
+| Front, lowest shelf (`2400,2401,2402,2409,2450,2468,2469,2470`) | 0.024 | −16.4 dB·m² |
+| Four at each edge | 0.025 | +13.5 dB·m² (a cliff) |
+
+Monte Carlo confirms: the front design is strictly better than equal spacing from 29 dB per tone downward, until about 8 dB. The principle is
+
+> **First make $S$ large (postpone the threshold), then leave anchors in the middle to break distant valleys (keep the shelf).**
+
+When $N \ll M$, a random draw is even less likely to hit that structure. Equal spacing is still not optimal, and searching or constructing “edges + anchors” is still worth doing. Coprime / Chinese-remainder draws optimize the unambiguous range and do not postpone the first threshold (Section 9.3).
+
+### 12.3 With describable multipath, is that still best?
+
+For a **single describable reflection** (amplitude $a$, excess path $\Delta$, phase $\psi$), the lattice model still applies: multipath only puts a deterministic phase offset $m_i = \arg(1 + a\,e^{j(2\pi f_i\Delta/c + \psi)})$ on each tone, which then projects to the disagreement $\beta$. The question becomes which placement keeps $\lvert\beta\rvert$ smaller and slips rarer as $\Delta$ varies.
+
+With $a = 0.3$, $\psi = \pi$, and $\Delta$ uniform on 0.01–5 m ($\sigma$ at half the equal grid’s threshold):
+
+| Design | $\mathrm{rms}(\beta)$ / wavelengths | fraction $\lvert\beta\rvert > 1/2$ | mean slip rate | mean MSE |
+| --- | --- | --- | --- | --- |
+| Uniform random (median) | 3.00 | 86% | 0.86 | −8.6 dB·m² |
+| Equal spacing | 1.99 | 82% | 0.81 | −12.0 dB·m² |
+| Front, lowest shelf | 1.72 | 72% | 0.72 | −13.4 dB·m² |
+| Four at each edge | 1.67 | 71% | 0.71 | −13.6 dB·m² |
+
+At $a = 0.1$ the order is unchanged, only the absolute values shrink. Intuitively: edge-heavy designs have larger $S$, so the same phase-offset vector projects to a smaller $\beta$ along the integer direction. Multipath phases vary more across a wider span, but in this single-reflection sweep the net effect still favours the edge-type designs.
+
+**That does not make them optimal under every multipath.** Three caveats:
+
+1. The average above is over uniform $\Delta$. If delays concentrate on a $\Delta$ that is particularly bad for an edge design, the ranking can flip — recompute $\beta(\Delta)$ for your own delay distribution.
+2. “Cliff” designs (four at each edge, no middle anchors) have no shelf under noise; once multipath pushes the estimate off the main lobe, the error may be a multi-metre far valley, while the lattice statistics above only count whole wavelengths. With multipath, prefer a **front design with anchors**, not pure edges.
+3. Several reflections, time-varying multipath, or coupling to fading are outside this article.
+
+Combined engineering advice: under a describable single reflection, **still prefer “dense edges + middle anchors”**; additionally plot $\beta(\Delta)$ for that design, mark the dangerous delays where $\lvert\beta\rvert > 1/2$, and leave a 20° margin for common phase offset in the link budget (Section 8).
+
+---
+
+## 13 Why this bound has been studied so little
 
 Multi-frequency phase ranging is not a small problem, yet the literature rarely gives a complete answer to "what do the MSE bound and the threshold actually look like". Our view is that the problem falls into the gaps between several communities.
 
