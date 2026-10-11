@@ -2,11 +2,11 @@ name: Deploy reading site
 
 on:
   push:
-    branches: [main, cursor/rewrite-threshold-notes-7f55]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -26,14 +26,24 @@ jobs:
         run: |
           pip install "markdown>=3.5,<4" "pymdown-extensions>=10.0,<11"
           python3 site/build_site.py
+          touch site/.nojekyll
+      - name: Publish gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          force_orphan: true
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: site
 
+  # Succeeds once Settings → Pages → Source is GitHub Actions.
+  # Until then this job may fail; gh-pages branch publish above still succeeds.
   deploy:
     needs: build
     runs-on: ubuntu-latest
+    continue-on-error: true
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}

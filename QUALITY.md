@@ -16,7 +16,7 @@ Confirmed for repository visibility **public** (2026-10-11).
 - `site/` HTML: Source Serif 4 + Noto Serif SC, IBM Plex Sans UI, measure ~42rem, sticky TOC, CN/EN switch, KaTeX, English figure labels
 - Rebuild: `python3 site/build_site.py`
 - Offline via Release asset `threshold-reading-site.zip`
-- GitHub Pages workflow: `.github/workflows/pages.yml`
+- CI publishes `gh-pages` and (when enabled) GitHub Actions Pages
 
 ## 3. Interaction
 
@@ -32,9 +32,15 @@ Confirmed for repository visibility **public** (2026-10-11).
 - README BibTeX under License and citation
 - Archive reuse rule: cite the repo and state values come from `computation/data/`
 
-## Public status
+## Package status
 
-- **Visibility:** PUBLIC (confirmed 2026-10-11)
-- **PR #2:** merged into `main`
-- **Release:** [v0.1.0](https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0) with `threshold-reading-site.zip` + `SHA256SUMS.txt`
-- **Pages (owner one click remaining):** Settings → Pages → Build and deployment → Source: **GitHub Actions**, then re-run workflow `Deploy reading site`. Agent token cannot enable Pages (403). Until then use Release zip / `site/` in the repo / Binder.
+| Item | Status |
+| --- | --- |
+| Visibility | PUBLIC |
+| Storyteller / JIT / typography / interaction / citation | Done (this file) |
+| PR merge to `main` | Done (#2, #3) |
+| Release `v0.1.0` zip + checksums | Done |
+| Binder accepts public tag | Done (launching) |
+| GitHub Pages | **Owner click:** [Settings → Pages](https://github.com/franklinzhang/multifrequency-phase-ranging/settings/pages) → Source **GitHub Actions**, or branch **`gh-pages` / (root)** |
+
+Until Pages is enabled, read via Release zip, `site/` in the repo, Binder, or CDN: `https://cdn.jsdelivr.net/gh/franklinzhang/multifrequency-phase-ranging@main/site/index.html`
