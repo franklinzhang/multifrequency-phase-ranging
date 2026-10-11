@@ -1,4 +1,5 @@
-"""Valley-filled Ziv–Zakai bound, its attribution to valleys, and valley-sum (MIE) predictions.
+"""Valley-filled Ziv–Zakai bound, its attribution to valleys, the single-test-point
+Weiss–Weinstein bound, and valley-sum (MIE) predictions.
 
 Prior: true range uniform on an interval of length T. Pairwise error probability is the
 Gaussian phase-vector test P_e(δ) = Q(√J(δ) / 2σ). The bound is
@@ -19,7 +20,7 @@ from dataclasses import dataclass
 import numpy as np
 from scipy.optimize import minimize_scalar
 
-from .core import C, moments, phase_cost, q_func
+from .core import C, moments, phase_cost, q_func, wrap
 
 
 @dataclass
@@ -178,6 +179,96 @@ def leave_sigma(surface: CostSurface, factor: float = 2.0, lo: float = 1e-3, hi:
     r0, r1 = math.log(ratio[i - 1]), math.log(ratio[i])
     t = (math.log(factor) - r0) / (r1 - r0)
     return float(math.exp(math.log(sig[i - 1]) + t * (math.log(sig[i]) - math.log(sig[i - 1]))))
+
+
+def _log_wrapped_normal(x, sigma: float, images: int):
+    k = np.arange(-images, images + 1)
+    z = np.asarray(x)[..., None] + 2.0 * math.pi * k
+    lse = np.logaddexp.reduce(-0.5 * (z / sigma) ** 2, axis=-1)
+    return lse - math.log(sigma * math.sqrt(2.0 * math.pi))
+
+
+def wrapped_log_chernoff(r, sigma: float, s: float, ngrid: int | None = None) -> np.ndarray:
+    """ln ∫ p(φ−r)^s p(φ)^{1−s} dφ over one turn for the wrapped normal p, elementwise in r.
+
+    The integrand is smooth and periodic, so the midpoint rule converges spectrally.
+    """
+    r = np.asarray(r, dtype=float)
+    n = ngrid or max(4096, int(math.ceil(40.0 * math.pi / sigma)))
+    images = int(math.ceil(6.0 * sigma / (2.0 * math.pi))) + 2
+    phi = -math.pi + 2.0 * math.pi * (np.arange(n) + 0.5) / n
+    l0 = _log_wrapped_normal(phi, sigma, images)
+    out = np.empty(r.size)
+    flat = r.ravel()
+    for i0 in range(0, flat.size, 64):
+        rr = flat[i0 : i0 + 64]
+        l1 = _log_wrapped_normal(wrap(phi[None, :] - rr[:, None]), sigma, images)
+        out[i0 : i0 + 64] = np.logaddexp.reduce(s * l1 + (1.0 - s) * l0[None, :], axis=1)
+    return (out + math.log(2.0 * math.pi / n)).reshape(r.shape)
+
+
+def _wwb_from_eta(h, eta_s_h, eta_2s_h, eta_22s_h, eta_s_2h):
+    """h² e^{2η(s,h)} / (e^{η(2s,h)} + e^{η(2−2s,−h)} − 2 e^{η(s,2h)}), in logs."""
+    m = np.maximum(eta_2s_h, eta_22s_h)
+    den = np.exp(eta_2s_h - m) + np.exp(eta_22s_h - m) - 2.0 * np.exp(eta_s_2h - m)
+    with np.errstate(divide="ignore", invalid="ignore"):
+        val = np.exp(2.0 * np.log(h) + 2.0 * eta_s_h - m) / den
+    return np.where(den > 0, val, 0.0)
+
+
+def wwb(surface: CostSurface, sigma: float, s=0.5, wrapped: bool = False, n_wrapped: int = 48, detail: bool = False):
+    """Single-test-point Weiss–Weinstein bound under the same uniform prior of length T.
+
+    η(s,h) = ln((T−h)/T) + ln C_s(h), with C_s(h) = ∫ p(φ|d+h)^s p(φ|d)^{1−s} dφ depending only on
+    wrap(g h). Gaussian phase vector: ln C_s = −s(1−s) J(h)/2σ². wrapped=True uses the exact
+    wrapped-normal coefficient tone by tone on the n_wrapped best Gaussian test points. The bound is
+    the maximum over test points h (main lobe, uniform grid, valley bottoms) and over s (scalar or array).
+    """
+    x, J = surface.grid_for(sigma)
+    T = surface.T
+    h = x[x > 0]
+    J1 = J[x > 0]
+    J2 = phase_cost(surface.f, 2.0 * h)
+    ss = np.atleast_1d(np.asarray(s, dtype=float))
+    log_a = np.log((T - h) / T)
+    with np.errstate(divide="ignore"):
+        log_b = np.log(np.maximum(T - 2.0 * h, 0.0) / T)
+
+    def gauss(si, Jh):
+        return -si * (1.0 - si) * Jh / (2.0 * sigma**2)
+
+    vals = np.stack([_wwb_from_eta(h, log_a + gauss(si, J1), log_a + gauss(2 * si, J1),
+                                   log_a + gauss(2 - 2 * si, J1), log_b + gauss(si, J2)) for si in ss])
+    best = np.unravel_index(int(np.argmax(vals)), vals.shape)
+    out = {"wwb": float(vals[best]), "h_m": float(h[best[1]]), "s": float(ss[best[0]]), "wrapped": False}
+    if wrapped:
+        top = np.argsort(-vals.max(axis=0))[:n_wrapped]
+        g = 2.0 * math.pi * surface.f / C
+        r1 = wrap(h[top, None] * g[None, :])
+        r2 = wrap(2.0 * h[top, None] * g[None, :])
+
+        def lc(si, r):
+            return wrapped_log_chernoff(r, sigma, si).sum(axis=1)
+
+        wv = np.stack([_wwb_from_eta(h[top], log_a[top] + lc(si, r1), log_a[top] + lc(2 * si, r1),
+                                     log_a[top] + lc(2 - 2 * si, r1), log_b[top] + lc(si, r2)) for si in ss])
+        bw = np.unravel_index(int(np.argmax(wv)), wv.shape)
+        out.update({"wwb": float(wv[bw]), "h_m": float(h[top][bw[1]]), "s": float(ss[bw[0]]), "wrapped": True,
+                    "wwb_gauss": float(vals[best])})
+    return out if detail else out["wwb"]
+
+
+def wwb_lattice(s_lat: float, lam_eff: float, T: float | None = None, k: int = 1) -> float:
+    """WWB at the grid test point h = kλ_eff, s = ½: J(kλ_eff) = k²J₁ and J₁/σ² = 1/s_lat².
+
+    T = None gives the infinite-window form λ_eff² s² · t / sinh t with t = k²/(4 s²).
+    """
+    t = k * k / (4.0 * s_lat**2)
+    if T is None:
+        return lam_eff**2 * s_lat**2 * t / math.sinh(t)
+    hk = k * lam_eff
+    a, b = (T - hk) / T, max(T - 2 * hk, 0.0) / T
+    return hk**2 * a * a * math.exp(-t) / (2.0 * a - 2.0 * b * math.exp(-2.0 * t))
 
 
 def wrapped_phase_fisher(sigma: float, nterms: int = 50, ngrid: int = 8001) -> float:
