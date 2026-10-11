@@ -149,9 +149,9 @@ HOME = """<!DOCTYPE html>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>The Threshold of Multi-Frequency Phase Ranging</title>
-  <meta name="description" content="Bilingual research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases. Chinese and English reading editions, archive explorer, Binder notebooks. CC BY 4.0." />
+  <meta name="description" content="Coherent range estimation from wrapped multi-frequency phases: the first threshold σ_jump = π√S/f̄, the half-window Ziv–Zakai bound, unequal spacing, and engineering rules. In Chinese and English." />
   <meta property="og:title" content="The Threshold of Multi-Frequency Phase Ranging" />
-  <meta property="og:description" content="Published bilingual reading edition — storyteller notes, JIT background, typographic HTML." />
+  <meta property="og:description" content="Coherent range estimation from wrapped multi-frequency phases: σ_jump, the half-window Ziv–Zakai bound, unequal spacing, and engineering rules." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
   <link rel="canonical" href="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
@@ -163,32 +163,32 @@ HOME = """<!DOCTYPE html>
 <body>
   <div class="home">
     <div class="home-card">
-      <p class="edition-label">Published reading edition · CC BY 4.0</p>
+      <p class="edition-label">多频相位测距的门限</p>
       <h1>The Threshold of Multi-Frequency Phase Ranging</h1>
-      <p class="lede">Bilingual research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases. Choose a language to read; explore the frozen archive without installing anything.</p>
+      <p class="lede">When range is estimated from phases known only modulo 2π at a few frequencies, the coherent estimate falls from carrier-phase accuracy to the accuracy of the tone spacings alone on a phase-noise scale σ<sub>jump</sub> = π√<i>S</i>/<i style="text-decoration: overline">f</i> fixed by the frequency set: 0.0836 rad for eight tones from 2400 to 2470 MHz.</p>
       <div class="choices">
         <a class="choice primary" href="zh.html">
-          <strong>中文阅读版</strong>
-          <span>终局感叙事 · JIT 背景 · KaTeX · 目录</span>
+          <strong>中文</strong>
+          <span>两条平行直线 · 第一道门限的相位尺度 · 半窗 Ziv–Zakai 下界 · 非等间隔 · 工程规则</span>
         </a>
         <a class="choice primary" href="en.html">
-          <strong>English reading edition</strong>
-          <span>Same architecture · typographic HTML · KaTeX</span>
+          <strong>English</strong>
+          <span>Two parallel lines · the phase scale of the first threshold · the half-window Ziv–Zakai bound · unequal spacing · engineering rules</span>
         </a>
         <a class="choice" href="explore.html">
-          <strong>Archive explorer</strong>
-          <span>Browser slider on frozen equal-grid curves · no install</span>
+          <strong>Equal-grid curves</strong>
+          <span>Step through the 18 archived noise levels: trial MSE, slip rate, carrier and bandwidth lines, half-window bound, mixture</span>
         </a>
         <a class="choice" href="{binder_zh}">
-          <strong>中文 Jupyter on Binder</strong>
-          <span>Full notebook + widgets in the browser</span>
+          <strong>中文 notebook</strong>
+          <span>在 Binder 上运行；图由归档试验重绘，带噪声点滑块</span>
         </a>
         <a class="choice" href="{binder_en}">
-          <strong>English Jupyter on Binder</strong>
-          <span>Full notebook + widgets in the browser</span>
+          <strong>English notebook</strong>
+          <span>Runs on Binder; figures redrawn from the archived trials, with a noise-level slider</span>
         </a>
       </div>
-      <div class="footnote-bar">Cite <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Source <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a> · Offline zip in <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0">Releases</a></div>
+      <div class="footnote-bar">CC BY 4.0 · Cite <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Source <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a> · Offline copy <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0">v0.1.0</a></div>
     </div>
   </div>
 </body>
@@ -302,27 +302,11 @@ EXPLORE = """<!DOCTYPE html>
 """
 
 def prepare_zh_source(text: str) -> str:
-    # Point image paths at site/figures and keep captions.
-    text = text.replace("](figures/", "](figures/")
-    # Same-directory links when the HTML lives on Pages.
-    text = text.replace(
-        "](https://franklinzhang.github.io/multifrequency-phase-ranging/zh.html)",
-        "](zh.html)",
-    )
-    text = text.replace(
-        "](https://franklinzhang.github.io/multifrequency-phase-ranging/en.html)",
-        "](en.html)",
-    )
-    text = text.replace(
-        "对外发布入口：https://franklinzhang.github.io/multifrequency-phase-ranging/ 。",
-        "对外发布入口：[阅读站首页](index.html)。",
-    )
     return text
 
 
 def prepare_en_source(text: str) -> str:
-    # Prefer a reading-focused English page from README, without license bulk at top.
-    # Keep Open the notes, abstract, and technical sections; trim license/bibtex to short note.
+    # Science body + references only; license/reproduce stay in the repo README.
     cut = text.find("## License and citation")
     if cut >= 0:
         refs = text.find("## References")
@@ -331,23 +315,10 @@ def prepare_en_source(text: str) -> str:
             text = head + text[refs:]
         else:
             text = head
-    text = "# The Threshold of Multi-Frequency Phase Ranging\n\n" + text.split("\n", 2)[-1]
-    # Drop the Read navigation table from the English reading body (landing covers it).
-    text = re.sub(
-        r"## Read\n\n.*?(?=\n## )",
-        "",
-        text,
-        count=1,
-        flags=re.S,
-    )
-    # Drop the one-line nav under the H1; the site chrome already has Home/CN/EN.
-    text = re.sub(
-        r"\n\[\*\*Read online\*\*\].*?\n",
-        "\n",
-        text,
-        count=1,
-        flags=re.S,
-    )
+    # Drop the repo title and the one-line Pages link; site chrome covers navigation.
+    text = re.sub(r"^# .*\n+", "", text, count=1)
+    text = re.sub(r"^\[\*\*Read online\*\*\].*\n+", "", text, count=1)
+    text = "# The Threshold of Multi-Frequency Phase Ranging\n\n" + text.lstrip()
     return text
 
 

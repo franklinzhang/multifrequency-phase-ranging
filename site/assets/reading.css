@@ -244,11 +244,10 @@ a:hover { color: var(--accent-ink); }
 
 .edition-label {
   margin: 0 0 0.65rem !important;
-  font-family: var(--sans);
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  letter-spacing: 0.02em;
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
