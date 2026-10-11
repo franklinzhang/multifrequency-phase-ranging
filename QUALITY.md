@@ -32,13 +32,9 @@ Confirmed for repository visibility **public** (2026-10-11).
 - README BibTeX under License and citation
 - Archive reuse rule: cite the repo and state values come from `computation/data/`
 
-## Owner one-time switches (agent token cannot)
+## Public status
 
-The cloud agent can push, tag, and attach Release assets, but **cannot** change
-visibility or enable Pages (GitHub returns 403 for those admin APIs). After review:
-
-1. **Public:** Settings → General → Danger Zone → Change repository visibility → Public  
-   (or `gh repo edit franklinzhang/multifrequency-phase-ranging --visibility public`)
-2. **Pages:** Settings → Pages → Build and deployment → Source: **GitHub Actions**  
-   Then re-run workflow `Deploy reading site` (or push any commit on `main` / this branch).
-3. **Merge PR #2** into `main` so the default branch matches the release tag tip.
+- **Visibility:** PUBLIC (confirmed 2026-10-11)
+- **PR #2:** merged into `main`
+- **Release:** [v0.1.0](https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0) with `threshold-reading-site.zip` + `SHA256SUMS.txt`
+- **Pages (owner one click remaining):** Settings → Pages → Build and deployment → Source: **GitHub Actions**, then re-run workflow `Deploy reading site`. Agent token cannot enable Pages (403). Until then use Release zip / `site/` in the repo / Binder.
