@@ -14,8 +14,9 @@ Research notes on the first threshold of coherent range estimation from wrapped 
 
 - Landing: [`site/index.html`](site/index.html) · no-install archive slider: [`site/explore.html`](site/explore.html)
 - Quality gate (storyteller / typography / interaction / citation): [`QUALITY.md`](QUALITY.md)
-- Release artifact: download `threshold-reading-site.zip` from [Releases](../../releases), unzip, open `index.html` offline
-- GitHub Pages (after deploy): `https://franklinzhang.github.io/multifrequency-phase-ranging/`
+- Release artifact: download `threshold-reading-site.zip` from [Releases](https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0), unzip, open `index.html` offline
+- CDN (no Pages needed): [jsDelivr landing](https://cdn.jsdelivr.net/gh/franklinzhang/multifrequency-phase-ranging@main/site/index.html)
+- GitHub Pages: `https://franklinzhang.github.io/multifrequency-phase-ranging/` (enable under Settings → Pages; CI publishes `gh-pages`)
 
 GitHub’s built-in notebook preview is not interactive. Prefer Binder or local Jupyter.
 
