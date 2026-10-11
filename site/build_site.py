@@ -304,7 +304,19 @@ EXPLORE = """<!DOCTYPE html>
 def prepare_zh_source(text: str) -> str:
     # Point image paths at site/figures and keep captions.
     text = text.replace("](figures/", "](figures/")
-    # Drop the repo-path logistics table clutter slightly? Keep — useful.
+    # Same-directory links when the HTML lives on Pages.
+    text = text.replace(
+        "](https://franklinzhang.github.io/multifrequency-phase-ranging/zh.html)",
+        "](zh.html)",
+    )
+    text = text.replace(
+        "](https://franklinzhang.github.io/multifrequency-phase-ranging/en.html)",
+        "](en.html)",
+    )
+    text = text.replace(
+        "https://franklinzhang.github.io/multifrequency-phase-ranging/",
+        "index.html",
+    )
     return text
 
 
