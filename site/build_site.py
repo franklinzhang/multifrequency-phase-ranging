@@ -95,11 +95,11 @@ PAGE = """<!DOCTYPE html>
           <a href="zh.html" class="{zh_active}">中文</a>
           <a href="en.html" class="{en_active}">English</a>
         </div>
-        <div class="meta"><a href="index.html">Home</a> · <a href="../README.md">Repo README</a></div>
+        <div class="meta"><a href="index.html">Home</a> · <a href="explore.html">Explore</a> · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
       </div>
       {body}
       <div class="footnote-bar">
-        CC BY 4.0 · Archived numbers in <code>computation/data/</code> · Interactive notebooks remain available in <code>notes/</code>
+        CC BY 4.0 · Cite via <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Archived numbers in <code>computation/data/</code>
       </div>
     </main>
   </div>
@@ -123,7 +123,13 @@ HOME = """<!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Multi-Frequency Phase Ranging — Threshold Notes</title>
+  <title>The Threshold of Multi-Frequency Phase Ranging</title>
+  <meta name="description" content="Bilingual research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases. Chinese and English reading editions, archive explorer, Binder notebooks. CC BY 4.0." />
+  <meta property="og:title" content="The Threshold of Multi-Frequency Phase Ranging" />
+  <meta property="og:description" content="Published bilingual reading edition — storyteller notes, JIT background, typographic HTML." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
+  <link rel="canonical" href="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet" />
@@ -132,14 +138,15 @@ HOME = """<!DOCTYPE html>
 <body>
   <div class="home">
     <div class="home-card">
+      <p class="edition-label">Published reading edition · CC BY 4.0</p>
       <h1>The Threshold of Multi-Frequency Phase Ranging</h1>
-      <p>Storyteller research notes: typeset reading, browser archive explorer, and Binder notebooks. Figure labels are English. Cite via CITATION.cff (CC BY 4.0).</p>
+      <p class="lede">Bilingual research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases. Choose a language to read; explore the frozen archive without installing anything.</p>
       <div class="choices">
-        <a class="choice" href="zh.html">
+        <a class="choice primary" href="zh.html">
           <strong>中文阅读版</strong>
-          <span>终局感叙事 · JIT 背景 · KaTeX · TOC</span>
+          <span>终局感叙事 · JIT 背景 · KaTeX · 目录</span>
         </a>
-        <a class="choice" href="en.html">
+        <a class="choice primary" href="en.html">
           <strong>English reading edition</strong>
           <span>Same architecture · typographic HTML · KaTeX</span>
         </a>
@@ -156,7 +163,7 @@ HOME = """<!DOCTYPE html>
           <span>Full notebook + widgets in the browser</span>
         </a>
       </div>
-      <div class="footnote-bar">CC BY 4.0 · Release zip also works offline · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
+      <div class="footnote-bar">Cite <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Source <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a> · Offline zip in <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0">Releases</a></div>
     </div>
   </div>
 </body>

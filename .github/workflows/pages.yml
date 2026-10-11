@@ -5,9 +5,8 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Publishes the built site to the gh-pages branch.
-# Enable Pages: Settings → Pages → Deploy from a branch → gh-pages / (root).
-# (Actions "deploy-pages" is omitted until the owner enables Pages; it 404s otherwise.)
+# Publishes the public bilingual reading edition to gh-pages.
+# Live URL: https://franklinzhang.github.io/multifrequency-phase-ranging/
 
 permissions:
   contents: write
@@ -28,10 +27,13 @@ jobs:
         run: |
           pip install "markdown>=3.5,<4" "pymdown-extensions>=10.0,<11"
           python3 site/build_site.py
-          touch site/.nojekyll
+          mkdir -p /tmp/pages-out
+          cp -a site/index.html site/zh.html site/en.html site/explore.html \
+                site/assets site/figures site/data /tmp/pages-out/
+          touch /tmp/pages-out/.nojekyll
       - name: Publish gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./site
+          publish_dir: /tmp/pages-out
           force_orphan: true

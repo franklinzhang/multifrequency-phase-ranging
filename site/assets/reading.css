@@ -242,6 +242,16 @@ a:hover { color: var(--accent-ink); }
   padding: clamp(1.6rem, 4vw, 2.6rem);
 }
 
+.edition-label {
+  margin: 0 0 0.65rem !important;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 600;
+}
+
 .home-card h1 {
   margin: 0 0 0.55rem;
   font-size: clamp(1.8rem, 4vw, 2.4rem);
@@ -249,7 +259,8 @@ a:hover { color: var(--accent-ink); }
   font-weight: 600;
 }
 
-.home-card p {
+.home-card p,
+.home-card .lede {
   margin: 0.55rem 0 1.3rem;
   color: var(--ink-soft);
   font-family: var(--sans);
@@ -269,12 +280,18 @@ a:hover { color: var(--accent-ink); }
   border-radius: 0.8rem;
   padding: 1rem 1.1rem;
   background: linear-gradient(180deg, #fff, #f7f9f8);
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.choice.primary {
+  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+  background: linear-gradient(180deg, #fff, #eef6f4);
 }
 
 .choice:hover {
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
   transform: translateY(-1px);
+  box-shadow: 0 8px 22px var(--shade);
 }
 
 .choice strong {

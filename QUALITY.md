@@ -42,6 +42,6 @@ Confirmed for repository visibility **public** (2026-10-11).
 | Release `v0.1.0` zip + checksums | Done |
 | Binder accepts public tag | Done (launching) |
 | `gh-pages` branch (CI) | Published |
-| GitHub Pages URL | **Owner click:** [Settings → Pages](https://github.com/franklinzhang/multifrequency-phase-ranging/settings/pages) → Deploy from a branch → **`gh-pages` / (root)** |
+| **Canonical public URL** | https://franklinzhang.github.io/multifrequency-phase-ranging/ |
 
-Until Pages is enabled, read via Release zip, `site/` in the repo, Binder, or CDN: `https://cdn.jsdelivr.net/gh/franklinzhang/multifrequency-phase-ranging@main/site/index.html`
+That URL is the published bilingual reading edition (`zh.html` / `en.html`), plus explorer and Binder entry points.

@@ -1,22 +1,23 @@
 # Range Estimation from Wrapped Multi-Frequency Phase Observations
 
-[Read](#read) · [Reproduce](#reproduce) · [Cite](#license-and-citation) · [License (CC BY 4.0)](LICENSE)
+[**Read online**](https://franklinzhang.github.io/multifrequency-phase-ranging/) · [Reproduce](#reproduce) · [Cite](#license-and-citation) · [License (CC BY 4.0)](LICENSE)
 
 Research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases: two parallel MSE lines, \(\sigma_{\mathrm{jump}}\), half-window Ziv–Zakai bounds, unequal spacing, and engineering budget rules. Figure labels are English. No PDF edition.
 
 ## Read
 
+**Published bilingual edition (canonical):**  
+https://franklinzhang.github.io/multifrequency-phase-ranging/
+
 | | 中文 | English |
 | --- | --- | --- |
-| **Typeset HTML** | [site/zh.html](site/zh.html) | [site/en.html](site/en.html) |
+| **Typeset HTML** | [中文阅读版](https://franklinzhang.github.io/multifrequency-phase-ranging/zh.html) | [English](https://franklinzhang.github.io/multifrequency-phase-ranging/en.html) |
 | **Binder Jupyter** | [launch 中文](https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb) | [launch English](https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2Fthreshold.ipynb) |
 | **Plain text** | [notes/门限问题的进展.md](notes/门限问题的进展.md) | this README |
 
-- Landing: [`site/index.html`](site/index.html) · no-install archive slider: [`site/explore.html`](site/explore.html)
-- Quality gate (storyteller / typography / interaction / citation): [`QUALITY.md`](QUALITY.md)
-- Release artifact: download `threshold-reading-site.zip` from [Releases](https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0), unzip, open `index.html` offline
-- CDN (no Pages needed): [jsDelivr landing](https://cdn.jsdelivr.net/gh/franklinzhang/multifrequency-phase-ranging@main/site/index.html)
-- GitHub Pages: `https://franklinzhang.github.io/multifrequency-phase-ranging/` — Settings → Pages → branch **`gh-pages` / (root)** (CI already publishes that branch)
+- Archive explorer (no install): [explore.html](https://franklinzhang.github.io/multifrequency-phase-ranging/explore.html)
+- Quality gate: [`QUALITY.md`](QUALITY.md)
+- Offline: `threshold-reading-site.zip` from [Releases](https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0)
 
 GitHub’s built-in notebook preview is not interactive. Prefer Binder or local Jupyter.
 
