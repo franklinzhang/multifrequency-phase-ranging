@@ -2,7 +2,7 @@
 
 Wrapped phases at a finite set of frequencies determine a range only up to a lattice of aliases. The coherent maximum-likelihood estimator uses those phases against one common phase reference. On a log-log plot its mean-square error follows the carrier line, then jumps, at the same slope, onto the bandwidth line.
 
-**Start here:** the narrative article [*The jump between two rulers*](article/en.md) ([中文](article/README.md)) gives the closed-form lattice model of the jump, its Monte Carlo validation, the Bayes and bound comparison, biases and multipath, layered ambiguity, and tone placement, with an engineering budget card. Its code is the library `computation/mfpr`, the experiments `computation/experiments/e01`–`e09`, and `computation/run_all.sh`. Its appendix C lists errata for the archived material below.
+**Start here:** the short story [*The jump between two rulers*](article/en.md) ([中文](article/README.md)) — four acts, one budget card, no textbook required. Full derivations and experiments: [deep.en.md](article/deep.en.md) / [deep.zh.md](article/deep.zh.md). Code: `computation/mfpr`, `computation/experiments/e01`–`e09`, `computation/run_all.sh`.
 
 The Chinese notes in this repository are the original account. This page states the model, the two lines, the first threshold, what unequal spacing actually changes, and what the bound does not claim.
 
