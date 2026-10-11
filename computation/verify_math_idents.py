@@ -406,6 +406,7 @@ def main() -> None:
             "L_m": round(vr_d["L_m"], 2), "cap_gain_db": round(20 * math.log10(design.leave_cap(fd) / sig_leave["equal"]), 2),
             "u_ref": round(0.2 / md["sigma_jump"], 2), "slip_owner_at_leave_m": slip_owner(sl), "slip_owner_at_0.2_m": slip_owner(0.2),
             "mse_ref_db": round(db(mse_ref[name]), 2) if name in mse_ref else None,
+            "mse_ref_multivalley_db": round(db(multivalley.mse(fd, 0.2, surf_d, n=100_000, seed=7)["mse"]), 2),
             "gcd_MHz": g, "period_m": round(core.C / (g * 1e6), 2), "dmax_MHz": int(np.max(np.diff(np.sort(ints)))),
         })
     check("σ_leave equal (e08) vs bounds.leave_sigma", bounds.leave_sigma(surf), sig_leave["equal"], 2e-3, rel=True)
