@@ -10,6 +10,7 @@ from __future__ import annotations
 import json
 import math
 import sys
+from concurrent.futures import ProcessPoolExecutor
 from functools import reduce
 from pathlib import Path
 
@@ -18,7 +19,7 @@ from scipy.integrate import quad
 from scipy.optimize import brentq
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from mfpr import bounds, core, lattice, sim  # noqa: E402
+from mfpr import bounds, core, design, estimators, lattice, multivalley, sim  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 NUM = json.loads((ROOT / "article" / "numbers.json").read_text())
@@ -87,6 +88,45 @@ def far_ratio(mhz, w=None, T=15.0, step=1e-4, lo=0.0):
     return float(J[j] / jl), float(d[j])
 
 
+def wrapped_pe(f, h: float, sigma: float, n: int, seed: int, d0: float = 7.0) -> tuple[float, float]:
+    """Error probability of the exact wrapped-normal LRT between d0 and d0+h (equal priors), with its s.e."""
+    rng = np.random.default_rng(seed)
+    g = 2 * np.pi * f / core.C
+    mu = (g * d0, g * (d0 + h))
+
+    def loglik(phi, m):
+        r = core.wrap(phi - m)[..., None] + 2 * np.pi * np.arange(-3, 4)
+        return np.sum(np.log(np.sum(np.exp(-0.5 * (r / sigma) ** 2), axis=-1)), axis=-1)
+
+    err = 0.0
+    for t in (0, 1):
+        phi = core.wrap(mu[t] + rng.normal(scale=sigma, size=(n, f.size)))
+        err += float(np.mean(loglik(phi, mu[1 - t]) > loglik(phi, mu[t])))
+    pe = 0.5 * err
+    return pe, math.sqrt(pe * (1 - pe) / (2 * n))
+
+
+def dominates(a: tuple, b: tuple) -> bool:
+    """a = (σ_leave ↑, mse_ref ↓, ρ ↑) weakly better everywhere and strictly somewhere."""
+    ge = a[0] >= b[0] and a[1] <= b[1] and a[2] >= b[2]
+    gt = a[0] > b[0] or a[1] < b[1] or a[2] > b[2]
+    return ge and gt
+
+
+def _ratios(mhz):
+    return design.valley_ratios(np.asarray(mhz, dtype=float) * 1e6, T=15.0, step=2e-4)
+
+
+def _ml_errors(args, n: int = 6000, T: float = 15.0, center: float = 12.345):
+    """Coherent-ML range errors with the e09 Monte Carlo set-up (window centre ± T)."""
+    f, sigma, seed = args
+    rng = np.random.default_rng(seed)
+    lam = core.C / float(np.mean(f))
+    d0 = center + (rng.random(n) - 0.5) * lam
+    grid = estimators.make_grid(center - T, center + T, lam)
+    return estimators.coherent_ml(sim.phases(rng, f, d0, sigma, n), f, grid) - d0
+
+
 def main() -> None:
     f = core.equal_hz()
     m = core.moments(f)
@@ -128,6 +168,45 @@ def main() -> None:
     report("ZZB_lat/MMSE at u=(2,3,5,10) vs 1 − 2/(√(2π)u)",
            [(u, round(zzb_lattice(f, u * sj) / core.mmse(f, u * sj), 3), round(1 - 2 / (math.sqrt(2 * math.pi) * u), 3)) for u in (2, 3, 5, 10)])
 
+    print("== §2.1 lemma: wrapped-phase P_e(h) ≥ Q(√J(h)/2σ), so the ZZB above is valid for wrapped data")
+    for sig, h, n_pe, seed in ((sj, lam * (1 - 1 / R), 200_000, 11), (0.836, 5.602, 40_000, 12)):
+        jh = float(core.phase_cost(f, [h])[0])
+        pe, se = wrapped_pe(f, h, sig, n_pe, seed)
+        pg = float(Q(math.sqrt(jh) / (2 * sig)))
+        check(f"wrapped LRT P_e ≥ Q(√J/2σ) − 3 s.e. at σ={sig:.4f}, h={h:.3f} m", float(pe >= pg - 3 * se), 1.0, 0)
+        report(f"σ={sig:.4f}, h={h:.3f} m: max|wrap(gh)| [rad], P_e wrapped ± s.e., Q(√J/2σ), ratio",
+               (round(float(np.max(np.abs(core.wrap(2 * np.pi * f * h / core.C)))), 2), (round(pe, 4), round(se, 4)), round(pg, 4), round(pe / pg, 3)))
+
+    print("== §2.5 single-test-point Weiss–Weinstein bound (same prior)")
+    s_grid = np.round(np.arange(0.05, 0.96, 0.05), 3)
+    w1 = bounds.wwb(surf, sj, wrapped=True, detail=True)
+    check("WWB(σ_jump): exact wrapped-normal η vs Gaussian η [dB]", db(w1["wwb"] / w1["wwb_gauss"]), 0.0, 1e-6)
+    check("WWB(σ_jump) test point is the 1λ grid valley [m]", w1["h_m"], lam * (1 - 1 / R), 1e-4)
+    p_thr = lattice.params(f, sj)
+    check("WWB(σ_jump) vs grid closed form h²a²e^{−t}/(2a−2be^{−2t}) [dB]",
+          db(w1["wwb"] / bounds.wwb_lattice(p_thr["s"], p_thr["lambda_eff_m"], T)), 0.0, 0.01)
+    report("WWB/MMSE at u=1: numeric, closed form T→∞ (1−1/R)·t/sinh t with t=1/(4s²) [dB]",
+           (round(db(w1["wwb"] / core.mmse(f, sj)), 3), round(db(bounds.wwb_lattice(p_thr["s"], p_thr["lambda_eff_m"]) / core.mmse(f, sj)), 3)))
+    for u in (0.3, 1.0, 3.0):
+        wo = bounds.wwb(surf, u * sj, s=s_grid, detail=True)
+        check(f"s = 1/2 is optimal over s∈[0.05,0.95] at u={u}", wo["s"], 0.5, 1e-9)
+    for u in (3.0, 5.0):
+        ww = bounds.wwb(surf, u * sj, wrapped=True, detail=True)
+        report(f"u={u}: wrapped − Gaussian WWB [dB], test point [m]", (float(f"{db(ww['wwb'] / ww['wwb_gauss']):.2e}"), round(ww["h_m"], 4)))
+    rows, worst_valid = [], -np.inf
+    for u in (0.15, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0):
+        sg = u * sj
+        mm, pp = core.mmse(f, sg), lattice.params(f, sg)
+        z_, w_ = bounds.zzb(surf, sg), bounds.wwb(surf, sg)
+        pm_, ml_ = lattice.pm_mse(pp)["mse"], lattice.ml_mse(pp)["mse"]
+        worst_valid = max(worst_valid, db(w_ / pm_))
+        rows.append((u, round(db(z_ / mm), 2), round(db(w_ / mm), 2), round(db(pm_ / mm), 2), round(db(ml_ / mm), 2),
+                     round(db(pm_ / max(z_, w_)), 2)))
+    report("(u, ZZB, WWB, PM_lat, ML_lat [dB re MMSE], PM − max(ZZB,WWB) [dB])", rows)
+    check("WWB ≤ PM (lattice) at every u above [max dB]", float(worst_valid <= 0.0), 1.0, 0)
+    u_x = brentq(lambda u: db(bounds.wwb(surf, u * sj) / bounds.zzb(surf, u * sj)), 0.5, 0.7, xtol=1e-3)
+    report("u where WWB overtakes ZZB", round(u_x, 3))
+
     print("== §3 knee: foot / center / overshoot")
     snr_total_c = N / (2 * sj**2)
     check("total SNR at u=1 = (R−1)/(2π²)", snr_total_c, (R - 1) / (2 * math.pi**2), 1e-10, rel=True)
@@ -157,6 +236,65 @@ def main() -> None:
     for s in (3.0, 10.0):
         check(f"E[k̂²] → s² + 1/12 at s={s}", ek2_ml(s), s * s + 1 / 12, 1e-6, rel=True)
 
+    print("== §4.6 multi-valley linearised model (mfpr/multivalley.py)")
+    worst = 0.0
+    for u in (0.3, 0.5, 1.0, 2.0):
+        worst = max(worst, abs(db(multivalley.mse(f, u * sj, surf, seed=3)["mse"] / lattice.ml_mse(lattice.params(f, u * sj))["mse"])))
+    check("equal grid: multi-valley = lattice model, max |dB| over u∈{0.3,0.5,1,2}", worst, 0.0, 0.06)
+    p_r = multivalley.mse(f, 0.25 * sj, surf, seed=4)
+    check("rare slips: multi-valley = valley sum (u=0.25) [rel]", p_r["mse"], p_r["union"], 0.02, rel=True)
+    d07 = sim.load("e07_layers")
+    lay = {"geometric": core.geometric_hz(), "cluster": np.asarray(d07["designs"]["cluster"]["f_hz"], dtype=float)}
+    for name, fd in lay.items():
+        surf_d = bounds.CostSurface.build(fd, 0.5 * core.C / 10e6)
+        rows, err_mv, err_mix, inside, n_pts = [], [], [], 0, 0
+        for r in sorted((r for r in d07["rows"] if r["design"] == name), key=lambda r: r["sigma"]):
+            sg = r["sigma"]
+            if sg < 0.05 or sg > 0.45:
+                continue
+            pred = multivalley.mse(fd, sg, surf_d, n=100_000, seed=5)
+            mix = float(bounds.valley_mixture_mse(surf_d, sg)[0])
+            lo, hi = multivalley.mc_band_db(pred, r["n"])
+            e_mv, e_mix = db(pred["mse"] / r["mse_coh"]), db(mix / r["mse_coh"])
+            n_pts += 1
+            inside += int(-hi <= e_mv <= -lo)
+            if max(-lo, hi) <= 1.5:
+                err_mv.append(abs(e_mv))
+                err_mix.append(abs(e_mix))
+            rows.append((round(sg, 4), round(r["u"], 2), round(db(r["mse_coh"]), 2), round(e_mix, 2), round(e_mv, 2),
+                         (round(lo, 2), round(hi, 2))))
+        report(f"e07 {name}: (σ, u, MC dB m², mixture−MC, multivalley−MC, MC 95% band of the prediction)", rows)
+        report(f"e07 {name}: max |error| where the MC band is within ±1.5 dB: multivalley, mixture [dB]",
+               (round(max(err_mv), 2), round(max(err_mix), 2)))
+        check(f"e07 {name}: multivalley inside the MC 95% band at every σ∈[0.05,0.45] ({n_pts} points)", inside, n_pts, 0)
+        if name == "geometric":
+            check("e07 geometric: max |multivalley − MC| on resolved points [dB]", max(err_mv), 0.0, 0.25)
+    d09_ = sim.load("e09_pareto")
+    rows = []
+    for lab, mhz in d09_["picks"].items():
+        fd = np.asarray(mhz, dtype=float) * 1e6
+        surf_d = bounds.CostSurface.build(fd, 15.0)
+        mc_rows = {round(r["sigma"], 4): r for r in d09_["mc"] if r["label"] == lab}
+        out = [lab]
+        for sg in (0.1828, 0.2342):
+            r = mc_rows[sg]
+            pred = multivalley.mse(fd, r["sigma"], surf_d, n=100_000, seed=6)
+            mix = float(bounds.valley_mixture_mse(surf_d, r["sigma"])[0])
+            out.append((sg, round(db(r["mse"]), 2), round(db(mix) - db(r["mse"]), 2), round(db(pred["mse"]) - db(r["mse"]), 2)))
+        p_ref = multivalley.mse(fd, 0.2, surf_d, n=100_000, seed=7)
+        out.append(("σ_ref=0.2: mixture, multivalley [dB m²]", round(db(float(bounds.valley_mixture_mse(surf_d, 0.2)[0])), 2), round(db(p_ref["mse"]), 2)))
+        rows.append(out)
+    report("e09 picks: (σ, MC dB m², mixture−MC, multivalley−MC) at the two MC σ around 0.2, then the σ_ref values", rows)
+    f_mid = np.asarray(d09_["picks"]["front_mid"], dtype=float) * 1e6
+    with ProcessPoolExecutor(max_workers=4) as ex:
+        errs = list(ex.map(_ml_errors, [(f_mid, 0.1828, 1000 + i) for i in range(8)]))
+    e_all = np.concatenate(errs)
+    pred = multivalley.mse(f_mid, 0.1828, bounds.CostSurface.build(f_mid, 15.0), n=200_000, seed=8)
+    report("front_mid σ=0.1828 rerun: 8×6000 coherent-ML trials, MSE [dB m²], batch range, archive (6000)",
+           (round(db(np.mean(e_all**2)), 2), (round(min(db(np.mean(x**2)) for x in errs), 2), round(max(db(np.mean(x**2)) for x in errs), 2)),
+            round(db(next(r["mse"] for r in d09_["mc"] if r["label"] == "front_mid" and abs(r["sigma"] - 0.1828) < 1e-4)), 2)))
+    check("front_mid σ=0.1828: multivalley vs 48000-trial rerun [dB]", db(pred["mse"] / np.mean(e_all**2)), 0.0, 0.3)
+
     print("== §5 accounting at u = 1 (lattice, then archive)")
     p1 = lattice.params(f, sj)
     ml, pm, zl, mm = lattice.ml_mse(p1)["mse"], lattice.pm_mse(p1)["mse"], zzb_lattice(f, sj), core.mmse(f, sj)
@@ -178,6 +316,12 @@ def main() -> None:
     us = np.linspace(0.3, 2.0, 69)
     gap = [db(lattice.ml_mse(lattice.params(f, u * sj))["mse"] / lattice.pm_mse(lattice.params(f, u * sj))["mse"]) for u in us]
     report("lattice ML−PM peak (u, dB)", (round(float(us[int(np.argmax(gap))]), 3), round(max(gap), 3)))
+    w_db = db(w1["wwb"])
+    report("WWB(σ_jump) [dB m²]", round(w_db, 3))
+    report("archive PM − WWB, ML − WWB, MMSE − WWB, WWB − ZZB [dB]",
+           [round(bt["db_m2"][k] - w_db, 3) for k in ("mse_pm", "mse_ml", "mmse")] + [round(w_db - bt["db_m2"]["zzb"], 3)])
+    report("lattice PM − WWB, ML − WWB [dB]", [round(db(pm / w1["wwb"]), 3), round(db(ml / w1["wwb"]), 3)])
+    check("archive PM − WWB at u=1 is below 1 dB", float(bt["db_m2"]["mse_pm"] - w_db < 1.0), 1.0, 0)
 
     print("== §6.1 near-zone theorem: J<π²/4 and δ<c/(2Δ_max) ⇒ J = two-scale cost")
     rng = np.random.default_rng(7)
@@ -202,6 +346,13 @@ def main() -> None:
           float(np.max(np.abs(jv[lat] / (k[lat] ** 2 * 4 * sj**2 * (1 - 1 / R)) - 1))), 0.0, 1e-3)
     report("equal grid: guaranteed ρ_far ≥ (R−1)/(16N)", round((R - 1) / (16 * N), 2))
     report("equal grid: smallest J among valleys with J ≥ π²/4 (over J(λ))", round(float(jv[~lat].min() / (4 * sj**2)), 2))
+    i_big = int(np.flatnonzero(~lat)[np.argmin(jv[~lat])])
+    report("  …that valley: (δ m, k, J_2 − J) — a grid valley beyond the lemma's J < π²/4",
+           (round(float(dv[i_big]), 4), int(k[i_big]), float(f"{float(two_scale(f, dv[i_big:i_big + 1])[0] - jv[i_big]):.1e}")))
+    vr_eq = design.valley_ratios(f, T=T - 1e-3, step=1e-4)
+    report("equal grid: shallowest NON-grid valley (J < J_2) (ρ_nongrid, δ m, #non-grid valleys)",
+           (round(vr_eq["rho_nongrid"], 2), round(vr_eq["delta_nongrid_m"], 3), vr_eq["n_nongrid"]))
+    check("equal grid: ρ_nongrid ≥ (R−1)/(16N) (lemma over the whole window, L = T)", float(vr_eq["rho_nongrid"] >= (R - 1) / (16 * N)), 1.0, 0)
 
     print("== §6.2 design table (T = 15 m)")
     d08, d09 = sim.load("e08_design"), sim.load("e09_pareto")
@@ -238,6 +389,7 @@ def main() -> None:
             return round(float(vx[int(np.argmax(c))]), 3)
 
         sl = sig_leave.get(name, bounds.leave_sigma(surf_d))
+        vr_d = design.valley_ratios(fd, T=15.0, step=1e-4)
         i_far = int(np.argmin(np.abs(vx - dfar)))
         i_one = int(np.argmin(np.abs(vx - md["lambda_m"])))
         sg = np.geomspace(0.005, 1.0, 1600)
@@ -250,6 +402,8 @@ def main() -> None:
             "sigma_leave": round(sl, 4), "gain_db": round(20 * math.log10(sl / sig_leave["equal"]), 2),
             "x_eff": round(md["sigma_jump"] / sl, 3), "x_lattice": round(foot_x(md["R"]), 3),
             "rho_far": round(rho, 2), "delta_far_m": round(dfar, 3), "u_far": round(u_far, 2),
+            "rho_nongrid": round(vr_d["rho_nongrid"], 2), "delta_nongrid_m": round(vr_d["delta_nongrid_m"], 3),
+            "L_m": round(vr_d["L_m"], 2), "cap_gain_db": round(20 * math.log10(design.leave_cap(fd) / sig_leave["equal"]), 2),
             "u_ref": round(0.2 / md["sigma_jump"], 2), "slip_owner_at_leave_m": slip_owner(sl), "slip_owner_at_0.2_m": slip_owner(0.2),
             "mse_ref_db": round(db(mse_ref[name]), 2) if name in mse_ref else None,
             "gcd_MHz": g, "period_m": round(core.C / (g * 1e6), 2), "dmax_MHz": int(np.max(np.diff(np.sort(ints)))),
@@ -258,6 +412,34 @@ def main() -> None:
     check("foot ratio σ_jump/σ_leave of equal = x(R)", sj / sig_leave["equal"], foot_x(R), 2e-3, rel=True)
     check("S_max/S_equal for N/2 tones at each edge = 3(N−1)/(N+1)", (N * B**2 / 4) / S, 3 * (N - 1) / (N + 1), 1e-12, rel=True)
     report("ideal edge stacking σ_jump gain [dB]", round(10 * math.log10(3 * (N - 1) / (N + 1)), 3))
+
+    print("== §6.2 O1 cap: σ_leave ≤ leave_cap (±1 grid valleys alone) ≈ σ_jump/x(R)")
+    f_edges = np.asarray(table["edges"], dtype=float) * 1e6
+    check("S_max over 8 distinct integer MHz in 2400–2470 = S(4+4 edges)", design.max_spread_mhz2(2400, 2470, 8),
+          core.moments(f_edges)["S"] / 1e12, 1e-9, rel=True)
+    check("leave_cap(equal) = σ_leave(equal, e08)", design.leave_cap(f), sig_leave["equal"], 2e-3, rel=True)
+    cap_e = design.leave_cap(f_edges)
+    me = core.moments(f_edges)
+    report("4+4 edges: cap σ, cap gain over equal [dB], same from σ_jump/x(R)",
+           (round(cap_e, 5), round(20 * math.log10(cap_e / sig_leave["equal"]), 3),
+            round(20 * math.log10(me["sigma_jump"] / foot_x(me["R"]) / (sj / foot_x(R))), 3)))
+    report("e08 best: σ_leave gain, own cap gain, gap to the global cap [dB]",
+           (round(20 * math.log10(sig_leave["best_e08"] / sig_leave["equal"]), 3),
+            round(20 * math.log10(design.leave_cap(np.asarray(table["best_e08"], dtype=float) * 1e6) / sig_leave["equal"]), 3),
+            round(20 * math.log10(cap_e / sig_leave["best_e08"]), 3)))
+
+    def cap_form(fb):
+        s_ub = (8988.0 - 8.0 * (fb - 2435.0) ** 2) * 1e12
+        return math.pi * math.sqrt(s_ub) / (fb * 1e6) / foot_x(1 + 8 * (fb * 1e6) ** 2 / s_ub)
+
+    sup_f = max(cap_form(fb) for fb in np.linspace(2425, 2445, 401))
+    check("sup over f̄ of σ_jump/x(R) under S ≤ 8988 − 8(f̄−2435)² exceeds the 4+4 value by < 0.01 dB",
+          20 * math.log10(sup_f / cap_form(2435.0)), 0.0, 0.01)
+    arch = [(r_["mhz"], r_["sigma_leave"]) for r_ in d08["random"]] + [(p_["mhz"], p_["sigma_leave"]) for p_ in d09["cloud"] + d09["anneal"]]
+    arch += [(d08["best"]["mhz"], d08["best"]["sigma_leave"])] + [(a_["mhz"], a_["sigma_leave"]) for a_ in d08["anneal"]]
+    own = max(sl_ / design.leave_cap(np.asarray(mz, dtype=float) * 1e6) for mz, sl_ in arch)
+    check(f"all {len(arch)} archived designs: σ_leave ≤ own cap (max ratio − 1)", own - 1.0, 0.0, 2e-3)
+    check("all archived designs: σ_leave ≤ cap of the 4+4 edges", float(max(sl_ for _, sl_ in arch) <= cap_e), 1.0, 0)
 
     print("== §6.3 anchors")
     edges = [2400, 2401, 2402, 2403, 2467, 2468, 2469, 2470]
@@ -307,6 +489,59 @@ def main() -> None:
     for s in (0.0252, 0.087, 0.3):
         a, b = mc[("equal", s)], mc[("front_lo", s)]
         report(f"MC at σ={s} ({db(1 / (2 * s * s)):.1f} dB/tone): equal, front_lo [dB m²]", (round(db(a["mse"]), 1), round(db(b["mse"]), 1)))
+
+    print("== §6.6 O3 re-judged on the e09 archive: ρ_far (old) versus ρ_nongrid (new)")
+    eq_key = tuple(int(v) for v in eq["mhz"])
+    seen, pts = {eq_key}, []
+    for p_ in d09["cloud"] + d09["anneal"] + d09["front"]:
+        key = tuple(int(v) for v in p_["mhz"])
+        if key not in seen:
+            seen.add(key)
+            pts.append(p_)
+    with ProcessPoolExecutor(max_workers=4) as ex:
+        vr = list(ex.map(_ratios, [p_["mhz"] for p_ in pts], chunksize=40))
+    vr_e = _ratios(eq["mhz"])
+    report(f"{len(pts)} distinct archived designs; equal: ρ_far, ρ_nongrid, L [m]",
+           (round(vr_e["rho_far"], 1), round(vr_e["rho_nongrid"], 1), round(vr_e["L_m"], 2)))
+    obj = lambda p_, r_, key: (p_["sigma_leave"], p_["mse_ref"], r_[key])  # noqa: E731
+    old = [(p_, r_) for p_, r_ in zip(pts, vr) if dominates(obj(p_, r_, "rho_far"), obj(eq, vr_e, "rho_far"))]
+    new = [(p_, r_) for p_, r_ in zip(pts, vr) if dominates(obj(p_, r_, "rho_nongrid"), obj(eq, vr_e, "rho_nongrid"))]
+    report("designs dominating equal in (σ_leave, MSE_ref, ρ_far)", len(old))
+    report("  e.g. (MHz, σ_leave, MSE_ref dB, ρ_far @ δ, ρ_nongrid)",
+           [(list(map(int, p_["mhz"])), round(p_["sigma_leave"], 5), round(db(p_["mse_ref"]), 2),
+             f"{r_['rho_far']:.0f}@{r_['delta_far_m']:.2f}", round(r_["rho_nongrid"], 1)) for p_, r_ in old[:3]])
+    check("designs dominating equal in (σ_leave, MSE_ref, ρ_nongrid)", len(new), 0, 0)
+    both = [(p_, r_) for p_, r_ in zip(pts, vr) if p_["sigma_leave"] >= eq["sigma_leave"] and r_["rho_nongrid"] >= vr_e["rho_nongrid"]]
+    check("designs at least as good as equal on σ_leave and ρ_nongrid alone (so any O2 proxy gives the same verdict)", len(both), 0, 0)
+    hi_ng = [(p_, r_) for p_, r_ in zip(pts, vr) if r_["rho_nongrid"] >= vr_e["rho_nongrid"]]
+    report("designs with ρ_nongrid ≥ equal's: count, share, best σ_leave gain among them [dB], median B [MHz]",
+           (len(hi_ng), round(len(hi_ng) / len(pts), 3),
+            round(20 * math.log10(max(p_["sigma_leave"] for p_, _ in hi_ng) / eq["sigma_leave"]), 2),
+            float(np.median([max(p_["mhz"]) - min(p_["mhz"]) for p_, _ in hi_ng]))))
+    report("designs with ρ_far ≥ equal's", sum(1 for r_ in vr if r_["rho_far"] >= vr_e["rho_far"]))
+    beat2 = [(p_, r_) for p_, r_ in zip(pts, vr) if p_["sigma_leave"] > eq["sigma_leave"] and p_["mse_ref"] < eq["mse_ref"]]
+    report("designs beating equal on (σ_leave, MSE_ref): count, largest ρ_nongrid among them (@ δ)",
+           (len(beat2), max((round(r_["rho_nongrid"], 1), round(r_["delta_nongrid_m"], 2)) for _, r_ in beat2)))
+    lb = [r_["L_m"] * 2 * (max(p_["mhz"]) - min(p_["mhz"])) * 1e6 / (core.C * (N - 1)) for p_, r_ in zip(pts, vr)]
+    check("Corollary 2 on the archive: L < c(N−1)/(2B) for every non-equal design", float(max(lb) < 1.0 - 1e-9), 1.0, 0)
+    report("largest L among the other designs (all bandwidths) [m]", round(max(r_["L_m"] for r_ in vr), 2))
+    l_good = [r_["L_m"] for p_, r_ in zip(pts, vr) if p_["sigma_leave"] >= eq["sigma_leave"]]
+    check("no design with σ_leave ≥ equal's has L ≥ equal's", float(max(l_good) < vr_e["L_m"]), 1.0, 0)
+    report("largest L among designs with σ_leave ≥ equal's [m]", round(max(l_good), 2))
+    report("front (σ_leave ↑): (MHz, ρ_far, ρ_nongrid @ δ, L)",
+           [(list(map(int, p_["mhz"])), round(r_["rho_far"], 2), f"{r_['rho_nongrid']:.2f}@{r_['delta_nongrid_m']:.2f}", round(r_["L_m"], 2))
+            for p_, r_ in sorted(((p_, _ratios(p_["mhz"])) for p_ in d09["front"]), key=lambda t: t[0]["sigma_leave"])])
+
+    print("== deep §12.1: foot per tone from x(R) (not threshold + 13.8 dB)")
+    rows = []
+    for f0 in (900, 2400, 5800, 24000):
+        fd = (f0 + 10.0 * np.arange(8)) * 1e6
+        md = core.moments(fd)
+        thr = db(1 / (2 * md["sigma_jump"] ** 2))
+        xx = foot_x(md["R"])
+        rows.append((f0, round(md["R_db"], 1), round(md["sigma_jump"], 4), round(thr, 1), round(xx, 3),
+                     round(thr + 20 * math.log10(xx), 1), round(thr + 13.8, 1)))
+    report("(f0 MHz, R_dB, σ_jump, centre dB/tone, x(R), foot dB/tone, old centre+13.8)", rows)
 
     print()
     if FAILS:
