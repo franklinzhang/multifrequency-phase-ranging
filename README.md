@@ -1,15 +1,32 @@
 # Range Estimation from Wrapped Multi-Frequency Phase Observations
 
-## Open the notes
+[Read](#read) · [Reproduce](#reproduce) · [Cite](#license-and-citation) · [License (CC BY 4.0)](LICENSE)
 
-| Language | Interactive (Jupyter) | Plain text |
+Research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases: two parallel MSE lines, \(\sigma_{\mathrm{jump}}\), half-window Ziv–Zakai bounds, unequal spacing, and engineering budget rules. Figure labels are English. No PDF edition.
+
+## Read
+
+| | 中文 | English |
 | --- | --- | --- |
-| **中文** | [notes/多频相位测距的门限.ipynb](notes/多频相位测距的门限.ipynb) | [notes/门限问题的进展.md](notes/门限问题的进展.md) |
-| **English** | [notes/threshold.ipynb](notes/threshold.ipynb) | this README |
+| **Typeset HTML** | [site/zh.html](site/zh.html) | [site/en.html](site/en.html) |
+| **Jupyter (local)** | [notes/多频相位测距的门限.ipynb](notes/多频相位测距的门限.ipynb) | [notes/threshold.ipynb](notes/threshold.ipynb) |
+| **Plain text** | [notes/门限问题的进展.md](notes/门限问题的进展.md) | this README |
 
-All figure axes and legends are **English** in both language versions. Numbers come from archived trials in [`computation/data/`](computation/data/). No PDF edition.
+Landing page: [`site/index.html`](site/index.html). Rebuild with `python3 site/build_site.py`.
 
-**License:** [CC BY 4.0](LICENSE). **Cite this repository** via [`CITATION.cff`](CITATION.cff) (GitHub “Cite this repository”, or the BibTeX below).
+**GitHub Release:** download `threshold-reading-site.zip` from [Releases](../../releases), unzip, open `index.html` offline. That is the reliable reading path (OpenAI-style: ship a usable artifact on the Release, do not rely on private blob URLs). If the Release page 404s while logged out, the repository is still **private** — make it public to share externally, or distribute the zip directly.
+
+GitHub’s in-browser notebook view is **not** the interactive edition (no widgets). Run Jupyter locally.
+
+## Reproduce
+
+```bash
+pip install -r requirements.txt
+python3 site/build_site.py          # optional: refresh HTML
+jupyter notebook notes/threshold.ipynb
+```
+
+Canonical numbers live under [`computation/data/`](computation/data/) (seed **7**). See [`computation/README.md`](computation/README.md). Do not silently overwrite the archive.
 
 ## Long abstract: what was done, what was answered
 
