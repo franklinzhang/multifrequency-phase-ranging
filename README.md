@@ -1,6 +1,13 @@
 # Range Estimation from Wrapped Multi-Frequency Phase Observations
 
-The Chinese note *多频相位测距的门限* is the full account. **Interactive canonical form:** [`notes/多频相位测距的门限.ipynb`](notes/多频相位测距的门限.ipynb) (Jupyter: narrative plus archived curves and a noise-ratio control). Plain-text twin: [`notes/门限问题的进展.md`](notes/门限问题的进展.md). This page is the English digest. There is no PDF edition.
+## Open the notes
+
+| Language | Interactive (Jupyter) | Plain text |
+| --- | --- | --- |
+| **中文** | [notes/多频相位测距的门限.ipynb](notes/多频相位测距的门限.ipynb) | [notes/门限问题的进展.md](notes/门限问题的进展.md) |
+| **English** | [notes/threshold.ipynb](notes/threshold.ipynb) | this README |
+
+All figure axes and legends are **English** in both language versions. Numbers come from archived trials in [`computation/data/`](computation/data/). No PDF edition.
 
 **License:** [CC BY 4.0](LICENSE). **Cite this repository** via [`CITATION.cff`](CITATION.cff) (GitHub “Cite this repository”, or the BibTeX below).
 
@@ -124,12 +131,11 @@ Two tasks are not worth the effort. One is a proof that every estimator jumps at
 
 ## Documents
 
-- **Interactive consolidation (canonical):** [`notes/多频相位测距的门限.ipynb`](notes/多频相位测距的门限.ipynb) — same narrative as the Markdown twin, with plots and a \(\sigma/\sigma_{\mathrm{jump}}\) control driven by archived trials.
-- **Plain-text twin:** [`notes/门限问题的进展.md`](notes/门限问题的进展.md) — for diff and reading without Jupyter.
-- **Figures** used by the Markdown twin: [`notes/figures/`](notes/figures/) (equal-spacing MSE, half-window cumulative fraction, geometric-spacing MSE).
+- **中文交互:** [`notes/多频相位测距的门限.ipynb`](notes/多频相位测距的门限.ipynb)
+- **English interactive:** [`notes/threshold.ipynb`](notes/threshold.ipynb)
+- **Chinese plain text:** [`notes/门限问题的进展.md`](notes/门限问题的进展.md)
+- **Figures** (English labels): [`notes/figures/`](notes/figures/)
 - **Archived trials:** [`computation/`](computation/) — see [`computation/README.md`](computation/README.md). A later run is not a substitute for those numbers unless the difference is stated.
-
-An older parallel derivation PDF is not shipped. The interactive notebook and the Markdown twin are the published consolidation.
 
 ## License and citation
 

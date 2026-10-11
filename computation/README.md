@@ -11,7 +11,8 @@ This directory holds the **authoritative** numbers cited by the Chinese note and
 | [`data/bound_valleys.json`](data/bound_valleys.json) | Half-window valley fill segments and cumulative fractions |
 
 - Random seed used for the archive: **7** (also recorded in `results.json`).
-- The notes and [`notes/多频相位测距的门限.ipynb`](../notes/多频相位测距的门限.ipynb) **read** these files. They must not rewrite them.
+- The notes and notebooks ([`多频相位测距的门限.ipynb`](../notes/多频相位测距的门限.ipynb), [`threshold.ipynb`](../notes/threshold.ipynb)) **read** these files. They must not rewrite them.
+- Static PNGs under `notes/figures/` use **English** axis labels and legends.
 - A later run of `sim_threshold.py` or `bound_valleys.py` is **not** a substitute for the archived numbers unless every difference is stated in the notes.
 
 ## Half-window bound (`zzb_half`)
