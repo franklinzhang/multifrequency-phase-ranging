@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: If you use this repository, please cite it as below.
+title: "Range Estimation from Wrapped Multi-Frequency Phase Observations"
+authors:
+  - family-names: Zhang
+    given-names: Franklin
+    email: franklinzhang1985@gmail.com
+repository-code: "https://github.com/franklinzhang/multifrequency-phase-ranging"
+url: "https://github.com/franklinzhang/multifrequency-phase-ranging"
+abstract: >-
+  Research notes on the first threshold of coherent range estimation from
+  wrapped multi-frequency phase observations: two parallel MSE lines, the
+  phase scale sigma_jump, half-window Ziv–Zakai bounds, unequal spacing, and
+  engineering budget rules. Archived trials live under computation/.
+keywords:
+  - phase ranging
+  - multi-frequency
+  - threshold effect
+  - Ziv-Zakai bound
+  - wrapped phase
+license: CC-BY-4.0
+type: software
+date-released: "2026-10-11"

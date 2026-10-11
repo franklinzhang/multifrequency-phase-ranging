@@ -2,6 +2,8 @@
 
 The Chinese note *多频相位测距的门限* (`notes/门限问题的进展.md`) is the full account. This page is the English digest: what was established, what the numbers say, what to budget, and what remains open.
 
+**License:** [CC BY 4.0](LICENSE). **Cite this repository** via [`CITATION.cff`](CITATION.cff) (GitHub “Cite this repository”, or the BibTeX below).
+
 ## Long abstract: what was done, what was answered
 
 Wrapped phases at a finite set of frequencies determine a range only up to a lattice of aliases. For the coherent maximum-likelihood estimator, mean-square error on a log-log plot follows the carrier line, then jumps, at the same slope, onto the bandwidth line. The phase scale of that first threshold is
@@ -125,6 +127,25 @@ Two tasks are not worth the effort. One is a proof that every estimator jumps at
 The derivation, with the cost surfaces and both estimators drawn separately, is the note *多频相位测距的平行门限*. The consolidation of the conclusions, the engineering rules, and the open questions is *多频相位测距的门限*, stored as Markdown at `notes/门限问题的进展.md`. The three curves in the consolidation are the equal-spacing mean square, the cumulative fraction of the half-window bound at \(0.0836\,\mathrm{rad}\), and the geometric-spacing mean square.
 
 The computation directory holds the frozen trials behind those curves and the programs that produced them. A later run is not a substitute for those numbers unless the difference is stated.
+
+## License and citation
+
+This repository is licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (`CC BY 4.0`). You may share and adapt the notes, figures, PDFs, and archived computation, including commercially, if you give appropriate credit, link the license, and note changes.
+
+Preferred citation (also in [`CITATION.cff`](CITATION.cff)):
+
+```bibtex
+@misc{zhang2026multifrequency,
+  author       = {Zhang, Franklin},
+  title        = {Range Estimation from Wrapped Multi-Frequency Phase Observations},
+  year         = {2026},
+  publisher    = {GitHub},
+  howpublished = {\url{https://github.com/franklinzhang/multifrequency-phase-ranging}},
+  note         = {Research notes and archived trials; licensed under CC BY 4.0}
+}
+```
+
+When you reuse a specific number from `computation/data/`, cite this repository and state that the value is from the archived trials.
 
 ## References
 
