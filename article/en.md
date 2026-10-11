@@ -391,6 +391,50 @@ The key point: the front design **keeps the $1\lambda$ ambiguity scale**, postpo
 
 When $N \ll M$, a random draw is even less likely to hit a “no shallow far valley” structure. Coprime / Chinese-remainder draws optimize the unambiguous range; they neither postpone the first threshold nor keep the first slip at $1\lambda$ (Section 9.3).
 
+#### What “edges + anchors” actually does
+
+Dense edges make $S$ large (later threshold). Edges alone have a cost: near the synthetic wavelength $c/\Delta F$ of the cluster-centre gap $\Delta F$, a far valley appears almost as deep as $J(\lambda)$ — each cluster is phase-aligned inside itself and the total cost is nearly zero. For clusters at 2400 and 2470 MHz, $\Delta F = 70$ MHz and the danger zone is around $c/70\,\mathrm{MHz} \approx 4.28$ m (numerically the shallowest often sits near 4.5 m).
+
+**A middle anchor is not another ruler; it is there to fill that far valley.** At the far valley the edge residuals are near zero, while a middle frequency is generally off an integer cycle and can contribute up to $\pi^2 \approx 10$ alone. In our eight-tone example, 4+4 edges with no anchor give $J \approx 1.5\,J(\lambda)$ at 4.49 m; one anchor at 2435 MHz lifts that to about $150\,J(\lambda)$. The far valley goes from “as easy as a $1\lambda$ slip” to practically unreachable. The threshold barely moves (still set by $S$); the shelf is kept. That is the construction behind designs like `2400,2401,2402,2409,2450,2468,2469,2470`: edges own $S$, one or two middles own the valley fill.
+
+#### Many tones at the edges and only one in the middle — drowned by noise?
+
+**Yes: that intuition is right — but the drowning is about relative cost height, not the SNR of that one tone.**
+
+The coherent cost is a sum of $N$ terms. With $N_{\mathrm{side}}$ tones at each edge:
+
+- $J(\lambda)$ grows **linearly** with $N_{\mathrm{side}}$ (every tone contributes at $1\lambda$);
+- a single anchor’s contribution to the far valley is capped by $\pi^2$, and the valley **relocates** to dodge that anchor — numerically one anchor often lifts $J_{\mathrm{far}}$ by only about 0.2, far below $\pi^2$;
+- so the ratio $J_{\mathrm{far}} / J(\lambda)$ falls as $N_{\mathrm{side}}$ grows. The far valley becomes relatively shallow again.
+
+Collapsing each edge to a single exact frequency (the most extreme “edges”) and spreading $K$ anchors in the middle:
+
+| tones per edge | $K=0$ | $K=1$ | $K=2$ | $K=4$ | $K=8$ |
+| --- | --- | --- | --- | --- | --- |
+| 4 | $J_{\mathrm{far}}/J(\lambda) = 0.02$ | 2.7 | 6.0 | **156** | 388 |
+| 64 | 0.02 | 0.21 | 0.40 | **10** | 25 |
+| 256 | 0.02 | 0.07 | 0.12 | 2.5 | 6.4 |
+| 512 (~1000 at the two edges) | 0.02 | 0.04 | 0.07 | 1.3 | 3.2 |
+
+How to read it:
+
+- **No anchors**: the far valley is essentially zero; one slip costs metres.
+- **$K=1,2$**: the valley moves; the lift is only $O(0.2)$–$O(0.4)$. Once the edges are thick, $J_{\mathrm{far}}$ is immediately shallow relative to $J(\lambda)$. About 1000 edge tones with one middle tone gives a ratio of 0.04 — the anchor is essentially wasted.
+- **$K \ge 4$ with anchors spread out**: the valley cannot dodge every anchor at once, and the lift reaches the $\pi^2$ scale. But $J(\lambda)\propto N$, so thicker edges still need $K$ to grow in proportion.
+
+The rule is simple:
+
+> Budget anchors against the edge size: keep $J_{\mathrm{far}} \gtrsim c\, J(\lambda)$ (about $c \sim 10$ is hard enough in practice). $K$ spread anchors contribute at most about $K\pi^2$, so $K \gtrsim c\, J(\lambda)/\pi^2 \propto N_{\mathrm{edge}}$. With eight edge tones, one or two anchors suffice; with a thousand at the edges, the middle needs tens, not one.
+
+Another view: an anchor works when its residual at the far valley is not erased by relocating the valley, and when it remains deep relative to $J(\lambda)$. That is a **geometric** condition, independent of that tone’s instantaneous noise — even if the anchor has the same SNR as the edges, a too-small $K/N_{\mathrm{edge}}$ still leaves a shallow far valley.
+
+Practical recipe:
+
+1. Place the edges first to hit the target $S$ / threshold;
+2. Sweep the cost surface around the synthetic wavelength and read $J_{\mathrm{far}}/J(\lambda)$ for the shallowest far valley;
+3. Add anchors uniformly between the edges until that ratio is about 10 or more, then stop — further anchors mostly add to $N$, with diminishing returns on valley fill;
+4. Do not replace step 2 by a gut feel for “what fraction sits in the middle”; let $J_{\mathrm{far}}/J(\lambda)$ speak.
+
 ### 12.3 With describable multipath, is that still best?
 
 For a **single describable reflection** (amplitude $a$, excess path $\Delta$, phase $\psi$), the lattice model still applies: multipath only puts a deterministic phase offset $m_i = \arg(1 + a\,e^{j(2\pi f_i\Delta/c + \psi)})$ on each tone, which then projects to the disagreement $\beta$. The question becomes which placement keeps $\lvert\beta\rvert$ smaller and slips rarer as $\Delta$ varies.
