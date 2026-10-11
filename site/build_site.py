@@ -18,6 +18,8 @@ FIG_SRC = NOTES / "figures"
 FIG_DST = SITE / "figures"
 DATA_SRC = ROOT / "computation" / "data" / "results.json"
 DATA_DST = SITE / "data"
+REPO = "https://github.com/franklinzhang/multifrequency-phase-ranging"
+REPO_BLOB = f"{REPO}/blob/main"
 BINDER_BASE = (
     "https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0"
 )
@@ -74,6 +76,29 @@ def retarget_figures(html: str) -> str:
     return html
 
 
+def rewrite_repo_links(html: str) -> str:
+    """Point repository paths at GitHub so the Pages edition does not 404."""
+    replacements = [
+        ('href="../README.md"', f'href="{REPO_BLOB}/README.md"'),
+        ('href="../LICENSE"', f'href="{REPO_BLOB}/LICENSE"'),
+        ('href="../CITATION.cff"', f'href="{REPO_BLOB}/CITATION.cff"'),
+        ('href="../computation/README.md"', f'href="{REPO_BLOB}/computation/README.md"'),
+        ('href="../computation/data/"', f'href="{REPO_BLOB}/computation/data"'),
+        ('href="../computation/"', f'href="{REPO_BLOB}/computation"'),
+        ('href="../notes/', f'href="{REPO_BLOB}/notes/'),
+        ('href="README.md"', f'href="{REPO_BLOB}/README.md"'),
+        ('href="LICENSE"', f'href="{REPO_BLOB}/LICENSE"'),
+        ('href="CITATION.cff"', f'href="{REPO_BLOB}/CITATION.cff"'),
+        ('href="computation/README.md"', f'href="{REPO_BLOB}/computation/README.md"'),
+        ('href="computation/data/"', f'href="{REPO_BLOB}/computation/data"'),
+        ('href="computation/"', f'href="{REPO_BLOB}/computation"'),
+        ('href="notes/', f'href="{REPO_BLOB}/notes/'),
+    ]
+    for old, new in replacements:
+        html = html.replace(old, new)
+    return html
+
+
 PAGE = """<!DOCTYPE html>
 <html lang="{lang}">
 <head>
@@ -95,11 +120,11 @@ PAGE = """<!DOCTYPE html>
           <a href="zh.html" class="{zh_active}">中文</a>
           <a href="en.html" class="{en_active}">English</a>
         </div>
-        <div class="meta"><a href="index.html">Home</a> · <a href="../README.md">Repo README</a></div>
+        <div class="meta"><a href="index.html">Home</a> · <a href="explore.html">Explore</a> · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
       </div>
       {body}
       <div class="footnote-bar">
-        CC BY 4.0 · Archived numbers in <code>computation/data/</code> · Interactive notebooks remain available in <code>notes/</code>
+        CC BY 4.0 · Cite via <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Archived numbers in <code>computation/data/</code>
       </div>
     </main>
   </div>
@@ -123,7 +148,13 @@ HOME = """<!DOCTYPE html>
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Multi-Frequency Phase Ranging — Threshold Notes</title>
+  <title>The Threshold of Multi-Frequency Phase Ranging</title>
+  <meta name="description" content="Bilingual research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases. Chinese and English reading editions, archive explorer, Binder notebooks. CC BY 4.0." />
+  <meta property="og:title" content="The Threshold of Multi-Frequency Phase Ranging" />
+  <meta property="og:description" content="Published bilingual reading edition — storyteller notes, JIT background, typographic HTML." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
+  <link rel="canonical" href="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet" />
@@ -132,14 +163,15 @@ HOME = """<!DOCTYPE html>
 <body>
   <div class="home">
     <div class="home-card">
+      <p class="edition-label">Published reading edition · CC BY 4.0</p>
       <h1>The Threshold of Multi-Frequency Phase Ranging</h1>
-      <p>Storyteller research notes: typeset reading, browser archive explorer, and Binder notebooks. Figure labels are English. Cite via CITATION.cff (CC BY 4.0).</p>
+      <p class="lede">Bilingual research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases. Choose a language to read; explore the frozen archive without installing anything.</p>
       <div class="choices">
-        <a class="choice" href="zh.html">
+        <a class="choice primary" href="zh.html">
           <strong>中文阅读版</strong>
-          <span>终局感叙事 · JIT 背景 · KaTeX · TOC</span>
+          <span>终局感叙事 · JIT 背景 · KaTeX · 目录</span>
         </a>
-        <a class="choice" href="en.html">
+        <a class="choice primary" href="en.html">
           <strong>English reading edition</strong>
           <span>Same architecture · typographic HTML · KaTeX</span>
         </a>
@@ -156,7 +188,7 @@ HOME = """<!DOCTYPE html>
           <span>Full notebook + widgets in the browser</span>
         </a>
       </div>
-      <div class="footnote-bar">CC BY 4.0 · Release zip also works offline · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
+      <div class="footnote-bar">Cite <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Source <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a> · Offline zip in <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0">Releases</a></div>
     </div>
   </div>
 </body>
@@ -272,7 +304,19 @@ EXPLORE = """<!DOCTYPE html>
 def prepare_zh_source(text: str) -> str:
     # Point image paths at site/figures and keep captions.
     text = text.replace("](figures/", "](figures/")
-    # Drop the repo-path logistics table clutter slightly? Keep — useful.
+    # Same-directory links when the HTML lives on Pages.
+    text = text.replace(
+        "](https://franklinzhang.github.io/multifrequency-phase-ranging/zh.html)",
+        "](zh.html)",
+    )
+    text = text.replace(
+        "](https://franklinzhang.github.io/multifrequency-phase-ranging/en.html)",
+        "](en.html)",
+    )
+    text = text.replace(
+        "对外发布入口：https://franklinzhang.github.io/multifrequency-phase-ranging/ 。",
+        "对外发布入口：[阅读站首页](index.html)。",
+    )
     return text
 
 
@@ -288,12 +332,22 @@ def prepare_en_source(text: str) -> str:
         else:
             text = head
     text = "# The Threshold of Multi-Frequency Phase Ranging\n\n" + text.split("\n", 2)[-1]
-    # Remove duplicate H1 if README already starts with it after strip — handled above.
-    # Fix relative notebook links for site root.
-    text = text.replace("(notes/", "(../notes/")
-    text = text.replace("](LICENSE)", "](../LICENSE)")
-    text = text.replace("](CITATION.cff)", "](../CITATION.cff)")
-    text = text.replace("](computation/", "](../computation/")
+    # Drop the Read navigation table from the English reading body (landing covers it).
+    text = re.sub(
+        r"## Read\n\n.*?(?=\n## )",
+        "",
+        text,
+        count=1,
+        flags=re.S,
+    )
+    # Drop the one-line nav under the H1; the site chrome already has Home/CN/EN.
+    text = re.sub(
+        r"\n\[\*\*Read online\*\*\].*?\n",
+        "\n",
+        text,
+        count=1,
+        flags=re.S,
+    )
     return text
 
 
@@ -329,16 +383,14 @@ def main() -> None:
 
     zh_md = prepare_zh_source((NOTES / "门限问题的进展.md").read_text(encoding="utf-8"))
     en_md = prepare_en_source((ROOT / "README.md").read_text(encoding="utf-8"))
-    zh_body = retarget_figures(md_to_html(zh_md))
-    en_body = retarget_figures(md_to_html(en_md))
+    zh_body = rewrite_repo_links(retarget_figures(md_to_html(zh_md)))
+    en_body = rewrite_repo_links(retarget_figures(md_to_html(en_md)))
 
     # Force TOC generation by ensuring toc extension runs; markdown places toc where [TOC] is.
-    if '[TOC]' not in zh_md:
-        zh_body = md_to_html("[TOC]\n\n" + zh_md)
-        zh_body = retarget_figures(zh_body)
-    if '[TOC]' not in en_md:
-        en_body = md_to_html("[TOC]\n\n" + en_md)
-        en_body = retarget_figures(en_body)
+    if "[TOC]" not in zh_md:
+        zh_body = rewrite_repo_links(retarget_figures(md_to_html("[TOC]\n\n" + zh_md)))
+    if "[TOC]" not in en_md:
+        en_body = rewrite_repo_links(retarget_figures(md_to_html("[TOC]\n\n" + en_md)))
 
     zh_toc = extract_toc(zh_body)
     en_toc = extract_toc(en_body)

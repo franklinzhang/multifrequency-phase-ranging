@@ -8,7 +8,7 @@ authors:
     given-names: Franklin
     email: franklinzhang1985@gmail.com
 repository-code: "https://github.com/franklinzhang/multifrequency-phase-ranging"
-url: "https://github.com/franklinzhang/multifrequency-phase-ranging"
+url: "https://franklinzhang.github.io/multifrequency-phase-ranging/"
 abstract: >-
   Research notes on the first threshold of coherent range estimation from
   wrapped multi-frequency phase observations: two parallel MSE lines, the
@@ -36,5 +36,5 @@ preferred-citation:
   title: "Range Estimation from Wrapped Multi-Frequency Phase Observations"
   year: 2026
   version: "0.1.0"
-  url: "https://github.com/franklinzhang/multifrequency-phase-ranging"
-  notes: "CC BY 4.0; cite archived numbers from computation/data/ as such"
+  url: "https://franklinzhang.github.io/multifrequency-phase-ranging/"
+  notes: "CC BY 4.0; bilingual reading edition; cite archived numbers from computation/data/ as such"

@@ -13,7 +13,6 @@
 <body>
   <div class="shell">
     <aside class="toc"><strong>Contents</strong><ul>
-<li><a href="#read">Read</a></li>
 <li><a href="#reproduce">Reproduce</a></li>
 <li><a href="#long-abstract-what-was-done-what-was-answered">Long abstract: what was done, what was answered</a></li>
 <li><a href="#observation-and-two-estimators">Observation and two estimators</a></li>
@@ -32,51 +31,16 @@
           <a href="zh.html" class="">中文</a>
           <a href="en.html" class="active">English</a>
         </div>
-        <div class="meta"><a href="index.html">Home</a> · <a href="../README.md">Repo README</a></div>
+        <div class="meta"><a href="index.html">Home</a> · <a href="explore.html">Explore</a> · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
       </div>
       <h1 id="the-threshold-of-multi-frequency-phase-ranging">The Threshold of Multi-Frequency Phase Ranging</h1>
-<p><a href="#read">Read</a> · <a href="#reproduce">Reproduce</a> · <a href="#license-and-citation">Cite</a> · <a href="../LICENSE">License (CC BY 4.0)</a></p>
 <p>Research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases: two parallel MSE lines, <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>, half-window Ziv–Zakai bounds, unequal spacing, and engineering budget rules. Figure labels are English. No PDF edition.</p>
-<h2 id="read">Read</h2>
-<table>
-<thead>
-<tr>
-<th></th>
-<th>中文</th>
-<th>English</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Typeset HTML</strong></td>
-<td><a href="site/zh.html">site/zh.html</a></td>
-<td><a href="site/en.html">site/en.html</a></td>
-</tr>
-<tr>
-<td><strong>Binder Jupyter</strong></td>
-<td><a href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb">launch 中文</a></td>
-<td><a href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2Fthreshold.ipynb">launch English</a></td>
-</tr>
-<tr>
-<td><strong>Plain text</strong></td>
-<td><a href="../notes/门限问题的进展.md">notes/门限问题的进展.md</a></td>
-<td>this README</td>
-</tr>
-</tbody>
-</table>
-<ul>
-<li>Landing: <a href="site/index.html"><code>site/index.html</code></a> · no-install archive slider: <a href="site/explore.html"><code>site/explore.html</code></a></li>
-<li>Quality gate (storyteller / typography / interaction / citation): <a href="QUALITY.md"><code>QUALITY.md</code></a></li>
-<li>Release artifact: download <code>threshold-reading-site.zip</code> from <a href="../../releases">Releases</a>, unzip, open <code>index.html</code> offline</li>
-<li>GitHub Pages (after deploy): <code>https://franklinzhang.github.io/multifrequency-phase-ranging/</code></li>
-</ul>
-<p>GitHub’s built-in notebook preview is not interactive. Prefer Binder or local Jupyter.</p>
 <h2 id="reproduce">Reproduce</h2>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
 python3<span class="w"> </span>site/build_site.py<span class="w">          </span><span class="c1"># refresh HTML + explore.html</span>
 jupyter<span class="w"> </span>notebook<span class="w"> </span>notes/threshold.ipynb
 </code></pre></div>
-<p>Canonical numbers live under <a href="../computation/data/"><code>computation/data/</code></a> (seed <strong>7</strong>). See <a href="../computation/README.md"><code>computation/README.md</code></a>. Do not silently overwrite the archive.</p>
+<p>Canonical numbers live under <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/computation/data"><code>computation/data/</code></a> (seed <strong>7</strong>). See <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/computation/README.md"><code>computation/README.md</code></a>. Do not silently overwrite the archive.</p>
 <h2 id="long-abstract-what-was-done-what-was-answered">Long abstract: what was done, what was answered</h2>
 <p>Wrapped phases at a finite set of frequencies determine a range only up to a lattice of aliases. For the coherent maximum-likelihood estimator, mean-square error on a log-log plot follows the carrier line, then jumps, at the same slope, onto the bandwidth line. The phase scale of that first threshold is</p>
 <div class="arithmatex">\[
@@ -147,11 +111,11 @@ R = 1 + \frac{12(N-1)}{N+1}\left(\frac{\bar f}{B}\right)^2.
 <p>Two tasks are not worth the effort. One is a proof that every estimator jumps at <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>. The incoherent estimator already does not. The other is using the Chinese remainder theorem to postpone the first threshold. That theorem moves the unambiguous range.</p>
 <h2 id="documents">Documents</h2>
 <ul>
-<li><strong>中文交互:</strong> <a href="../notes/多频相位测距的门限.ipynb"><code>notes/多频相位测距的门限.ipynb</code></a></li>
-<li><strong>English interactive:</strong> <a href="../notes/threshold.ipynb"><code>notes/threshold.ipynb</code></a></li>
-<li><strong>Chinese plain text:</strong> <a href="../notes/门限问题的进展.md"><code>notes/门限问题的进展.md</code></a></li>
-<li><strong>Figures</strong> (English labels): <a href="../notes/figures/"><code>notes/figures/</code></a></li>
-<li><strong>Archived trials:</strong> <a href="../computation/"><code>computation/</code></a> — see <a href="../computation/README.md"><code>computation/README.md</code></a>. A later run is not a substitute for those numbers unless the difference is stated.</li>
+<li><strong>中文交互:</strong> <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/notes/多频相位测距的门限.ipynb"><code>notes/多频相位测距的门限.ipynb</code></a></li>
+<li><strong>English interactive:</strong> <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/notes/threshold.ipynb"><code>notes/threshold.ipynb</code></a></li>
+<li><strong>Chinese plain text:</strong> <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/notes/门限问题的进展.md"><code>notes/门限问题的进展.md</code></a></li>
+<li><strong>Figures</strong> (English labels): <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/notes/figures/"><code>notes/figures/</code></a></li>
+<li><strong>Archived trials:</strong> <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/computation"><code>computation/</code></a> — see <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/computation/README.md"><code>computation/README.md</code></a>. A later run is not a substitute for those numbers unless the difference is stated.</li>
 </ul>
 <h2 id="references">References</h2>
 <p>Wei Li and Wangdong Qi, Optimization in Multi-Frequency Interferometry Ranging: Theory and Experiment, arXiv:1202.1424, 2012. Used in the two-line heights; no <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> as a function of the frequency set.</p>
@@ -159,7 +123,7 @@ R = 1 + \frac{12(N-1)}{N+1}\left(\frac{\bar f}{B}\right)^2.
 <p>J. Ziv and M. Zakai, Some Lower Bounds on Signal Parameter Estimation, IEEE Transactions on Information Theory, 1969. Used for the half-window bound with valley fill.</p>
 <p>D. C. Rife and R. R. Boorstyn, Single-Tone Parameter Estimation from Discrete-Time Observations, IEEE Transactions on Information Theory, vol. 20, no. 5, pp. 591–598, 1974. Used to mark the same local-bound / global-jump skeleton for a different parameter.</p>
       <div class="footnote-bar">
-        CC BY 4.0 · Archived numbers in <code>computation/data/</code> · Interactive notebooks remain available in <code>notes/</code>
+        CC BY 4.0 · Cite via <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Archived numbers in <code>computation/data/</code>
       </div>
     </main>
   </div>
