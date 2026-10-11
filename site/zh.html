@@ -13,28 +13,33 @@
 <body>
   <div class="shell">
     <aside class="toc"><strong>Contents</strong><ul>
-<li><a href="#摘要">摘要</a></li>
-<li><a href="#1-观测与两个估计量">1 观测与两个估计量</a></li>
-<li><a href="#2-两条平行直线">2 两条平行直线</a></li>
-<li><a href="#3-第一道门限的位置">3 第一道门限的位置</a><ul>
+<li><a href="#1-观测模型">1 观测模型</a></li>
+<li><a href="#2-现象两条平行直线与一跳">2 现象：两条平行直线与一跳</a></li>
+<li><a href="#3-第一道门限的相位尺度">3 第一道门限的相位尺度</a><ul>
 <li><a href="#31-相位尺度-sigma_mathrmjump">3.1 相位尺度 \(\sigma_{\mathrm{jump}}\)</a></li>
 <li><a href="#32-混合近似离开载频直线的位置">3.2 混合近似离开载频直线的位置</a></li>
 <li><a href="#33-等间距试验">3.3 等间距试验</a></li>
-<li><a href="#34-局部信息不跳">3.4 局部信息不跳</a></li>
 </ul>
 </li>
-<li><a href="#4-半窗-zivzakai-下界">4 半窗 Ziv–Zakai 下界</a></li>
-<li><a href="#5-非等间隔改变什么">5 非等间隔改变什么</a><ul>
-<li><a href="#51-保持-s-不能取消这一跳">5.1 保持 \(S\) 不能取消这一跳</a></li>
-<li><a href="#52-谷段如何进入半窗积分">5.2 谷段如何进入半窗积分</a></li>
-<li><a href="#53-几何间隔与一个波长同样深的远谷">5.3 几何间隔：与一个波长同样深的远谷</a></li>
-<li><a href="#54-更大噪声上的一串谷">5.4 更大噪声上的一串谷</a></li>
+<li><a href="#4-局部信息不跳非相干估计的反例">4 局部信息不跳；非相干估计的反例</a></li>
+<li><a href="#5-半窗-zivzakai-下界">5 半窗 Ziv–Zakai 下界</a><ul>
+<li><a href="#51-逐谷分解">5.1 逐谷分解</a></li>
+<li><a href="#52-它约束什么不约束什么">5.2 它约束什么，不约束什么</a></li>
 </ul>
 </li>
-<li><a href="#6-工程规则">6 工程规则</a></li>
-<li><a href="#7-结论与仍开放的问题">7 结论与仍开放的问题</a><ul>
-<li><a href="#71-结论">7.1 结论</a></li>
-<li><a href="#72-仍开放的问题">7.2 仍开放的问题</a></li>
+<li><a href="#6-非等间隔">6 非等间隔</a><ul>
+<li><a href="#61-保持-s矩匹配">6.1 保持 \(S\)：矩匹配</a></li>
+<li><a href="#62-几何间隔与一个波长同样深的远谷">6.2 几何间隔：与一个波长同样深的远谷</a></li>
+<li><a href="#63-更大噪声上的一串谷">6.3 更大噪声上的一串谷</a></li>
+</ul>
+</li>
+<li><a href="#7-工程规则">7 工程规则</a></li>
+<li><a href="#8-已做干净的与仍开放的">8 已做干净的与仍开放的</a><ul>
+<li><a href="#81-按最坏的谷排频点">8.1 按最坏的谷排频点</a></li>
+<li><a href="#82-在同一先验下比较贝叶斯均方">8.2 在同一先验下比较贝叶斯均方</a></li>
+<li><a href="#83-只在残差接近半周的谷上换似然比">8.3 只在残差接近半周的谷上换似然比</a></li>
+<li><a href="#84-在复观测上复核第一道门限">8.4 在复观测上复核第一道门限</a></li>
+<li><a href="#85-滑移长于一个波长以后的二阶矩">8.5 滑移长于一个波长以后的二阶矩</a></li>
 </ul>
 </li>
 <li><a href="#文献">文献</a></li>
@@ -48,134 +53,151 @@
         <div class="meta"><a href="index.html">Home</a> · <a href="explore.html">Explore</a> · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
       </div>
       <h1 id="多频相位测距的门限">多频相位测距的门限</h1>
-<p><em>Range Estimation from Wrapped Multi-Frequency Phase Observations</em></p>
 <p>2026 年 10 月</p>
-<h2 id="摘要">摘要</h2>
-<p>在有限个频率上各测一个相位，读数只保留 <span class="arithmatex">\(2\pi\)</span> 以内的部分（包裹相位），要由这些读数估计距离。相位噪声 <span class="arithmatex">\(\sigma\)</span> 增大时，相干极大似然估计的均方误差在双对数图上先沿着载频直线 HMSE（整周全部判对时的精度），再几乎垂直地升到带宽直线 MMSE（只靠频率间距时的精度）；两条直线斜率相同。这一跳的相位尺度由频率集合决定：</p>
-<div class="arithmatex">\[
-\sigma_{\mathrm{jump}} = \pi\sqrt{S}/\bar f,
-\]</div>
-<p>其中 <span class="arithmatex">\(\bar f\)</span> 是平均频率，<span class="arithmatex">\(S = \sum_i (f_i-\bar f)^2\)</span> 是频点相对平均频率的离差平方和。2400–2470 MHz、间隔 10 MHz 的八个等间距频点上，<span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.0836\,\mathrm{rad}\)</span>（约 4.8 度）。这是相位噪声增大时遇到的第一道门限；第二道在噪声到 1 rad 量级、相位模型本身失效时出现。记平均波长 <span class="arithmatex">\(\lambda = c/\bar f\)</span>、滑出一个波长的概率为 <span class="arithmatex">\(p\)</span>，混合近似 <span class="arithmatex">\((1-p)\,\mathrm{HMSE} + p\lambda^2\)</span> 在 <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span> 离开载频直线。0.22 到 0.50 倍门限每点 8000 次的试验中，第一次滑移（误差超过半个平均波长）出现在 <span class="arithmatex">\(0.25\,\sigma_{\mathrm{jump}}\)</span>；从该点到 <span class="arithmatex">\(1.0\,\sigma_{\mathrm{jump}}\)</span>，样本均方等于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>，误差在 0.1 分贝以内。门限上滑移率 0.344，样本均方 −22.8 分贝（相对 1 m²），带宽直线 −24.2 分贝。</p>
-<p>真值在长 14.99 m（搜索窗长度的一半）的区间上均匀分布时，Ziv–Zakai 下界（半窗下界）在同一门限上是 −27.6 分贝。它是这一先验下的贝叶斯风险，试验则是真值固定在搜索窗中心的条件均方；下界先离开载频直线，试验后离开。由局部 Fisher 信息得到的克拉美–罗界不跳。不使用绝对载波相位的非相干估计从最低噪声起就在带宽直线上，所以 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 只是使用绝对载波相位的估计量的门限。</p>
-<p>非等间隔不取消这一跳。保持个数、平均频率与 <span class="arithmatex">\(S\)</span> 不变（矩匹配）而只打乱间隔，第一道门限不动。公比 1.02 的几何间隔把 <span class="arithmatex">\(S\)</span> 放大约 23 倍，<span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 升到 0.403 rad；但在这组频点上，相距 6.211 m 的两个距离与相距一个平均波长的两个距离同样难以区分，相干均方离开载频直线后不在带宽直线上停留，一次滑移的距离约为平均波长的 50 倍。相位噪声再大一个量级时，矩匹配设计在 10.6–11.3 m 的距离差上比等间距更难区分，半窗下界因此高约 1.4 分贝。</p>
-<p>工程上，有公共相位参考时，约 <span class="arithmatex">\(0.2\,\sigma_{\mathrm{jump}}\)</span> 以下才能按载频直线做预算，约 <span class="arithmatex">\(0.5\,\sigma_{\mathrm{jump}}\)</span> 到相位模型失效之间按带宽直线；没有公共相位时直接按带宽直线。排频时，记 <span class="arithmatex">\(P_e(\delta)\)</span> 为把相距 <span class="arithmatex">\(\delta\)</span> 的两个距离判错的概率，在 <span class="arithmatex">\(P_e\)</span> 的每一对局部极大 <span class="arithmatex">\(\pm\delta\)</span> 上解 <span class="arithmatex">\(2P_e(\delta)\,\delta^2 = \mathrm{HMSE}\)</span>，取最早的 <span class="arithmatex">\(\sigma\)</span>。更长的无模糊距离不推迟第一道门限。</p>
-<p>尚未回答的有五个问题：在整数兆赫栅格上排频，使上述各解中最早的一个晚于等间距；在同一先验下比较后验均值与相干极大似然，判定门限处约 5 分贝的差距属于界还是属于估计量；只在 10.6–11.3 m 那串距离差上改用包裹似然比；在复观测上复核第一道门限；滑移长于一个波长以后按 <span class="arithmatex">\(\delta^2\)</span> 加权。</p>
-<h2 id="1-观测与两个估计量">1 观测与两个估计量</h2>
-<p>第 <span class="arithmatex">\(i\)</span> 个频率上的观测是</p>
+<h2 id="1-观测模型">1 观测模型</h2>
+<p>在 <span class="arithmatex">\(N\)</span> 个频率 <span class="arithmatex">\(f_1,\dots,f_N\)</span> 上各测一个相位，用这些相位估计距离 <span class="arithmatex">\(d\)</span>。第 <span class="arithmatex">\(i\)</span> 个频率上的读数是</p>
 <div class="arithmatex">\[
 \varphi_i = \mathrm{wrap}(2\pi f_i d/c + e_i), \qquad e_i \sim \mathcal{N}(0,\sigma^2),
 \]</div>
-<p>各 <span class="arithmatex">\(e_i\)</span> 独立，<span class="arithmatex">\(c = 299\,792\,458\,\mathrm{m/s}\)</span>。<span class="arithmatex">\(\mathrm{wrap}\)</span> 把角度对 <span class="arithmatex">\(2\pi\)</span> 取模，取值在 <span class="arithmatex">\((-\pi,\pi]\)</span> 内：真相位可以差任意多个 <span class="arithmatex">\(2\pi\)</span>，读数只留下主值。因此有限个频率上的相位只能把距离确定到一组别名为止。</p>
+<p>各 <span class="arithmatex">\(e_i\)</span> 独立，<span class="arithmatex">\(c = 299\,792\,458\,\mathrm{m/s}\)</span>。<span class="arithmatex">\(\mathrm{wrap}\)</span> 把角度对 <span class="arithmatex">\(2\pi\)</span> 取模，取值在 <span class="arithmatex">\((-\pi,\pi]\)</span> 内。</p>
+<p>真实相位 <span class="arithmatex">\(2\pi f_i d/c\)</span> 是若干整周加一个零头，读数只留下零头。距离改变 <span class="arithmatex">\(\delta\)</span> 时，第 <span class="arithmatex">\(i\)</span> 个读数转过 <span class="arithmatex">\(2\pi f_i\delta/c\)</span>；如果每个频率转过的角度都接近整周，所有读数几乎不变，<span class="arithmatex">\(d\)</span> 与 <span class="arithmatex">\(d+\delta\)</span> 就难以区分。记平均频率为 <span class="arithmatex">\(\bar f\)</span>，平均波长为 <span class="arithmatex">\(\lambda = c/\bar f\)</span>。<span class="arithmatex">\(\delta = \lambda\)</span> 时，第 <span class="arithmatex">\(i\)</span> 个读数转过 <span class="arithmatex">\(2\pi + 2\pi(f_i-\bar f)/\bar f\)</span>，只比整周多出一个小角度，频点越靠近平均频率，这个角度越小；所有 <span class="arithmatex">\(f_i\delta/c\)</span> 恰好都是整数时，读数完全不变。所以有限个包裹相位只能把距离确定到一组别名为止：平均波长整数倍附近的近似别名，以及由频率的最大公约数决定的精确周期。</p>
 <p>相干估计最小化包裹残差的平方和：</p>
 <div class="arithmatex">\[
 \hat d = \arg\min_{d} \sum_i \mathrm{wrap}\bigl(\varphi_i - 2\pi f_i d/c\bigr)^2 .
 \]</div>
-<p>它使用相对同一本振的绝对相位，载频因此进入距离信息。若各频率还共有一个未知相位，这个相位必须消去，估计量改为最大化相量和的模：</p>
+<p><span class="arithmatex">\(\sigma\)</span> 远小于 <span class="arithmatex">\(\pi\)</span> 时，包裹正态密度在主值区间内与正态密度只差可以忽略的项，这个最小化就是极大似然估计。它使用各频点相对同一本振的绝对相位，载频因此进入距离信息。</p>
+<p>若各频点还共有一个未知相位（例如收发两端没有公共相位参考），这个相位必须消去。非相干估计最大化相量和的模：</p>
 <div class="arithmatex">\[
-\hat d_{\mathrm{inc}} = \arg\max_{d} \Bigl|\sum_i e^{\mathrm{j}(\varphi_i - 2\pi f_i d/c)}\Bigr| ,
+\hat d_{\mathrm{inc}} = \arg\max_{d} \Bigl|\sum_i e^{\mathrm{j}(\varphi_i - 2\pi f_i d/c)}\Bigr| .
 \]</div>
-<p>公共相位连同载频一起从距离信息中消去，只剩频率间距携带的信息。这个估计量称为非相干估计。</p>
-<p>这个相位模型是复观测 <span class="arithmatex">\(y_i = \exp(\mathrm{j}\,2\pi f_i d/c) + n_i\)</span> 的高信噪比极限。等间距例子的第一道门限约在 <span class="arithmatex">\(0.08\,\mathrm{rad}\)</span>，那里这个极限成立。相位噪声到 <span class="arithmatex">\(1\,\mathrm{rad}\)</span> 量级时，相位模型本身失效，预算必须回到复观测；这是第二道门限，与第一道分开处理。</p>
-<p>往返测距的相位是 <span class="arithmatex">\(4\pi f d/c\)</span>，等价于把 <span class="arithmatex">\(c\)</span> 换成 <span class="arithmatex">\(c/2\)</span>：波长与模糊周期减半，下面两条均方直线都除以 4；<span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 只依赖频率之比，弧度值不变。</p>
-<h2 id="2-两条平行直线">2 两条平行直线</h2>
-<p>噪声很小、误差还没有跨到相邻的别名时，相干估计的均方是多少？公共相位被消去以后又是多少？</p>
-<p>误差留在主瓣内时，包裹可以去掉，两个估计量都化为线性最小二乘：以相位对频率作图，相干估计拟合一条过原点的直线，非相干估计多拟合一个截距，即公共相位。记 <span class="arithmatex">\(F = \sum_i f_i^2\)</span>，两条均方是</p>
+<p>所有相量同乘一个 <span class="arithmatex">\(e^{\mathrm{j}\theta}\)</span> 不改变模，所以公共相位不影响它。载频项 <span class="arithmatex">\(2\pi\bar f d/c\)</span> 在各频点上也是同一个常数，与公共相位分不开，随它一起消去；剩下的距离信息只来自 <span class="arithmatex">\(f_i-\bar f\)</span>，即频率间距。</p>
+<p>以下各节把这个模型下相干估计的均方误差随 <span class="arithmatex">\(\sigma\)</span> 增大的变化逐项理清。用到的都是参数估计里现成的工具：包裹极大似然、Fisher 信息与克拉美–罗界、两假设检验与 Ziv–Zakai 下界、滑移的混合近似，以及三组频点上的归档试验。</p>
+<h2 id="2-现象两条平行直线与一跳">2 现象：两条平行直线与一跳</h2>
+<p>取 2400 到 2470 MHz、间隔 10 MHz 的八个频点（下称等间距例子），在一组 <span class="arithmatex">\(\sigma\)</span> 上重复试验，记录相干估计的样本均方误差，得到图 1。横轴是 <span class="arithmatex">\(\sigma\)</span> 与第 3 节导出的尺度 <span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.0836\,\mathrm{rad}\)</span> 之比。图中下面的黑色虚线是载频直线 HMSE（high-SNR mean-square error，高信噪比区间的均方误差），上面的灰色点划线是带宽直线 MMSE（moderate-SNR mean-square error，中等信噪比区间的均方误差，不是最小均方误差）。</p>
+<p><img alt="图1 等间距八个频点的均方误差" src="figures/fig02_equal_mse.png"></p>
+<p>图 1　等间距八个频点上相干估计的均方误差。蓝色圆点是试验，每点 1600 或 8000 次，随机种子 7；黑色虚线是载频直线（HMSE），灰色点划线是带宽直线（MMSE）；绿色曲线是半窗 Ziv–Zakai 下界（第 5 节），灰色点线是搜索窗地板，橙色竖线标出 <span class="arithmatex">\(\sigma = \sigma_{\mathrm{jump}}\)</span>。</p>
+<p>从左往右读这张图。<span class="arithmatex">\(\sigma\)</span> 不超过 <span class="arithmatex">\(0.22\,\sigma_{\mathrm{jump}}\)</span> 时，圆点落在载频直线上：每个频率上的整周都判对了，载频本身在测距离。<span class="arithmatex">\(\sigma\)</span> 再增大不到三倍，到约 <span class="arithmatex">\(0.65\,\sigma_{\mathrm{jump}}\)</span>，圆点几乎垂直地升到带宽直线上；从那里到 <span class="arithmatex">\(6\,\sigma_{\mathrm{jump}}\)</span>，它比带宽直线最多高 1.4 分贝。这一段里整周已不可靠，能用的只剩频率间距。两条直线平行，相距 40.53 分贝。<span class="arithmatex">\(\sigma\)</span> 继续增大，均方离开带宽直线，升到搜索窗地板，即估计不再携带信息、误差在整个搜索窗上均匀分布时的均方。按噪声增大的顺序，前面那一跳是第一道门限，这里是第二道门限，出现在相位噪声到 <span class="arithmatex">\(1\,\mathrm{rad}\)</span> 量级时。上面的相位模型是复观测 <span class="arithmatex">\(y_i = \exp(\mathrm{j}\,2\pi f_i d/c) + n_i\)</span> 在高信噪比下的极限，到 <span class="arithmatex">\(1\,\mathrm{rad}\)</span> 量级，这个极限本身也不再成立，第二道门限的预算要回到复观测；这里只记下它的位置。</p>
+<p>要理清的就是这个现象：相干均方先沿载频直线，再在一段不宽的噪声范围里跳到与之平行的带宽直线上。两条直线的高度已有现成的结果；这一跳发生在多大的 <span class="arithmatex">\(\sigma\)</span> 上、由频率集合的什么量决定、能否靠排频推迟，是后面几节的内容。</p>
+<p>两条直线的高度来自主瓣内的线性最小二乘。主瓣指真值附近、还没有跨到相邻别名的那一段。误差留在主瓣内时，包裹可以去掉：以相位对频率作图，相干估计拟合一条过原点的直线，斜率给出距离；非相干估计多拟合一个截距，即公共相位。记 <span class="arithmatex">\(F = \sum_i f_i^2\)</span>，<span class="arithmatex">\(S = \sum_i (f_i-\bar f)^2\)</span>，两条均方是</p>
 <div class="arithmatex">\[
 \mathrm{HMSE} = \frac{c^2\sigma^2}{4\pi^2 F}, \qquad \mathrm{MMSE} = \frac{c^2\sigma^2}{4\pi^2 S}.
 \]</div>
-<p><span class="arithmatex">\(F\)</span> 主要来自载频，<span class="arithmatex">\(S\)</span> 只取决于频点围绕平均频率的分布，两条直线因此分别称为载频直线与带宽直线。二者都正比于 <span class="arithmatex">\(\sigma^2\)</span>，比值 <span class="arithmatex">\(R = F/S\)</span> 与 <span class="arithmatex">\(\sigma\)</span> 无关，所以在双对数图上平行。拟合截距相当于先减去频率的均值：<span class="arithmatex">\(F = S + N\bar f^2\)</span>，于是 <span class="arithmatex">\(R = 1 + N\bar f^2/S\)</span>。</p>
-<p>这两条高度就是李巍与齐望东（arXiv:1202.1424）用微扰分析得到的式 (30) 与式 (42)。他们把高、中信噪比区间的均方分别记作 HMSE 与 MMSE，这里沿用（MMSE 不是最小均方误差）。他们按信噪比升高的方向给门限编号，把从 MMSE 落到 HMSE 的过渡称为第二道门限；按相位噪声增大的方向编号，同一过渡是第一道门限，这里用后一种编号。他们没有把这一过渡所在的噪声写成频率集合的函数。</p>
-<p><span class="arithmatex">\(N\)</span> 个等间距频点、带宽 <span class="arithmatex">\(B = (N-1)\Delta f\)</span> 时，</p>
+<p><span class="arithmatex">\(F\)</span> 主要来自载频，<span class="arithmatex">\(S\)</span> 只取决于频点围绕平均频率的分布，两条直线因此称为载频直线与带宽直线。二者都正比于 <span class="arithmatex">\(\sigma^2\)</span>，比值 <span class="arithmatex">\(R = F/S\)</span> 与 <span class="arithmatex">\(\sigma\)</span> 无关，所以在双对数图上平行。拟合截距相当于先减去平均频率：<span class="arithmatex">\(F = S + N\bar f^2\)</span>，于是 <span class="arithmatex">\(R = 1 + N\bar f^2/S\)</span>。等间距例子里 <span class="arithmatex">\(\bar f = 2435\,\mathrm{MHz}\)</span>，<span class="arithmatex">\(S = 4200\,\mathrm{MHz}^2\)</span>，<span class="arithmatex">\(R = 11295\)</span>，即 40.53 分贝；平均波长 <span class="arithmatex">\(\lambda = 0.12312\,\mathrm{m}\)</span>。</p>
+<p>这两条高度是李巍与齐望东用微扰分析得到的式 (30) 与式 (42)，HMSE 与 MMSE 两个名称也取自他们。他们称这一现象为双门限效应，按信噪比升高的方向编号，把从 MMSE 落到 HMSE 的过渡称为第二道门限，即这里的第一道门限。他们没有把这一过渡所在的噪声写成频率集合的函数。</p>
+<p>连续时间的被动时延估计里有同样的三段。Weinstein 与 Weiss 用改进的 Ziv–Zakai 下界得到：高信噪比时下界与克拉美–罗界重合，中等信噪比时高出 <span class="arithmatex">\(12(\omega_0/W)^2\)</span> 倍（<span class="arithmatex">\(\omega_0\)</span> 为中心频率，<span class="arithmatex">\(W\)</span> 为带宽），低信噪比时趋于只由先验区间决定的常数。<span class="arithmatex">\(N\)</span> 个等间距频点、带宽 <span class="arithmatex">\(B = (N-1)\Delta f\)</span> 时，</p>
 <div class="arithmatex">\[
-R = 1 + \frac{12(N-1)}{N+1}\left(\frac{\bar f}{B}\right)^2.
+R = 1 + \frac{12(N-1)}{N+1}\left(\frac{\bar f}{B}\right)^2 ,
 \]</div>
-<p><span class="arithmatex">\(N\)</span> 很大时系数趋于 12，主导项是 <span class="arithmatex">\(12(\bar f/B)^2\)</span>。Weiss 与 Weinstein 在连续时间、平坦谱的时延估计里得到同一因子 <span class="arithmatex">\(12(\omega_0/W)^2\)</span>；那是另一种观测模型取到的同一极限，离散的包裹相位并不等同于连续平坦谱。<span class="arithmatex">\(N = 8\)</span> 时系数是 9.33，比同一 <span class="arithmatex">\(\bar f/B\)</span> 下的连续谱公式低约 1.1 分贝。</p>
-<p>等间距例子取 2400 到 2470 MHz、间隔 10 MHz 的八个频点：<span class="arithmatex">\(\bar f = 2435\,\mathrm{MHz}\)</span>，<span class="arithmatex">\(B = 70\,\mathrm{MHz}\)</span>，<span class="arithmatex">\(S = 4200\,\mathrm{MHz}^2\)</span>，<span class="arithmatex">\(R = 11295\)</span>（40.53 分贝），平均波长 <span class="arithmatex">\(\lambda = c/\bar f = 0.12312\,\mathrm{m}\)</span>。</p>
-<h2 id="3-第一道门限的位置">3 第一道门限的位置</h2>
-<p>相干估计从载频直线跳到带宽直线，这一跳发生在多大的相位噪声上？</p>
+<p><span class="arithmatex">\(N\)</span> 很大时系数趋于 12，与他们的因子相同。那是另一种观测模型取到的同一极限，离散的包裹相位并不等同于连续平坦谱：<span class="arithmatex">\(N = 8\)</span> 时系数是 9.33，比同一 <span class="arithmatex">\(\bar f/B\)</span> 下的连续谱值低约 1.1 分贝。</p>
+<h2 id="3-第一道门限的相位尺度">3 第一道门限的相位尺度</h2>
 <h3 id="31-相位尺度-sigma_mathrmjump">3.1 相位尺度 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span></h3>
 <p>两个距离假设相差 <span class="arithmatex">\(\delta\)</span> 时，第 <span class="arithmatex">\(i\)</span> 个频率上的相位差是 <span class="arithmatex">\(2\pi f_i\delta/c\)</span>。记包裹后相位差向量的平方长度为</p>
 <div class="arithmatex">\[
 J(\delta) = \sum_i \mathrm{wrap}(2\pi f_i\delta/c)^2 .
 \]</div>
-<p>取 <span class="arithmatex">\(\delta = \lambda\)</span>。第 <span class="arithmatex">\(i\)</span> 个分量是 <span class="arithmatex">\(2\pi f_i/\bar f = 2\pi + 2\pi(f_i-\bar f)/\bar f\)</span>，去掉整周后剩下 <span class="arithmatex">\(2\pi(f_i-\bar f)/\bar f\)</span>，所以 <span class="arithmatex">\(\sqrt{J(\lambda)} = 2\pi\sqrt{S}/\bar f = 2\sigma_{\mathrm{jump}}\)</span>：</p>
+<p><span class="arithmatex">\(J(0) = 0\)</span>。<span class="arithmatex">\(J\)</span> 在 <span class="arithmatex">\(\delta \neq 0\)</span> 处的局部极小称为谷；谷底的 <span class="arithmatex">\(J\)</span> 越小，相距 <span class="arithmatex">\(\delta\)</span> 的两个距离越难区分。图 2 是等间距例子的 <span class="arithmatex">\(J(\delta)\)</span>。</p>
+<p><img alt="图2 等间距例子的 J(δ)" src="figures/fig01_equal_cost.png"></p>
+<p>图 2　等间距例子的 <span class="arithmatex">\(J(\delta)\)</span>（单位 rad²），只画出 <span class="arithmatex">\(J \le 2\)</span> 的部分；橙色竖线是平均波长 <span class="arithmatex">\(\lambda\)</span>。谷位于 <span class="arithmatex">\(\lambda\)</span> 的整数倍附近，第 <span class="arithmatex">\(k\)</span> 个谷底的 <span class="arithmatex">\(J\)</span> 约为 <span class="arithmatex">\(k^2 J(\lambda)\)</span>。平均波长处的谷底 <span class="arithmatex">\(J = 0.028\)</span>，在这个纵轴上几乎贴着零。</p>
+<p>取 <span class="arithmatex">\(\delta = \lambda\)</span>。第 <span class="arithmatex">\(i\)</span> 个分量是 <span class="arithmatex">\(2\pi f_i/\bar f = 2\pi + 2\pi(f_i-\bar f)/\bar f\)</span>，去掉整周后剩下 <span class="arithmatex">\(2\pi(f_i-\bar f)/\bar f\)</span>，所以 <span class="arithmatex">\(\sqrt{J(\lambda)} = 2\pi\sqrt{S}/\bar f\)</span>。记</p>
 <div class="arithmatex">\[
-\sigma_{\mathrm{jump}} = \pi\sqrt{S}/\bar f .
+\sigma_{\mathrm{jump}} = \pi\sqrt{S}/\bar f ,
 \]</div>
-<p>由 <span class="arithmatex">\(F = S + N\bar f^2\)</span> 还得到 <span class="arithmatex">\(R = 1 + N\pi^2/\sigma_{\mathrm{jump}}^2\)</span>。门限的相位尺度与两条直线的间隔由同一个量 <span class="arithmatex">\(S/\bar f^2\)</span> 决定。</p>
-<p>等间距例子里 <span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.0836\,\mathrm{rad}\)</span>。在这个噪声上，单个相位读数离 <span class="arithmatex">\(\pm\pi\)</span> 还很远；包裹起作用，是因为距离假设跨过了一个载频周期。</p>
+<p>则 <span class="arithmatex">\(\sqrt{J(\lambda)} = 2\sigma_{\mathrm{jump}}\)</span>。</p>
 <p>把相位差向量当作高斯观测来判决两个假设，错误概率是</p>
 <div class="arithmatex">\[
 P_e(\delta) = Q\bigl(\sqrt{J(\delta)}/(2\sigma)\bigr),
 \]</div>
-<p><span class="arithmatex">\(Q\)</span> 是标准正态分布的右尾概率。在 <span class="arithmatex">\(\delta = \lambda\)</span> 处，自变量正好是 <span class="arithmatex">\(\sigma_{\mathrm{jump}}/\sigma\)</span>。<span class="arithmatex">\(\sigma = \sigma_{\mathrm{jump}}\)</span> 时，向两侧各错一个波长的概率合计 <span class="arithmatex">\(2Q(1) = 0.317\)</span>。</p>
-<p><span class="arithmatex">\(J\)</span> 在 <span class="arithmatex">\(\delta \neq 0\)</span> 处的局部极小称为谷。谷底的 <span class="arithmatex">\(J\)</span> 越小，两个距离越难区分，<span class="arithmatex">\(P_e\)</span> 越大。平均波长附近的谷底在 <span class="arithmatex">\(\delta = \lambda(1-1/R)\)</span>，那里 <span class="arithmatex">\(J = (1-1/R)\,J(\lambda)\)</span>，与 <span class="arithmatex">\(J(\lambda) = 4\sigma_{\mathrm{jump}}^2\)</span> 的相对差只有 <span class="arithmatex">\(1/R\)</span>。</p>
-<p>这个 <span class="arithmatex">\(P_e\)</span> 来自高斯向量检验，不是包裹以后的似然比。主瓣附近、残差远小于 <span class="arithmatex">\(\pi\)</span> 时两者接近；残差接近 <span class="arithmatex">\(\pi\)</span> 的谷在 5.4 节出现。</p>
+<p><span class="arithmatex">\(Q\)</span> 是标准正态分布的右尾概率。在 <span class="arithmatex">\(\delta = \lambda\)</span> 处，自变量正好是 <span class="arithmatex">\(\sigma_{\mathrm{jump}}/\sigma\)</span>：<span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 是区分相距一个平均波长的两个距离时的噪声尺度。<span class="arithmatex">\(\sigma = \sigma_{\mathrm{jump}}\)</span> 时，向两侧各错一个波长的概率合计 <span class="arithmatex">\(2Q(1) = 0.317\)</span>。平均波长附近的谷底在 <span class="arithmatex">\(\delta = \lambda(1-1/R)\)</span>，那里 <span class="arithmatex">\(J = (1-1/R)\,J(\lambda)\)</span>，与 <span class="arithmatex">\(J(\lambda)\)</span> 只差 <span class="arithmatex">\(1/R\)</span>。</p>
+<p>由 <span class="arithmatex">\(F = S + N\bar f^2\)</span> 还得到 <span class="arithmatex">\(R = 1 + N\pi^2/\sigma_{\mathrm{jump}}^2\)</span>：门限的相位尺度与两条直线的间隔由同一个量 <span class="arithmatex">\(S/\bar f^2\)</span> 决定。</p>
+<p>等间距例子里 <span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.0836\,\mathrm{rad}\)</span>，约 4.8 度。在这个噪声上，单个读数离 <span class="arithmatex">\(\pm\pi\)</span> 还很远；包裹起作用，是因为距离假设跨过了一个载频周期，而不是某个读数被折回。</p>
+<p>这个 <span class="arithmatex">\(P_e\)</span> 来自高斯向量检验，不是包裹以后的似然比。残差远小于 <span class="arithmatex">\(\pi\)</span> 时两者接近；残差接近 <span class="arithmatex">\(\pi\)</span> 的谷在 6.3 节出现。</p>
+<p>往返测距的相位是 <span class="arithmatex">\(4\pi f d/c\)</span>，相当于把 <span class="arithmatex">\(c\)</span> 换成 <span class="arithmatex">\(c/2\)</span>：波长与精确周期减半，两条均方直线都除以 4；<span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 只依赖频率之比，弧度值不变。</p>
 <h3 id="32-混合近似离开载频直线的位置">3.2 混合近似离开载频直线的位置</h3>
 <p>设一次试验以概率 <span class="arithmatex">\(p = 2Q(\sigma_{\mathrm{jump}}/\sigma)\)</span> 滑出一个波长，否则留在主瓣。均方的混合近似是</p>
 <div class="arithmatex">\[
 \mathrm{MSE} \approx (1-p)\,\mathrm{HMSE} + p\lambda^2 .
 \]</div>
-<p>令 <span class="arithmatex">\(p\lambda^2 = \mathrm{HMSE}\)</span>，等间距例子解出 <span class="arithmatex">\(\sigma = 0.0170\,\mathrm{rad}\)</span>，即 <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span>；混合近似在这里离开载频直线。试验曲线从哪里开始上升，还取决于试验次数：8000 次里期望出现一次滑移要求 <span class="arithmatex">\(p = 1/8000\)</span>，对应 <span class="arithmatex">\(0.26\,\sigma_{\mathrm{jump}}\)</span>。</p>
-<p>在 <span class="arithmatex">\(\sigma = \sigma_{\mathrm{jump}}\)</span> 处，<span class="arithmatex">\(\mathrm{MMSE} = c^2/(4\bar f^2) = \lambda^2/4\)</span>。代入 <span class="arithmatex">\(p = 0.317\)</span>，<span class="arithmatex">\(p\lambda^2\)</span> 比带宽直线高 1.0 分贝。</p>
+<p>令 <span class="arithmatex">\(p\lambda^2 = \mathrm{HMSE}\)</span>，等间距例子解出 <span class="arithmatex">\(\sigma = 0.0170\,\mathrm{rad}\)</span>，即 <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span>；混合近似在这里离开载频直线。在 <span class="arithmatex">\(\sigma = \sigma_{\mathrm{jump}}\)</span> 处，<span class="arithmatex">\(\mathrm{MMSE} = c^2/(4\bar f^2) = \lambda^2/4\)</span>；代入 <span class="arithmatex">\(p = 0.317\)</span>，<span class="arithmatex">\(p\lambda^2\)</span> 比带宽直线高 1.0 分贝。到了门限，仅一波长滑移就足以把均方抬到带宽直线的高度。</p>
 <h3 id="33-等间距试验">3.3 等间距试验</h3>
-<p>相干估计在以真值 12.345 m 为中心、半长 14.990 m 的搜索窗里取全局最小；窗长 29.979 m，正好是等间距的模糊周期 <span class="arithmatex">\(c/\Delta f\)</span>。0.22 到 0.50 倍门限每个噪声点做 8000 次，其余 1600 次，随机种子为 7，结果存于 <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/computation/data"><code>computation/data/</code></a>。滑移指误差绝对值超过半个平均波长。</p>
-<p>0.10 到 0.22 倍门限的三个噪声点上没有滑移，样本均方与载频直线相差不超过 0.35 分贝。0.25 倍处 8000 次中出现一次滑移，样本均方升到 −57.2 分贝；一个一波长的错误摊到 8000 次上，贡献正好是 −57.2 分贝。这一点的上升来自单个大误差，不是两条直线之间的另一条渐近线。</p>
-<p>从 0.25 倍到 1 倍门限，样本均方等于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>，误差在 0.1 分贝以内。门限上滑移率 0.344，样本均方 −22.8 分贝，比带宽直线（−24.2 分贝）高 1.4 分贝；混合近似用 <span class="arithmatex">\(p = 0.317\)</span> 预测高 1.0 分贝，方向相同。1.5 倍门限以后，一部分滑移长于一个波长，样本均方开始高于这个乘积。图 1 是这条曲线。</p>
-<p><img alt="图1 等间距八个频点的均方误差" src="figures/fig02_equal_mse.png"></p>
-<p>图 1　等间距八个频点的均方误差，横轴以 <span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.0836\,\mathrm{rad}\)</span> 归一。黑色虚线是载频直线（HMSE），灰色点划线是带宽直线（MMSE）；相干估计离开前者后升到后者上。绿色曲线是半窗下界（第 4 章），灰色点线是搜索窗地板，橙色竖线标出门限。</p>
-<p>非相干估计从最低噪声起就在带宽直线上：0.10 倍门限处它是 −44.4 分贝，带宽直线是 −44.2 分贝。公共相位一开始就把载频消掉，它下面没有更低的直线可以离开。因此 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 只对使用绝对载波相位的估计量是门限。</p>
-<h3 id="34-局部信息不跳">3.4 局部信息不跳</h3>
-<p>单个包裹正态相位关于其均值的 Fisher 信息是 <span class="arithmatex">\(\sigma\)</span> 的光滑函数，由它得到的距离克拉美–罗界沿载频直线变化，不跳；等间距例子里，到 <span class="arithmatex">\(\sigma = 0.84\,\mathrm{rad}\)</span> 它与载频直线仍只差 0.03 分贝。跳跃来自全局估计量离开主瓣；Fisher 信息只描述真值附近似然的曲率，不涉及主瓣以外的谷。</p>
-<p>单音频率的极大似然估计有同样的结构：Rife 与 Boorstyn 指出，高信噪比时方差与克拉美–罗界重合，信噪比低于一道门限后估计值取在错误的谱峰上。那里的参数是频率，观测也不是一组包裹相位。</p>
-<h2 id="4-半窗-zivzakai-下界">4 半窗 Ziv–Zakai 下界</h2>
-<p>图 1 的绿色曲线在试验之前就离开了载频直线。它约束的是什么？</p>
-<p>设真值在长 <span class="arithmatex">\(L\)</span> 的区间上均匀分布。Ziv 与 Zakai 用区分两个假设的错误概率给估计误差定下界；取 Bellini 与 Tartara 的谷填充形式，均方下界是</p>
+<p>相干估计在以真值 12.345 m 为中心、半长 14.990 m 的搜索窗里取全局最小：先在步长 <span class="arithmatex">\(\lambda/8\)</span> 的格点上取最小，再在该点附近迭代细化。窗长 29.979 m 正好是等间距例子的精确周期 <span class="arithmatex">\(c/\Delta f\)</span>。0.22 到 0.50 倍门限的六个噪声点每点 8000 次，其余每点 1600 次，随机种子为 7，结果存于 <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/computation/data"><code>computation/data/</code></a>。滑移指误差绝对值超过半个平均波长。下文的分贝值都相对 1 m²。</p>
+<p>0.10 到 0.22 倍门限的三个噪声点上没有滑移，样本均方与载频直线相差不超过 0.35 分贝。0.25 倍处 8000 次中出现一次滑移，样本均方升到 −57.2 分贝；一个一波长的错误摊到 8000 次上，正好贡献 −57.2 分贝。试验曲线从哪里开始上升还取决于试验次数：8000 次里期望出现一次滑移要求 <span class="arithmatex">\(p = 1/8000\)</span>，对应 <span class="arithmatex">\(0.26\,\sigma_{\mathrm{jump}}\)</span>。这一点的上升来自单个大误差，不是两条直线之间的另一条渐近线。</p>
+<p>从 0.25 倍到 1 倍门限，样本均方等于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>，误差在 0.1 分贝以内：这一段的均方几乎全部来自一波长滑移。门限上滑移率 0.344，样本均方 −22.8 分贝，比带宽直线（−24.2 分贝）高 1.4 分贝；混合近似用 <span class="arithmatex">\(p = 0.317\)</span> 预测高 1.0 分贝，方向相同。1.5 倍门限以后，一部分滑移长于一个波长，样本均方开始高于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>。</p>
+<h2 id="4-局部信息不跳非相干估计的反例">4 局部信息不跳；非相干估计的反例</h2>
+<p>包裹正态相位关于其均值的 Fisher 信息是 <span class="arithmatex">\(\sigma\)</span> 的光滑函数。由它得到的距离克拉美–罗界沿载频直线变化，不跳；等间距例子里，到 <span class="arithmatex">\(\sigma = 0.84\,\mathrm{rad}\)</span> 它与载频直线仍只差 0.03 分贝。李巍与齐望东在复观测上也得到 HMSE 与克拉美–罗界重合。跳跃来自全局估计离开主瓣；Fisher 信息只描述真值附近似然的曲率，不涉及主瓣以外的谷，对这一跳它能说的只有这些。</p>
+<p>单音频率的极大似然估计有同样的结构：Rife 与 Boorstyn 指出，高信噪比时方差与克拉美–罗界重合，信噪比低于一道门限后估计值落在错误的谱峰上。那里的参数是频率，观测也不是一组包裹相位。</p>
+<p>非相干估计说明这一跳属于谁。它与相干估计用同样的观测、同样的频点，只是不用绝对载波相位。图 3 中，它从最低噪声起就在带宽直线上：0.10 倍门限处是 −44.4 分贝，带宽直线是 −44.2 分贝。公共相位一开始就把载频消去，它下面没有更低的直线可以离开，也就没有第一道门限。所以 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 是使用绝对载波相位的估计量的门限，不是观测本身的性质；不存在「一切估计量都在 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 上跳」的定理。</p>
+<p><img alt="图3 相干与非相干估计的均方误差" src="figures/fig07_coherent_incoherent.png"></p>
+<p>图 3　等间距例子中相干估计（蓝色圆点）与非相干估计（橙色方点）的均方误差，横轴以 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 归一。非相干估计从最低噪声起就在带宽直线上；约 2 倍门限以后两条曲线几乎重合，10 倍门限处一起离开带宽直线。</p>
+<h2 id="5-半窗-zivzakai-下界">5 半窗 Ziv–Zakai 下界</h2>
+<p>图 1 的绿色曲线在试验之前就离开了载频直线。它约束什么，不约束什么？</p>
+<p>设真值在长 <span class="arithmatex">\(L\)</span> 的区间上均匀分布。Ziv 与 Zakai 用区分两个假设的错误概率给估计误差定下界；Bellini 与 Tartara 在其中加入谷填充，均方下界是</p>
 <div class="arithmatex">\[
 \mathrm{ZZB} = \frac{1}{L}\int_0^L \delta\, G\bigl[(L-\delta)\,P_e(\delta)\bigr]\,\mathrm{d}\delta,
 \qquad G[h](\delta) = \max_{\eta\ge\delta} h(\eta),
 \]</div>
-<p>即 <span class="arithmatex">\(G\)</span> 把函数换成自右向左的累积最大值。成对错误概率 <span class="arithmatex">\(P_e\)</span> 仍用 3.1 节的高斯向量检验。这里取 <span class="arithmatex">\(L = 14.990\,\mathrm{m}\)</span>，是搜索窗长度的一半，所以称为半窗下界。</p>
+<p>即 <span class="arithmatex">\(G\)</span> 把函数换成自右向左的累积最大值。成对错误概率 <span class="arithmatex">\(P_e\)</span> 仍用 3.1 节的高斯向量检验。任何估计量按这个先验平均后的均方都不低于 ZZB。这里取 <span class="arithmatex">\(L = 14.990\,\mathrm{m}\)</span>，是搜索窗长度的一半，所以称为半窗下界：试验的误差不会超过半个窗长，而 <span class="arithmatex">\(L\)</span> 若取整个周期，周期远端的复制谷会把下界抬高。</p>
 <p>高信噪比时只有主瓣有贡献：<span class="arithmatex">\(\sqrt{J(\delta)} \approx \beta\delta\)</span>，其中 <span class="arithmatex">\(\beta = 2\pi\sqrt{F}/c\)</span>，积分化为 <span class="arithmatex">\((2\sigma/\beta)^2\int_0^\infty u\,Q(u)\,\mathrm{d}u\)</span>。由 <span class="arithmatex">\(\int_0^\infty u\,Q(u)\,\mathrm{d}u = 1/4\)</span>，下界等于 <span class="arithmatex">\(\sigma^2/\beta^2 = \mathrm{HMSE}\)</span>。等间距例子在 <span class="arithmatex">\(\sigma = 0.008\,\mathrm{rad}\)</span> 上，两者之差是 0.00 分贝，对积分有贡献的距离差只到约 0.5 mm。</p>
-<p>这个下界是真值在半窗上均匀分布时的贝叶斯风险；试验把真值固定在搜索窗中心，给出的是条件均方。门限上，下界 −27.6 分贝，带宽直线 −24.2 分贝，相干试验 −22.8 分贝。0.22 倍门限处试验还没有滑移，下界已经比载频直线高约 3 分贝。下界先离开载频直线，试验后离开；它约束均方，不标出试验曲线的转折点。</p>
-<p>半窗先验的方差是 <span class="arithmatex">\(L^2/12\)</span>，即 12.7 分贝，噪声很大时下界趋于这个值。试验均方的上限是误差在整段搜索窗（29.979 m）上均匀分布时的方差 18.74 分贝，即搜索窗地板。<span class="arithmatex">\(\sigma = 2.34\,\mathrm{rad}\)</span> 时，等间距下界是 8.1 分贝，仍低于先验方差。若把 <span class="arithmatex">\(L\)</span> 取成整个模糊周期，周期远端的复制谷会把下界抬高，所以图中画的是半窗下界。</p>
-<p>第二道门限是另一回事。<span class="arithmatex">\(\sigma\)</span> 到 1 rad 量级时，相位模型失效，必须回到复观测。等间距相干试验在 <span class="arithmatex">\(\sigma = 0.50\,\mathrm{rad}\)</span> 仍在带宽直线上，到 <span class="arithmatex">\(\sigma = 2.34\,\mathrm{rad}\)</span> 才到达 18.7 分贝的搜索窗地板。这道门限决定误差何时到达地板，不改变 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>。</p>
-<h2 id="5-非等间隔改变什么">5 非等间隔改变什么</h2>
-<p>把间隔做成不等，能改变什么？频率集合上有三个设计量，彼此不能替代。</p>
-<ol>
-<li><span class="arithmatex">\(S/\bar f^2\)</span> 决定第一道门限的相位尺度，也决定两条直线的间隔（<span class="arithmatex">\(R = 1 + N\pi^2/\sigma_{\mathrm{jump}}^2\)</span>）。频点从平均频率向两侧拉开，这一跳变矮，并移到更大的相位噪声上。</li>
-<li>每个深谷谷底的 <span class="arithmatex">\(J(\delta)\)</span> 与距离 <span class="arithmatex">\(\delta\)</span> 决定相干均方是否会在带宽直线上停留，以及一次滑移的代价是一个波长的平方还是数米的平方。<span class="arithmatex">\(J(\delta)\)</span> 与 <span class="arithmatex">\(J(\lambda)\)</span> 相当时，滑到该谷的概率与错一个波长相同。</li>
-<li>频点的最大公约数决定所有相位同时回到整周的精确周期，即无模糊距离。互素或中国剩余定理式的排频只改变这个周期，不推迟第一道门限。</li>
-</ol>
-<h3 id="51-保持-s-不能取消这一跳">5.1 保持 <span class="arithmatex">\(S\)</span> 不能取消这一跳</h3>
-<p>第二组频点与等间距的个数、平均频率和 <span class="arithmatex">\(S\)</span> 都相同（下称矩匹配）：2390、2418、2425、2432、2443、2449、2454、2469 MHz。频点取整数兆赫，间隔的最大公约数是 1 MHz，精确周期约 300 m。<span class="arithmatex">\(R\)</span> 与 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 因而与等间距相同。</p>
-<p>在 <span class="arithmatex">\(\sigma = 0.0836\,\mathrm{rad}\)</span> 上，半窗积分的分段与等间距相同，2 m 以内的 <span class="arithmatex">\(J(\delta)\)</span> 曲线也重合。只把等间隔改成不等间隔而保持 <span class="arithmatex">\(S\)</span>，这一跳不会消失；两组的差别要到更大的噪声才出现（5.4 节）。</p>
-<h3 id="52-谷段如何进入半窗积分">5.2 谷段如何进入半窗积分</h3>
+<h3 id="51-逐谷分解">5.1 逐谷分解</h3>
 <p>谷填充不是把各个谷的错误概率相加。按 <span class="arithmatex">\(G\)</span> 的定义，自右向左读加权错误概率 <span class="arithmatex">\(h(\delta) = (L-\delta)P_e(\delta)\)</span>：每出现一个新高点 <span class="arithmatex">\(\delta_a\)</span>，它就决定左侧一整段的被积函数，直到左边第一个 <span class="arithmatex">\(h\)</span> 更高的位置 <span class="arithmatex">\(\delta_b\)</span>。这一段对下界的贡献是</p>
 <div class="arithmatex">\[
 \frac{L-\delta_a}{L}\, P_e(\delta_a)\, \frac{\delta_a^2-\delta_b^2}{2}.
 \]</div>
-<p>左端落在主瓣上时，<span class="arithmatex">\(\delta_b \approx \sqrt{J(\delta_a)}/\beta\)</span>；等间距在门限上，这个左端只有 1.2 mm。</p>
-<p>在 <span class="arithmatex">\(\sigma = 0.0836\,\mathrm{rad}\)</span> 上，等间距的平均波长一段贡献 −29.2 分贝，二倍波长一段 −32.9 分贝，三倍波长一段 −43.0 分贝；三段相加 −27.6 分贝，与半窗数值积分相同。按数值积分划分，平均波长的谷占 67%，二倍波长占 29%。更远的 <span class="arithmatex">\(k\lambda\)</span> 谷几乎不进入积分：第 <span class="arithmatex">\(k\)</span> 个谷底的 <span class="arithmatex">\(J\)</span> 按 <span class="arithmatex">\(k^2\)</span> 增大，<span class="arithmatex">\(P_e\)</span> 随之下降，远快于 <span class="arithmatex">\(\delta^2\)</span> 的增长。</p>
-<p>几何间隔的情形不同。它的远谷位于 <span class="arithmatex">\(L-\delta\)</span> 较小的地方，加权错误概率低于平均波长处，填不到主瓣；这个远谷决定的是从平均波长一直延伸到它自己的一长段。图 2 在同一噪声上比较三组的累计占比。</p>
-<p><img alt="图2 半窗下界的累计占比" src="figures/fig08_bound_cumulative.png"></p>
-<p>图 2　半窗下界沿距离的累计占比，噪声取等间距门限 0.0836 rad。等间距与矩匹配两条曲线重合，0.25 m 处积到 96%，0.4 m 以内积满；几何间隔（绿色）要到 6.21 m 才积满。</p>
-<h3 id="53-几何间隔与一个波长同样深的远谷">5.3 几何间隔：与一个波长同样深的远谷</h3>
-<p>第三组频点是公比 1.02 的等比数列，几何中心 2435 MHz，算术平均 2437.5 MHz。<span class="arithmatex">\(S\)</span> 约为等间距的 23 倍，<span class="arithmatex">\(R\)</span> 降到 26.87 分贝，<span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 升到 0.403 rad，平均波长仍是 0.1230 m。这是第一个设计量 <span class="arithmatex">\(S/\bar f^2\)</span> 的变化：门限移到更大的相位噪声，两条直线靠近。</p>
-<p>6.211 m 处谷底的 <span class="arithmatex">\(J\)</span> 是 0.650，与 <span class="arithmatex">\(J(\lambda) = 0.650\)</span> 相同，八个相位残差的绝对值都不超过 0.44 rad。这是一个深旁瓣，不是所有频点同时回到整周。它约在平均波长的 50 倍处，平方误差高约 34 分贝：滑过去的概率与错一个波长相同，错的距离却是 6.2 m。</p>
-<p>因为 <span class="arithmatex">\(L - 6.211\,\mathrm{m}\)</span> 较小，这个远谷的加权错误概率低于平均波长谷，填不到主瓣；它决定的区间从平均波长延伸到 6.211 m，占半窗积分的 96%。这一段的贡献沿距离分布：积分的一半来自 4.3 m 以外，九成来自 5.9 m 以内，并不集中在 6.211 m 一点。半窗下界因此是 −51 分贝，而载频直线是 −64.8 分贝。</p>
-<p>试验用的噪声与等间距是同一组绝对值，所以 <span class="arithmatex">\(\sigma = 0.0836\,\mathrm{rad}\)</span> 只是几何间隔自身门限的 0.21 倍。该点相干试验仍在载频直线上（−64.5 分贝），下界已经是 −51 分贝。到自身门限的 0.31 倍，相干与非相干估计都到了 −13.2 分贝，滑移率只有 0.0031。同样的滑移率若都落在一个波长上，均方约为 −43 分贝；<span class="arithmatex">\(0.0031\times(6.21\,\mathrm{m})^2\)</span> 约为 −9 分贝，与 −13 分贝同一量级。相干均方不在带宽直线上停留。用平均波长算出的混合离开点是 0.0967 rad，它给出滑移开始出现的噪声，不给出滑错的距离。图 3 是这组曲线。</p>
-<p><img alt="图3 几何间隔的均方误差" src="figures/fig06_geometric_mse.png"></p>
-<p>图 3　几何间隔的均方误差，横轴以这一组自身的门限 0.403 rad 归一。黑色虚线是载频直线，灰色点划线是带宽直线。相干估计（蓝色圆点）离开载频直线后直接越过带宽直线；非相干估计（橙色方点）从带宽直线出发，在同一噪声上越过它。绿色曲线是半窗下界。</p>
-<p>三组频点的参数如下。</p>
+<p>左端落在主瓣上时，<span class="arithmatex">\(\delta_b \approx \sqrt{J(\delta_a)}/\beta\)</span>。</p>
+<p>等间距例子在门限 <span class="arithmatex">\(\sigma = 0.0836\,\mathrm{rad}\)</span> 上，自右向左的新高点落在各个 <span class="arithmatex">\(k\lambda\)</span> 谷上。贡献最大的三段来自一倍、二倍、三倍平均波长的谷，分别是 −29.2、−32.9 与 −43.0 分贝，三段相加 −27.6 分贝，与半窗数值积分相同。一倍波长一段的左端落在主瓣上，只有 1.2 mm。按数值积分划分，平均波长的谷占 67%，二倍波长占 29%。更远的 <span class="arithmatex">\(k\lambda\)</span> 谷几乎不进入积分：第 <span class="arithmatex">\(k\)</span> 个谷底的 <span class="arithmatex">\(J\)</span> 按 <span class="arithmatex">\(k^2\)</span> 增大，<span class="arithmatex">\(P_e\)</span> 随之下降，远快于 <span class="arithmatex">\(\delta^2\)</span> 的增长。</p>
+<h3 id="52-它约束什么不约束什么">5.2 它约束什么，不约束什么</h3>
+<p>这个下界针对真值在半窗上均匀分布的先验；试验把真值固定在搜索窗中心，给出的是条件均方的样本估计。门限上，下界 −27.6 分贝，带宽直线 −24.2 分贝，相干试验 −22.8 分贝。</p>
+<p>0.22 倍门限处，下界已经比载频直线高约 3 分贝（−74.8 分贝），8000 次试验却还没有滑移，样本均方 −77.8 分贝，在下界之下。两者并不矛盾：下界约束的是均方的期望。那里一波长滑移的概率约 <span class="arithmatex">\(5.5\times10^{-6}\)</span>，8000 次中期望只有 0.04 次，多半一次也抽不到，样本均方因而低于期望；按混合近似，期望约为 −70.0 分贝，在下界之上。下界先离开载频直线、试验后离开，一部分原因就在试验次数。下界约束均方，不标出试验曲线的转折点。</p>
+<p>噪声很大时，下界趋于半窗先验的方差 <span class="arithmatex">\(L^2/12\)</span>，即 12.7 分贝；<span class="arithmatex">\(\sigma = 2.34\,\mathrm{rad}\)</span> 时，等间距的下界是 8.1 分贝，仍低于这个值。估计不再携带信息、误差在整段搜索窗（29.979 m）上均匀分布时，均方是 18.74 分贝，即图 1 中的搜索窗地板。等间距相干试验在 <span class="arithmatex">\(\sigma = 0.50\,\mathrm{rad}\)</span>（6 倍门限）仍在带宽直线上，在 <span class="arithmatex">\(\sigma = 0.84\,\mathrm{rad}\)</span>（10 倍门限）已高出带宽直线约 12 分贝，到 <span class="arithmatex">\(\sigma = 2.34\,\mathrm{rad}\)</span> 到达地板。这是第二道门限；它决定误差何时到达地板，不改变 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>。</p>
+<p>门限上，下界与试验相差约 5 分贝。一个是先验平均的下界，一个是条件均方，两者不能直接相减；这 5 分贝属于界还是属于估计量，是第 8 节的开放问题之一。</p>
+<h2 id="6-非等间隔">6 非等间隔</h2>
+<p>把间隔做成不等，能改变什么？频率集合上有三个设计量，彼此不能替代。</p>
+<ol>
+<li><span class="arithmatex">\(S/\bar f^2\)</span> 决定第一道门限的相位尺度，也决定两条直线的间隔（<span class="arithmatex">\(R = 1 + N\pi^2/\sigma_{\mathrm{jump}}^2\)</span>）。频点从平均频率向两侧拉开，这一跳变矮，并移到更大的相位噪声上。</li>
+<li>每个深谷谷底的 <span class="arithmatex">\(J(\delta)\)</span> 与距离 <span class="arithmatex">\(\delta\)</span> 决定相干均方是否在带宽直线上停留，以及一次滑移的代价是一个波长的平方还是数米的平方。<span class="arithmatex">\(J(\delta)\)</span> 与 <span class="arithmatex">\(J(\lambda)\)</span> 相当时，滑到该谷的概率与错一个波长相同。</li>
+<li>频点的最大公约数决定所有相位同时回到整周的精确周期，即无模糊距离。互素或中国剩余定理式的排频只改变这个周期，不推迟第一道门限。间隔近似相等时留下的近似周期不属于这一项，它们表现为第二项里的深谷（6.2 节）。</li>
+</ol>
+<h3 id="61-保持-s矩匹配">6.1 保持 <span class="arithmatex">\(S\)</span>：矩匹配</h3>
+<p>第二组频点与等间距的个数、平均频率和 <span class="arithmatex">\(S\)</span> 都相同（下称矩匹配）：2390、2418、2425、2432、2443、2449、2454、2469 MHz。频点取整数兆赫，间隔的最大公约数是 1 MHz，精确周期约 300 m。<span class="arithmatex">\(R\)</span> 与 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 因而与等间距相同。</p>
+<p>2 m 以内，两组的 <span class="arithmatex">\(J(\delta)\)</span> 在 <span class="arithmatex">\(J \le 14\)</span> 的部分完全重合：这一段的谷附近残差都不发生包裹，<span class="arithmatex">\(J\)</span> 只由 <span class="arithmatex">\(N\)</span>、<span class="arithmatex">\(\bar f\)</span> 与 <span class="arithmatex">\(S\)</span> 决定，而这三个量两组相同。在 <span class="arithmatex">\(\sigma = 0.0836\,\mathrm{rad}\)</span> 上，半窗积分的分段也与等间距相同。只把等间隔改成不等间隔而保持 <span class="arithmatex">\(S\)</span>，这一跳不会消失；两组的差别要到更大的噪声才出现（6.3 节）。</p>
+<h3 id="62-几何间隔与一个波长同样深的远谷">6.2 几何间隔：与一个波长同样深的远谷</h3>
+<p>第三组频点是公比 1.02 的等比数列，从 2272 到 2610 MHz，几何中心 2435 MHz，算术平均 2437.5 MHz。跨度约 338 MHz，是等间距例子的 4.8 倍；<span class="arithmatex">\(S\)</span> 约为等间距的 23 倍，几乎全部来自更宽的跨度。<span class="arithmatex">\(R\)</span> 降到 26.87 分贝，<span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 升到 0.403 rad，平均波长仍是 0.1230 m。这是第一个设计量的变化：门限移到更大的相位噪声上，两条直线靠近。</p>
+<p>变化同时落在第二个设计量上。图 4 是这组频点的 <span class="arithmatex">\(J(\delta)\)</span>：6.211 m 处谷底的 <span class="arithmatex">\(J\)</span> 是 0.650，与 <span class="arithmatex">\(J(\lambda) = 0.650\)</span> 相同，八个相位残差的绝对值都不超过 0.44 rad。这个谷的来历是间隔：七个间隔在 45.4 到 51.2 MHz 之间，平均 48.26 MHz，而 <span class="arithmatex">\(c\)</span> 除以 48.26 MHz 是 6.212 m；在 6.211 m 上，相邻频点之间的相位差都在 0.94 到 1.06 周之间。2% 的公比没有把这个近似周期打散。等间距例子的间隔是 10 MHz，同样的周期在 29.98 m，落在半窗之外。6.211 m 约为平均波长的 50 倍：滑过去的概率与错一个波长相同，平方误差却高约 34 分贝。</p>
+<p><img alt="图4 几何间隔的 J(δ)" src="figures/fig05_geometric_cost.png"></p>
+<p>图 4　几何间隔的 <span class="arithmatex">\(J(\delta)\)</span>，只画出 <span class="arithmatex">\(J \le 10\)</span> 的部分。橙色竖线是平均波长，绿色竖线是 6.21 m，两处谷底都是 0.65；12.4 m 附近还有一簇谷，最深处约 2.6。</p>
+<p>在半窗积分里，这个远谷的 <span class="arithmatex">\(L-\delta\)</span> 较小，加权错误概率低于平均波长处，填不到主瓣；它决定的一段从平均波长一直延伸到 6.211 m，占积分的 96%。这一段的贡献沿距离分布：积分的一半来自 4.3 m 以外，九成来自 5.9 m 以内，并不集中在 6.211 m 一点。图 5 在等间距门限的噪声上比较三组频点的累计占比。在这个噪声上，几何间隔的半窗下界约为 −51 分贝，载频直线是 −64.8 分贝。</p>
+<p><img alt="图5 半窗下界的累计占比" src="figures/fig08_bound_cumulative.png"></p>
+<p>图 5　半窗下界沿距离的累计占比，噪声取等间距门限 0.0836 rad。等间距与矩匹配两条曲线重合，0.25 m 处积到 96%，0.4 m 以内积满；几何间隔（绿色）要到 6.21 m 才积满。</p>
+<p>试验用的噪声与等间距是同一组绝对值，所以 <span class="arithmatex">\(\sigma = 0.0836\,\mathrm{rad}\)</span> 只是几何间隔自身门限的 0.21 倍。这一点上相干样本均方是 −64.5 分贝，仍在载频直线上，而下界已是 −51 分贝。原因与 5.2 节相同：滑到 <span class="arithmatex">\(\pm 6.211\,\mathrm{m}\)</span> 的概率约 <span class="arithmatex">\(1.4\times10^{-6}\)</span>，1600 次试验抽不到。到自身门限的 0.31 倍，相干与非相干估计的样本均方都到了约 −13 分贝（−13.2 与 −13.1），比这组的带宽直线（−34.4 分贝）高约 21 分贝，而滑移率只有 0.0031。同样的滑移率若都落在一个波长上，均方约为 −43 分贝；<span class="arithmatex">\(0.0031\times(6.21\,\mathrm{m})^2\)</span> 约为 −9 分贝，与 −13 分贝同一量级。相干均方离开载频直线以后不在带宽直线上停留。用平均波长算出的混合离开点是 0.0967 rad，它给出滑移开始出现的噪声，不给出滑错的距离。图 6 是这组曲线。</p>
+<p><img alt="图6 几何间隔的均方误差" src="figures/fig06_geometric_mse.png"></p>
+<p>图 6　几何间隔的均方误差，横轴以这一组自身的门限 0.403 rad 归一。黑色虚线是载频直线，灰色点划线是带宽直线，绿色曲线是半窗下界。相干估计（蓝色圆点）离开载频直线后直接越过带宽直线；非相干估计（橙色方点）从带宽直线出发，在同一噪声上越过它。</p>
+<h3 id="63-更大噪声上的一串谷">6.3 更大噪声上的一串谷</h3>
+<p>矩匹配与等间距要到相位噪声再大一个量级才分开。<span class="arithmatex">\(\sigma = 0.836\,\mathrm{rad}\)</span> 时，两者的半窗下界分别是 −2.4 与 −3.8 分贝。矩匹配在 10.6 到 11.3 m 有一串谷，谷底的 <span class="arithmatex">\(J\)</span> 约 14；等间距在同一段的谷底都不低于 22.9。这一串里加权错误概率最高的点在 10.65 m，它决定的一段单独占矩匹配积分的 29%；去掉这一段，下界从 −2.4 分贝降到约 −3.9 分贝，与等间距的 −3.8 分贝相符。这一串里最深的谷在稍远的 11.0 m；<span class="arithmatex">\(L-\delta\)</span> 偏向较近的谷，所以自右向左的新高落在 10.65 m。这 1.4 分贝来自这串远谷，不来自近处的谷。</p>
+<p>这些谷底的 <span class="arithmatex">\(J\)</span> 约为 14 而不是 0，所以也不是精确的整周重合。它们的相位残差可达约 2.5 rad，接近半周，3.1 节的高斯向量检验在这里最不可靠。同一噪声上的试验也是矩匹配较高：相干样本均方 10.3 分贝，等间距 7.8 分贝。</p>
+<h2 id="7-工程规则">7 工程规则</h2>
+<p>下面的规则只用于相位模型成立的区间，即 <span class="arithmatex">\(\sigma\)</span> 远小于 1 rad；到 1 rad 量级，预算改用复观测（第二道门限）。换算成信噪比时可用复观测的高信噪比关系 <span class="arithmatex">\(\sigma^2 \approx 1/(2\,\mathrm{SNR})\)</span>，SNR 是单个频点复相量的信噪比。</p>
+<p>有公共相位参考时：</p>
+<ul>
+<li>工作点在约 <span class="arithmatex">\(0.2\,\sigma_{\mathrm{jump}}\)</span> 以下，才按载频直线做预算。等间距例子对应的相位标准差约 1 度，即 0.017 rad，单个频点的信噪比约 32 分贝。</li>
+<li>约 <span class="arithmatex">\(0.5\,\sigma_{\mathrm{jump}}\)</span> 到相位模型失效之间，按带宽直线做预算；等间距例子比载频直线差 40.53 分贝。</li>
+<li>两者之间，均方近似等于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>（3.3 节）。</li>
+</ul>
+<p>没有公共相位时，高信噪比预算直接就是带宽直线，载频直线上的那一跳没有对应的工作区。远处若还有与 <span class="arithmatex">\(J(\lambda)\)</span> 相当的深谷，去掉公共相位只去掉了载频直线，去不掉那个谷造成的上升；几何间隔的非相干估计就是这样（6.2 节）。</p>
+<p>排频时，对 <span class="arithmatex">\(P_e\)</span> 的每一对局部极大 <span class="arithmatex">\(\pm\delta\)</span>（即每一对谷）解</p>
+<div class="arithmatex">\[
+2P_e(\delta)\,\delta^2 = \mathrm{HMSE},
+\]</div>
+<p>取最早的 <span class="arithmatex">\(\sigma\)</span>。左边是滑进这一对谷的期望平方误差，系数 2 计入 <span class="arithmatex">\(+\delta\)</span> 与 <span class="arithmatex">\(-\delta\)</span> 两侧；它超过 HMSE 时，均方离开载频直线。只报 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 不够。等间距与矩匹配上，最早的解来自平均波长的谷，<span class="arithmatex">\(\sigma = 0.0170\,\mathrm{rad}\)</span>（<span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span>），与 3.2 节的混合离开点相同。几何间隔上，最早的解来自 6.211 m 的谷，约 0.069 rad（自身门限的 0.17 倍），早于按平均波长算出的 0.0967 rad；离开以后，一次未被检出的滑移，概率与错一个波长相同，均方却高约 34 分贝。</p>
+<p>间隔近似相等时，要在 <span class="arithmatex">\(c\)</span> 除以典型间隔的距离上检查 <span class="arithmatex">\(J(\delta)\)</span>：那里可能留下与 <span class="arithmatex">\(J(\lambda)\)</span> 同样深的谷，最大公约数与中国剩余定理都看不到它。</p>
 <table>
 <thead>
 <tr>
-<th>设计</th>
+<th>频点</th>
 <th><span class="arithmatex">\(\bar f\)</span></th>
 <th><span class="arithmatex">\(S\)</span></th>
 <th><span class="arithmatex">\(R\)</span></th>
 <th><span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span></th>
+<th>最早的离开点</th>
+<th>决定它的谷</th>
 </tr>
 </thead>
 <tbody>
@@ -185,6 +207,8 @@ P_e(\delta) = Q\bigl(\sqrt{J(\delta)}/(2\sigma)\bigr),
 <td>4200 MHz²</td>
 <td>40.53 dB</td>
 <td>0.0836 rad</td>
+<td>0.0170 rad</td>
+<td>0.123 m</td>
 </tr>
 <tr>
 <td>矩匹配</td>
@@ -192,6 +216,8 @@ P_e(\delta) = Q\bigl(\sqrt{J(\delta)}/(2\sigma)\bigr),
 <td>4200 MHz²</td>
 <td>40.53 dB</td>
 <td>0.0836 rad</td>
+<td>0.0170 rad</td>
+<td>0.123 m</td>
 </tr>
 <tr>
 <td>几何间隔</td>
@@ -199,52 +225,41 @@ P_e(\delta) = Q\bigl(\sqrt{J(\delta)}/(2\sigma)\bigr),
 <td><span class="arithmatex">\(9.78\times 10^4\)</span> MHz²</td>
 <td>26.87 dB</td>
 <td>0.403 rad</td>
+<td>0.069 rad</td>
+<td>6.211 m</td>
 </tr>
 </tbody>
 </table>
-<p>表 1　三组频点。矩匹配与等间距共用平均频率、<span class="arithmatex">\(S\)</span> 与门限；几何间隔的 <span class="arithmatex">\(S\)</span> 更大，门限更高，两条直线的间隔更小。</p>
-<h3 id="54-更大噪声上的一串谷">5.4 更大噪声上的一串谷</h3>
-<p>矩匹配与等间距要到相位噪声再大一个量级才分开。<span class="arithmatex">\(\sigma = 0.836\,\mathrm{rad}\)</span> 时，两者的半窗下界分别是 −2.4 与 −3.8 分贝。矩匹配在 10.6 到 11.3 m 有一串谷，谷底的 <span class="arithmatex">\(J\)</span> 约 14；等间距在同一段约 25。这一串里加权错误概率最高的点在 10.65 m，它决定的一段单独占矩匹配积分的 29%；去掉这一段，下界从 −2.4 分贝降到约 −3.9 分贝，与等间距的 −3.8 分贝相符。窗内最深的谷不在 10.65 m，而在稍远的 11.0 m；<span class="arithmatex">\(L-\delta\)</span> 偏向较近的谷，所以自右向左的新高落在 10.65 m。这 1.4 分贝来自这串远谷，不来自近处的谷。这些谷底的 <span class="arithmatex">\(J\)</span> 约为 14 而不是 0，所以也不是精确的整周重合。它们的相位残差可达约 2.5 rad，接近半周，3.1 节的高斯向量检验在这里最不可靠。</p>
-<h2 id="6-工程规则">6 工程规则</h2>
-<p>下面的规则只用于相位模型成立的区间，即 <span class="arithmatex">\(\sigma\)</span> 远小于 1 rad；到 1 rad 量级，预算改用复观测（第二道门限）。</p>
-<p>有公共相位参考时：</p>
-<ul>
-<li>工作点在约 <span class="arithmatex">\(0.2\,\sigma_{\mathrm{jump}}\)</span> 以下，才按载频直线做预算。等间距例子对应的相位标准差约 1 度，即 0.017 rad。</li>
-<li>约 <span class="arithmatex">\(0.5\,\sigma_{\mathrm{jump}}\)</span> 到相位模型失效之间，按带宽直线做预算；等间距例子比载频直线差 40.53 分贝。</li>
-<li>两者之间，均方近似等于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>（3.3 节）。</li>
-</ul>
-<p>没有公共相位时，高信噪比预算直接就是带宽直线，载频直线上的那一跳没有对应的工作区。远处若还有与 <span class="arithmatex">\(J(\lambda)\)</span> 相当的深谷，去掉公共相位只去掉了载频直线，去不掉那个谷造成的上升。</p>
-<p>排频时，对 <span class="arithmatex">\(P_e\)</span> 的每一对局部极大 <span class="arithmatex">\(\pm\delta\)</span>（即每一对谷）解 <span class="arithmatex">\(2P_e(\delta)\,\delta^2 = \mathrm{HMSE}\)</span>，取最早的 <span class="arithmatex">\(\sigma\)</span>；只报 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 不够。等间距上，这个方程的解与 <span class="arithmatex">\(0.20\,\sigma_{\mathrm{jump}}\)</span> 重合，因为起决定作用的谷就在平均波长上。几何间隔上，远谷使下界更早上升：在自身门限的 0.21 倍，下界已经是 −51 分贝，载频直线仍是 −64.8 分贝；一次未被检出的滑移，概率与错一个波长相同，均方却高约 34 分贝。</p>
+<p>表 1　三组频点。最早的离开点是 <span class="arithmatex">\(2P_e(\delta)\,\delta^2 = \mathrm{HMSE}\)</span> 在半窗内所有谷上的最早解。</p>
 <p>三个设计量分开评估：拉开 <span class="arithmatex">\(S/\bar f^2\)</span> 改变第一道门限和两条直线的间隔；深谷的 <span class="arithmatex">\(J(\delta)\)</span> 与 <span class="arithmatex">\(\delta\)</span> 决定相干均方是否在带宽直线上停留、滑错多远；最大公约数改变无模糊距离。更长的精确周期只动第三个量，第一道门限不动。</p>
-<h2 id="7-结论与仍开放的问题">7 结论与仍开放的问题</h2>
-<h3 id="71-结论">7.1 结论</h3>
+<h2 id="8-已做干净的与仍开放的">8 已做干净的与仍开放的</h2>
+<p>这里没有提出新的估计理论。用到的都是参数估计里现成的工具，每一种都用到它在这个问题上能给出结论为止：</p>
 <ol>
-<li>两条直线的高度由 <span class="arithmatex">\(F\)</span> 与 <span class="arithmatex">\(S\)</span> 决定；<span class="arithmatex">\(R = F/S = 1 + N\pi^2/\sigma_{\mathrm{jump}}^2\)</span> 与 <span class="arithmatex">\(\sigma\)</span> 无关，两条直线在双对数图上平行。</li>
-<li>第一道门限的相位尺度是 <span class="arithmatex">\(\sigma_{\mathrm{jump}} = \pi\sqrt{S}/\bar f\)</span>，即区分相距一个平均波长的两个距离时高斯检验的尺度。它只对使用绝对载波相位的估计量是门限：非相干估计从最低噪声起就在带宽直线上，不存在「一切估计量都在 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 上跳」的定理。</li>
-<li>等间距上，混合近似在 <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span> 离开载频直线；8000 次试验的首次滑移在 <span class="arithmatex">\(0.25\,\sigma_{\mathrm{jump}}\)</span>；从该点到门限，样本均方等于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>，误差在 0.1 分贝以内。</li>
-<li>局部 Fisher 信息与克拉美–罗界不跳。</li>
-<li>半窗 Ziv–Zakai 下界是均匀先验下的贝叶斯风险，先于条件试验离开载频直线，不标出试验曲线的转折点。</li>
-<li>保持 <span class="arithmatex">\(S\)</span> 的非等间隔不取消第一道门限；远处 <span class="arithmatex">\(J(\delta)\approx J(\lambda)\)</span> 的谷使相干均方不在带宽直线上停留，并把一次滑移的距离放大到数米。</li>
-<li>无模糊距离与第一道门限是两个设计量：中国剩余定理式的排频延长前者，不推迟后者。</li>
+<li>主瓣内的线性最小二乘，即李巍与齐望东的微扰分析，给出两条直线的高度；<span class="arithmatex">\(R = F/S = 1 + N\pi^2/\sigma_{\mathrm{jump}}^2\)</span> 与 <span class="arithmatex">\(\sigma\)</span> 无关，两条直线平行。</li>
+<li>两假设的高斯检验给出第一道门限的相位尺度 <span class="arithmatex">\(\sigma_{\mathrm{jump}} = \pi\sqrt{S}/\bar f\)</span>，即区分相距一个平均波长的两个距离时的噪声尺度。</li>
+<li>滑移的混合近似与归档试验给出门限附近的均方：混合近似在 <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span> 离开载频直线；8000 次试验的首次滑移在 <span class="arithmatex">\(0.25\,\sigma_{\mathrm{jump}}\)</span>，与试验次数决定的 <span class="arithmatex">\(0.26\,\sigma_{\mathrm{jump}}\)</span> 相符；从那里到门限，样本均方等于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>，误差在 0.1 分贝以内。</li>
+<li>包裹正态的 Fisher 信息与克拉美–罗界只描述主瓣曲率，不跳；这一跳不在局部工具的范围内。</li>
+<li>非相干估计是同一观测上的反例：它没有第一道门限，所以门限属于使用绝对载波相位的估计量，不属于观测本身。</li>
+<li>Ziv–Zakai 下界加上 Bellini 与 Tartara 的谷填充，给出半窗下界和它的逐谷分解；它是均匀先验下的均方下界，先于条件试验离开载频直线，不标出试验曲线的转折点。</li>
+<li>三组频点上的下界与试验把设计量分开：保持 <span class="arithmatex">\(S\)</span> 的非等间隔不取消第一道门限；近似相等的间隔留下与 <span class="arithmatex">\(J(\lambda)\)</span> 同样深的远谷，使相干均方不在带宽直线上停留，并把一次滑移放大到数米；排频取 <span class="arithmatex">\(2P_e(\delta)\,\delta^2 = \mathrm{HMSE}\)</span> 的最早解。</li>
+<li>无模糊距离由频率的最大公约数决定，中国剩余定理式的排频延长它。这件事数论已经回答完；<span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 只由 <span class="arithmatex">\(S/\bar f^2\)</span> 决定，延长无模糊距离不推迟第一道门限。</li>
 </ol>
-<p>有限 <span class="arithmatex">\(N\)</span> 下全局包裹最小二乘的均方没有闭式。已经确定的是门限的相位尺度、谷填充下界，以及二者与归档试验的对照。</p>
-<h3 id="72-仍开放的问题">7.2 仍开放的问题</h3>
-<p>下面五个问题都可以用数值计算与试验回答，不依赖上述闭式。</p>
-<h4 id="按最坏的谷排频点">按最坏的谷排频点</h4>
-<p>在带宽、<span class="arithmatex">\(N\)</span> 与整数兆赫合成器步长的约束下，能否让各深谷离开点中最早的那个 <span class="arithmatex">\(\sigma\)</span> 晚于等间距的 0.0170 rad，同时不在 <span class="arithmatex">\(\delta \gg \lambda\)</span> 处留下 <span class="arithmatex">\(J(\delta)\approx J(\lambda)\)</span> 的谷？矩匹配已经说明，<span class="arithmatex">\(S\)</span> 不变时只打乱间隔没有用，<span class="arithmatex">\(S\)</span> 与深谷的位置要一起调整。找到一组同时满足这两个条件的频点，这个问题就有了答案。</p>
-<h4 id="在同一先验下比较贝叶斯均方">在同一先验下比较贝叶斯均方</h4>
-<p>门限上，半窗下界是 −27.6 分贝，相干试验是 −22.8 分贝，相差约 5 分贝。下界是半窗均匀先验下的贝叶斯风险，试验是搜索窗中心的条件均方，两者不能直接比较。在同一先验下计算后验均值的均方，并在同一噪声网格上与相干极大似然对照，就能判定这 5 分贝来自界的松弛还是估计量的次优。这个对照也会说明，整周模糊的整数最小二乘、或对模糊边沿积分，是否值得做。</p>
-<h4 id="只在残差接近半周的谷上换似然比">只在残差接近半周的谷上换似然比</h4>
-<p>高斯向量检验在残差远小于 <span class="arithmatex">\(\pi\)</span> 时是合适的近似。第一道门限上 <span class="arithmatex">\(\sigma = 0.08\,\mathrm{rad}\)</span>，几何间隔 6.211 m 谷的残差也不超过 0.44 rad，这两处的近似都可靠。不可靠的是 <span class="arithmatex">\(\sigma = 0.836\,\mathrm{rad}\)</span> 时 10.6 到 11.3 m 的那串谷，残差可达约 2.5 rad。只在这串谷上把高斯向量检验换成包裹以后的似然比，看矩匹配与等间距之间 1.4 分贝的下界差是否移动，就能回答这个问题；其余距离上的错误概率不必先重算。</p>
-<h4 id="在复观测上复核第一道门限">在复观测上复核第一道门限</h4>
-<p>相位模型是复观测的高信噪比极限，第一道门限处这个极限成立。在同一组等间距频点上用相干极大似然直接处理复观测，核对第一道门限是否仍在 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 附近；预期第一跳不变，地板与第二道门限会移动。幅度衰落、各频点信噪比不同、以及共用本振带来的相关相位噪声，是这次核对之后再加入预算的修正。</p>
-<h4 id="滑移长于一个波长以后的二阶矩">滑移长于一个波长以后的二阶矩</h4>
-<p><span class="arithmatex">\(1.5\,\sigma_{\mathrm{jump}}\)</span> 以后，等间距的样本均方高于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>，因为一部分滑移长于一个波长。等间距前几个谷在 <span class="arithmatex">\(k\lambda\)</span> 附近，谷底的 <span class="arithmatex">\(J\)</span> 是 <span class="arithmatex">\(k^2 J(\lambda)\)</span>，成对错误概率是 <span class="arithmatex">\(Q(k\sigma_{\mathrm{jump}}/\sigma)\)</span>。可以用 <span class="arithmatex">\(\delta^2\)</span> 与 <span class="arithmatex">\(Q(k\sigma_{\mathrm{jump}}/\sigma)\)</span> 对 5.2 节自右向左的加权错误概率新高所对应的那些谷加权，代替单一的 <span class="arithmatex">\(\lambda^2\)</span>；非等间隔用同样的新高点，而不是整数倍波长。在 1.5 倍门限以远，若这样加权后与样本均方的差明显小于现在的 <span class="arithmatex">\(\lambda^2\)</span> 乘积，并能指出仍对不上的区间，这个问题就回答了。</p>
+<p>有限 <span class="arithmatex">\(N\)</span> 下全局包裹最小二乘的均方没有闭式，这里也不去找。下面五个问题仍开放，都可以用同样的工具，通过数值计算与试验回答。</p>
+<h3 id="81-按最坏的谷排频点">8.1 按最坏的谷排频点</h3>
+<p>在带宽、<span class="arithmatex">\(N\)</span> 与整数兆赫合成器步长的约束下，能否让 <span class="arithmatex">\(2P_e(\delta)\,\delta^2 = \mathrm{HMSE}\)</span> 的最早解晚于等间距的 0.0170 rad，同时不在 <span class="arithmatex">\(\delta \gg \lambda\)</span> 处留下 <span class="arithmatex">\(J(\delta)\approx J(\lambda)\)</span> 的谷？矩匹配说明，<span class="arithmatex">\(S\)</span> 不变时只打乱间隔没有用；几何间隔把最早解推到约 0.069 rad，靠的是 4.8 倍的跨度，留下的正是 6.211 m 那样的远谷。<span class="arithmatex">\(S\)</span> 与深谷的位置要一起调整。在同样的约束下找到一组同时满足两个条件的频点，或者用完整的搜索确认没有，这个问题就回答了。</p>
+<h3 id="82-在同一先验下比较贝叶斯均方">8.2 在同一先验下比较贝叶斯均方</h3>
+<p>门限上，半窗下界是 −27.6 分贝，相干试验是 −22.8 分贝，相差约 5 分贝。下界针对半窗均匀先验，试验是搜索窗中心的条件均方，两者不能直接相减。在同一先验下计算后验均值的均方，并在同一噪声网格上与相干极大似然对照，就能判定这 5 分贝属于界的松弛还是估计量的次优。这个对照也会说明，整周模糊的整数最小二乘、或对模糊边沿积分，是否值得做。</p>
+<h3 id="83-只在残差接近半周的谷上换似然比">8.3 只在残差接近半周的谷上换似然比</h3>
+<p>高斯向量检验在残差远小于 <span class="arithmatex">\(\pi\)</span> 时是合适的近似。第一道门限上 <span class="arithmatex">\(\sigma = 0.08\,\mathrm{rad}\)</span>，几何间隔 6.211 m 谷的残差也不超过 0.44 rad，这两处的近似都可靠。不可靠的是 <span class="arithmatex">\(\sigma = 0.836\,\mathrm{rad}\)</span> 时 10.6 到 11.3 m 的那串谷，残差可达约 2.5 rad。只在这串谷上把高斯向量检验换成包裹以后的似然比，重算矩匹配与等间距之间 1.4 分贝的下界差，看它是否移动，就回答了这个问题；其余距离上的错误概率不必先重算。</p>
+<h3 id="84-在复观测上复核第一道门限">8.4 在复观测上复核第一道门限</h3>
+<p>相位模型是复观测的高信噪比极限，第一道门限处这个极限成立。在同一组等间距频点上用相干极大似然直接处理复观测，核对第一道门限是否仍在 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> 附近：预期第一跳不变，地板与第二道门限会移动。核对之后，幅度衰落、各频点信噪比不同、以及共用本振带来的相关相位噪声，再作为修正加入预算。</p>
+<h3 id="85-滑移长于一个波长以后的二阶矩">8.5 滑移长于一个波长以后的二阶矩</h3>
+<p><span class="arithmatex">\(1.5\,\sigma_{\mathrm{jump}}\)</span> 以后，等间距的样本均方高于滑移率乘以 <span class="arithmatex">\(\lambda^2\)</span>，因为一部分滑移长于一个波长。等间距前几个谷在 <span class="arithmatex">\(k\lambda\)</span> 附近，谷底的 <span class="arithmatex">\(J\)</span> 是 <span class="arithmatex">\(k^2 J(\lambda)\)</span>，成对错误概率是 <span class="arithmatex">\(Q(k\sigma_{\mathrm{jump}}/\sigma)\)</span>。可以用 <span class="arithmatex">\(\delta^2\)</span> 与 <span class="arithmatex">\(Q(k\sigma_{\mathrm{jump}}/\sigma)\)</span> 对 5.1 节自右向左的加权错误概率新高所对应的那些谷加权，代替单一的 <span class="arithmatex">\(\lambda^2\)</span>；非等间隔用同样的新高点，而不是整数倍波长。在 1.5 倍门限以远，这样加权以后若明显比 <span class="arithmatex">\(\lambda^2\)</span> 乘积更贴近样本均方，并能指出仍对不上的区间，这个问题就回答了。</p>
 <h2 id="文献">文献</h2>
-<p>李巍、齐望东，Optimization in Multi-Frequency Interferometry Ranging: Theory and Experiment，arXiv:1202.1424，2012。式 (30)、(42) 给出 HMSE 与 MMSE。他们按信噪比升高的方向编号，称二者之间的过渡为第二道门限，即这里的第一道门限；分析用微扰法，没有给出 <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>。</p>
-<p>A. Weiss 与 E. Weinstein，Fundamental Limitations in Passive Time-Delay Estimation，Part I（1983）与 Part II（1984），IEEE Transactions on Acoustics, Speech, and Signal Processing。连续平坦谱时延估计中的因子 <span class="arithmatex">\(12(\omega_0/W)^2\)</span>，等于等间距 <span class="arithmatex">\(R\)</span> 在大 <span class="arithmatex">\(N\)</span> 下的极限系数；观测模型不同。</p>
-<p>J. Ziv 与 M. Zakai，Some Lower Bounds on Signal Parameter Estimation，IEEE Transactions on Information Theory，1969。用二元假设检验的错误概率给出估计误差的下界。</p>
-<p>S. Bellini 与 G. Tartara，Bounds on Error in Signal Parameter Estimation，IEEE Transactions on Communications，1974。Ziv–Zakai 下界的谷填充形式。</p>
+<p>李巍、齐望东，Optimization in Multi-Frequency Interferometry Ranging: Theory and Experiment，arXiv:1202.1424，2012。式 (30) 与式 (42) 给出 HMSE 与 MMSE；分析用微扰法。</p>
+<p>A. J. Weiss 与 E. Weinstein，Fundamental Limitations in Passive Time-Delay Estimation—Part I: Narrow-Band Systems，IEEE Transactions on Acoustics, Speech, and Signal Processing，第 31 卷第 2 期，472–486 页，1983。E. Weinstein 与 A. J. Weiss，Part II: Wide-Band Systems，同刊第 32 卷第 5 期，1064–1078 页，1984。第二部分用改进的 Ziv–Zakai 下界，在连续时间时延估计中得到高、中、低三段，中等信噪比区间比克拉美–罗界高 <span class="arithmatex">\(12(\omega_0/W)^2\)</span> 倍；观测模型与这里不同。</p>
+<p>J. Ziv 与 M. Zakai，Some Lower Bounds on Signal Parameter Estimation，IEEE Transactions on Information Theory，第 15 卷第 3 期，386–391 页，1969。用二元假设检验的错误概率给出估计误差的下界。</p>
+<p>S. Bellini 与 G. Tartara，Bounds on Error in Signal Parameter Estimation，IEEE Transactions on Communications，第 22 卷第 3 期，340–342 页，1974。Ziv–Zakai 下界的谷填充形式。</p>
 <p>D. C. Rife 与 R. R. Boorstyn，Single-Tone Parameter Estimation from Discrete-Time Observations，IEEE Transactions on Information Theory，第 20 卷第 5 期，591–598 页，1974。单音频率估计中局部界紧、全局均方在门限处离开的同类结构；参数是频率，不是距离。</p>
       <div class="footnote-bar">
         CC BY 4.0 · Cite via <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Archived numbers in <code>computation/data/</code>

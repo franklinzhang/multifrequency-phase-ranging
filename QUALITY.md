@@ -1,13 +1,11 @@
 # Quality notes (internal)
 
-Public prose should open with the scientific claim, not with packaging.
+Public reading path (2026-10-11):
 
-Removed from the reading surface (2026-10-11, Opus rewrite):
+1. Observation model first (wrapped multi-frequency phases + coherent / incoherent)
+2. Then the phenomenon with Figure 1 (two parallel lines and the jump)
+3. Then σ_jump, bounds, unequal spacing, rules
 
-- Format tables, “对外发布入口”, “无 PDF”, quality-gate / storyteller / JIT branding
-- “完成的标准：” checklist voice; “两件不做的事” / “文档与归档试验” meta sections
-- Self-announcing openings (“全文给出已钉死的结论…”)
+Tone: exhaust existing math / stats / parameter-estimation tools to clean the problem — do not invent new theory, do not open with packaging.
 
-Canonical public URL: https://franklinzhang.github.io/multifrequency-phase-ranging/
-
-License, Binder, and reproduce instructions stay in the repo README and landing footnotes — not in the opening of the note.
+Canonical URL: https://franklinzhang.github.io/multifrequency-phase-ranging/
