@@ -364,25 +364,32 @@ Moving from 2.4 GHz to 5.8 GHz with the same 8×10 MHz raises the threshold cent
 
 ### 12.2 Drawing N out of M equal-spaced candidates: is uniform random best?
 
-**No.** Two different “uniforms” must be kept apart.
+**No** — but three objectives must be kept apart, or equal spacing’s real virtue is lost.
 
-1. **Deterministic equal spacing** (every $M/N$-th candidate): the classic design with the nicest shelf, but not Pareto optimal.
-2. **Uniform random draws**: on the two objectives (how late the threshold arrives, how large the error is below it) the median is worse than equal spacing. About 11–13% of random samples strictly beat equal spacing on both objectives, but the Pareto front is occupied almost entirely by “dense at the edges + a few anchors in the middle”, not by random samples.
+**Equal spacing minimizes the scale of the integer ambiguity.** On an equal grid every deep valley sits at an integer multiple of the mean wavelength, $k\lambda$, with $J(k\lambda) = k^2 J(\lambda)$. The first jump is off by exactly one wavelength (12.3 cm here); there is no far valley that is as easy to slip into as $1\lambda$ but costs metres. That structural property is why its shelf is clean. Packing all tones at the two edges with no middle anchors leaves a valley at about 4.5 m with depth comparable to $J(\lambda)$, so the ambiguity scale jumps by a factor of thirty-odd — the threshold moves later, the integer ambiguity gets worse.
 
-Numbers for 8 tones drawn from 2400–2470 MHz at 1 MHz steps ($M = 71$):
+So designs should be compared on at least three knobs:
 
-| Design | $\sigma$ at leaving the carrier line | predicted MSE at $\sigma = 0.2$ rad |
-| --- | --- | --- |
-| Uniform random (median) | 0.014 | −11.6 dB·m² |
-| Equal spacing | 0.017 | −13.4 dB·m² |
-| Front, lowest shelf (`2400,2401,2402,2409,2450,2468,2469,2470`) | 0.024 | −16.4 dB·m² |
-| Four at each edge | 0.025 | +13.5 dB·m² (a cliff) |
+| Objective | Equal spacing | Uniform random | Edges + middle anchors | Pure edges |
+| --- | --- | --- | --- | --- |
+| Scale of the first slip | **smallest ($1\lambda$)** | usually larger | can stay $\sim 1\lambda$ | bad (metres) |
+| How late the threshold arrives | medium | median earlier | **later** | latest |
+| Shelf MSE below the threshold | good | median worse | **can be better** | no shelf (cliff) |
 
-Monte Carlo confirms: the front design is strictly better than equal spacing from 29 dB per tone downward, until about 8 dB. The principle is
+Numbers for 8 tones from 2400–2470 MHz at 1 MHz steps ($M = 71$):
 
-> **First make $S$ large (postpone the threshold), then leave anchors in the middle to break distant valleys (keep the shelf).**
+| Design | $\sigma$ at leaving the carrier line | predicted MSE at $\sigma = 0.2$ rad | shallowest off-$k\lambda$ valley |
+| --- | --- | --- | --- |
+| Uniform random (median) | 0.014 | −11.6 dB·m² | usually present |
+| Equal spacing | 0.017 | −13.4 dB·m² | **none** (all deep valleys on $k\lambda$) |
+| Front, lowest shelf (`2400,2401,2402,2409,2450,2468,2469,2470`) | 0.024 | −16.4 dB·m² | **none** (first deep valleys still on $k\lambda$) |
+| Four at each edge | 0.025 | +13.5 dB·m² | 4.49 m, $J \approx 1.5\,J(\lambda)$ |
 
-When $N \ll M$, a random draw is even less likely to hit that structure. Equal spacing is still not optimal, and searching or constructing “edges + anchors” is still worth doing. Coprime / Chinese-remainder draws optimize the unambiguous range and do not postpone the first threshold (Section 9.3).
+The key point: the front design **keeps the $1\lambda$ ambiguity scale**, postpones the threshold by 3 dB relative to equal spacing, and lowers the shelf by 2–3 dB. Monte Carlo confirms it from 29 dB per tone downward. Uniform random is worse than equal spacing at the median on both numerical objectives; about 12% of samples beat equal spacing on both, but random samples almost never sit on the Pareto front.
+
+> **Restated conclusion.** If the only goal is “smallest integer-ambiguity scale for the first jump”, equal spacing is the structural answer. If the threshold and the shelf also matter, “dense edges + middle anchors” under the constraint of no shallow far valley does not give up that scale and can dominate equal spacing. Uniform random is not optimal. Pure edges buy a later threshold by sacrificing ambiguity scale, and are more dangerous under multipath or once the threshold is crossed.
+
+When $N \ll M$, a random draw is even less likely to hit a “no shallow far valley” structure. Coprime / Chinese-remainder draws optimize the unambiguous range; they neither postpone the first threshold nor keep the first slip at $1\lambda$ (Section 9.3).
 
 ### 12.3 With describable multipath, is that still best?
 
@@ -423,7 +430,7 @@ There is also a technical reason. The Cramér–Rao bound is useless here (it do
 
 ---
 
-## 13 Limits and open questions
+## 14 Limits and open questions
 
 - **Scope of the lattice model.** It requires errors to occur only at whole mean wavelengths (equal spacing, moment-matched designs, and generally designs without distant deep valleys), and it holds before the second threshold. Designs like the geometric one need the valley mixture, which is only accurate to 1–4.5 dB.
 - **Noise model.** We assume independent, equal-variance Gaussian phase noise on each tone. With unequal per-tone SNR (fading) the lattice formulas still hold in their weighted form (Appendix A), but we have not validated that systematically. Correlated phase noise from a shared oscillator is not considered.
