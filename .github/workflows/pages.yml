@@ -5,10 +5,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# Publishes the built site to the gh-pages branch.
+# Enable Pages: Settings → Pages → Deploy from a branch → gh-pages / (root).
+# (Actions "deploy-pages" is omitted until the owner enables Pages; it 404s otherwise.)
+
 permissions:
   contents: write
-  pages: write
-  id-token: write
 
 concurrency:
   group: pages
@@ -33,20 +35,3 @@ jobs:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./site
           force_orphan: true
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-
-  # Succeeds once Settings → Pages → Source is GitHub Actions.
-  # Until then this job may fail; gh-pages branch publish above still succeeds.
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
