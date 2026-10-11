@@ -238,7 +238,14 @@ def main() -> None:
             return round(float(vx[int(np.argmax(c))]), 3)
 
         sl = sig_leave.get(name, bounds.leave_sigma(surf_d))
+        i_far = int(np.argmin(np.abs(vx - dfar)))
+        i_one = int(np.argmin(np.abs(vx - md["lambda_m"])))
+        sg = np.geomspace(0.005, 1.0, 1600)
+        far_c = Q(np.sqrt(vj[i_far]) / (2 * sg)) * vx[i_far] ** 2
+        one_c = Q(np.sqrt(vj[i_one]) / (2 * sg)) * vx[i_one] ** 2
+        u_cross = float(sg[np.argmax(far_c > one_c)] / md["sigma_jump"]) if (far_c > one_c).any() else float("nan")
         report(f"design {name}", {
+            "hmse_vs_equal_db": round(db(md["hmse_factor"] / m["hmse_factor"]), 4), "u_cross": round(u_cross, 2),
             "S_MHz2": round(md["S"] / 1e12, 1), "R_db": round(md["R_db"], 2), "sigma_jump": round(md["sigma_jump"], 4),
             "sigma_leave": round(sl, 4), "gain_db": round(20 * math.log10(sl / sig_leave["equal"]), 2),
             "x_eff": round(md["sigma_jump"] / sl, 3), "x_lattice": round(foot_x(md["R"]), 3),
