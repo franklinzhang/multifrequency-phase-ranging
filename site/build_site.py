@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import json
 import re
 import shutil
 from pathlib import Path
@@ -15,7 +16,16 @@ SITE = ROOT / "site"
 NOTES = ROOT / "notes"
 FIG_SRC = NOTES / "figures"
 FIG_DST = SITE / "figures"
-
+DATA_SRC = ROOT / "computation" / "data" / "results.json"
+DATA_DST = SITE / "data"
+BINDER_BASE = (
+    "https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0"
+)
+BINDER_EN = f"{BINDER_BASE}?labpath=notes%2Fthreshold.ipynb"
+BINDER_ZH = (
+    f"{BINDER_BASE}?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D"
+    "%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb"
+)
 
 def md_to_html(text: str) -> str:
     # Normalize display math delimiters for better KaTeX coverage.
@@ -123,32 +133,141 @@ HOME = """<!DOCTYPE html>
   <div class="home">
     <div class="home-card">
       <h1>The Threshold of Multi-Frequency Phase Ranging</h1>
-      <p>Read the consolidation in the browser with typeset math and English figure labels. Notebooks remain available for archive interaction.</p>
+      <p>Storyteller research notes: typeset reading, browser archive explorer, and Binder notebooks. Figure labels are English. Cite via CITATION.cff (CC BY 4.0).</p>
       <div class="choices">
         <a class="choice" href="zh.html">
           <strong>中文阅读版</strong>
-          <span>终局感叙事 · 精排 HTML · KaTeX</span>
+          <span>终局感叙事 · JIT 背景 · KaTeX · TOC</span>
         </a>
         <a class="choice" href="en.html">
           <strong>English reading edition</strong>
-          <span>Storyteller digest · typographic HTML · KaTeX</span>
+          <span>Same architecture · typographic HTML · KaTeX</span>
         </a>
-        <a class="choice" href="../notes/多频相位测距的门限.ipynb">
-          <strong>中文 Jupyter（交互）</strong>
-          <span>滑条查看归档噪声比；需本地或支持 widgets 的环境</span>
+        <a class="choice" href="explore.html">
+          <strong>Archive explorer</strong>
+          <span>Browser slider on frozen equal-grid curves · no install</span>
         </a>
-        <a class="choice" href="../notes/threshold.ipynb">
-          <strong>English Jupyter (interactive)</strong>
-          <span>Archive slider; run locally with requirements.txt</span>
+        <a class="choice" href="{binder_zh}">
+          <strong>中文 Jupyter on Binder</strong>
+          <span>Full notebook + widgets in the browser</span>
+        </a>
+        <a class="choice" href="{binder_en}">
+          <strong>English Jupyter on Binder</strong>
+          <span>Full notebook + widgets in the browser</span>
         </a>
       </div>
-      <div class="footnote-bar">CC BY 4.0 · If GitHub links 404 while logged out, the repository is private — open the Release zip or clone locally.</div>
+      <div class="footnote-bar">CC BY 4.0 · Release zip also works offline · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
     </div>
   </div>
 </body>
 </html>
-"""
+""".replace("{binder_zh}", BINDER_ZH).replace("{binder_en}", BINDER_EN)
 
+EXPLORE = """<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Archive explorer — threshold notes</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/reading.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+  <style>
+    .explore-wrap { max-width: 52rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
+    .explore-panel {
+      background: var(--panel); border: 1px solid var(--line); border-radius: 1rem;
+      box-shadow: 0 18px 50px var(--shade); padding: 1.25rem 1.35rem 1.5rem;
+    }
+    .explore-panel h1 { margin: 0 0 0.4rem; font-size: 1.7rem; }
+    .explore-panel .sub { color: var(--muted); font-family: var(--sans); margin: 0 0 1rem; }
+    .controls { font-family: var(--sans); display: grid; gap: 0.55rem; margin: 0.75rem 0 1rem; }
+    .controls input[type=range] { width: 100%; }
+    .readout { font-family: var(--sans); font-size: 0.95rem; color: var(--ink-soft); min-height: 3.2rem; }
+    canvas { width: 100% !important; max-height: 420px; }
+  </style>
+</head>
+<body>
+  <div class="explore-wrap">
+    <div class="topbar" style="margin-bottom:1rem;font-family:var(--sans);font-size:0.92rem;">
+      <div class="lang-switch">
+        <a href="index.html">Home</a>
+        <a href="zh.html">中文</a>
+        <a href="en.html">English</a>
+      </div>
+      <div class="meta">Frozen archive · seed 7 · English labels</div>
+    </div>
+    <div class="explore-panel">
+      <h1>Archive explorer</h1>
+      <p class="sub">Equal-spacing coherent MSE, HMSE, MMSE, half-window bound, and mixture prediction from <code>computation/data/results.json</code>. Read-only — nothing is recomputed.</p>
+      <div class="controls">
+        <label for="idx">Noise ratio point on the archived grid</label>
+        <input id="idx" type="range" min="0" max="1" step="1" value="0" />
+        <div class="readout" id="readout"></div>
+      </div>
+      <canvas id="chart" height="220"></canvas>
+    </div>
+  </div>
+  <script>
+  (async function () {
+    const payload = await fetch('data/results.json').then(r => r.json());
+    const eq = payload.sets.equal;
+    const ratio = eq.sigma.map((s, i) => s / eq.sigma_jump);
+    const mse = eq.mse_coh;
+    const hmse = eq.hmse;
+    const mmse = eq.mmse;
+    const zzb = eq.zzb_half.zzb;
+    const slip = eq.slip_rate;
+    const lam2 = eq.lambda_m * eq.lambda_m;
+    const mix = slip.map((p, i) => (1 - p) * hmse[i] + p * lam2);
+    const db = x => 10 * Math.log10(x);
+    const idxDefault = ratio.findIndex(r => Math.abs(r - 1) < 1e-9);
+    const slider = document.getElementById('idx');
+    slider.max = String(ratio.length - 1);
+    slider.value = String(idxDefault >= 0 ? idxDefault : 0);
+    const readout = document.getElementById('readout');
+    const ctx = document.getElementById('chart');
+    const chart = new Chart(ctx, {
+      type: 'line',
+      data: {
+        datasets: [
+          { label: 'Coherent MSE', data: ratio.map((r,i)=>({x:r,y:mse[i]})), borderColor:'#1f4e79', pointRadius:3, tension:0 },
+          { label: 'HMSE', data: ratio.map((r,i)=>({x:r,y:hmse[i]})), borderColor:'#222', borderDash:[6,4], pointRadius:0 },
+          { label: 'MMSE', data: ratio.map((r,i)=>({x:r,y:mmse[i]})), borderColor:'#666', borderDash:[2,3], pointRadius:0 },
+          { label: 'Half-window bound', data: ratio.map((r,i)=>({x:r,y:zzb[i]})), borderColor:'#2e7d32', pointRadius:0 },
+          { label: 'Mixture', data: ratio.map((r,i)=>({x:r,y:mix[i]})), borderColor:'#6a1b9a', borderDash:[1,2], pointRadius:0 },
+        ]
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: { type: 'logarithmic', title: { display: true, text: 'σ / σ_jump' } },
+          y: { type: 'logarithmic', title: { display: true, text: 'MSE / m²' }, min: 1e-9, max: 200 }
+        },
+        plugins: { legend: { position: 'bottom' } }
+      }
+    });
+    let marker;
+    function paint() {
+      const i = Number(slider.value);
+      const r = ratio[i];
+      readout.innerHTML = `Selected <strong>${r.toFixed(3)}</strong> σ/σ_jump · sample <strong>${db(mse[i]).toFixed(1)} dB</strong> · HMSE ${db(hmse[i]).toFixed(1)} · MMSE ${db(mmse[i]).toFixed(1)} · bound ${db(zzb[i]).toFixed(1)} · slip ${slip[i].toFixed(4)} · mixture ${db(mix[i]).toFixed(1)} dB`;
+      if (marker) chart.data.datasets = chart.data.datasets.filter(d => d.label !== 'Selected');
+      chart.data.datasets.push({
+        label: 'Selected', data: [{x:r,y:mse[i]}], showLine:false,
+        pointRadius: 7, pointBackgroundColor: '#c45911', borderColor: '#c45911'
+      });
+      marker = true;
+      chart.update('none');
+    }
+    slider.addEventListener('input', paint);
+    paint();
+  })();
+  </script>
+</body>
+</html>
+"""
 
 def prepare_zh_source(text: str) -> str:
     # Point image paths at site/figures and keep captions.
@@ -178,14 +297,38 @@ def prepare_en_source(text: str) -> str:
     return text
 
 
+def write_explore() -> None:
+    DATA_DST.mkdir(parents=True, exist_ok=True)
+    # Slim copy: keep only fields the explorer needs, still from the archive.
+    full = json.loads(DATA_SRC.read_text(encoding="utf-8"))
+    eq = full["sets"]["equal"]
+    slim = {
+        "seed": full["seed"],
+        "sets": {
+            "equal": {
+                "sigma_jump": eq["sigma_jump"],
+                "lambda_m": eq["lambda_m"],
+                "sigma": eq["sigma"],
+                "mse_coh": eq["mse_coh"],
+                "hmse": eq["hmse"],
+                "mmse": eq["mmse"],
+                "slip_rate": eq["slip_rate"],
+                "zzb_half": eq["zzb_half"],
+            }
+        },
+    }
+    (DATA_DST / "results.json").write_text(json.dumps(slim), encoding="utf-8")
+    (SITE / "explore.html").write_text(EXPLORE, encoding="utf-8")
+
+
 def main() -> None:
     FIG_DST.mkdir(parents=True, exist_ok=True)
     for png in FIG_SRC.glob("*.png"):
         shutil.copy2(png, FIG_DST / png.name)
+    write_explore()
 
     zh_md = prepare_zh_source((NOTES / "门限问题的进展.md").read_text(encoding="utf-8"))
     en_md = prepare_en_source((ROOT / "README.md").read_text(encoding="utf-8"))
-
     zh_body = retarget_figures(md_to_html(zh_md))
     en_body = retarget_figures(md_to_html(en_md))
 
@@ -228,6 +371,7 @@ def main() -> None:
     print("wrote", SITE / "index.html")
     print("wrote", SITE / "zh.html")
     print("wrote", SITE / "en.html")
+    print("wrote", SITE / "explore.html")
 
 
 if __name__ == "__main__":

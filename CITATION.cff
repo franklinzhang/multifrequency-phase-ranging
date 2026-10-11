@@ -1,5 +1,7 @@
 cff-version: 1.2.0
-message: If you use this repository, please cite it as below.
+message: >-
+  If you use these notes, figures, or archived numbers, please cite this
+  repository (and the release tag when possible).
 title: "Range Estimation from Wrapped Multi-Frequency Phase Observations"
 authors:
   - family-names: Zhang
@@ -20,4 +22,19 @@ keywords:
   - wrapped phase
 license: CC-BY-4.0
 type: software
+version: "0.1.0"
 date-released: "2026-10-11"
+identifiers:
+  - type: url
+    value: "https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0"
+    description: GitHub Release v0.1.0
+preferred-citation:
+  type: software
+  authors:
+    - family-names: Zhang
+      given-names: Franklin
+  title: "Range Estimation from Wrapped Multi-Frequency Phase Observations"
+  year: 2026
+  version: "0.1.0"
+  url: "https://github.com/franklinzhang/multifrequency-phase-ranging"
+  notes: "CC BY 4.0; cite archived numbers from computation/data/ as such"

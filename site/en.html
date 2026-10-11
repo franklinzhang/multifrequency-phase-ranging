@@ -53,9 +53,9 @@
 <td><a href="site/en.html">site/en.html</a></td>
 </tr>
 <tr>
-<td><strong>Jupyter (local)</strong></td>
-<td><a href="../notes/多频相位测距的门限.ipynb">notes/多频相位测距的门限.ipynb</a></td>
-<td><a href="../notes/threshold.ipynb">notes/threshold.ipynb</a></td>
+<td><strong>Binder Jupyter</strong></td>
+<td><a href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb">launch 中文</a></td>
+<td><a href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2Fthreshold.ipynb">launch English</a></td>
 </tr>
 <tr>
 <td><strong>Plain text</strong></td>
@@ -64,12 +64,16 @@
 </tr>
 </tbody>
 </table>
-<p>Landing page: <a href="site/index.html"><code>site/index.html</code></a>. Rebuild with <code>python3 site/build_site.py</code>.</p>
-<p><strong>GitHub Release:</strong> download <code>threshold-reading-site.zip</code> from <a href="../../releases">Releases</a>, unzip, open <code>index.html</code> offline. That is the reliable reading path (OpenAI-style: ship a usable artifact on the Release, do not rely on private blob URLs). If the Release page 404s while logged out, the repository is still <strong>private</strong> — make it public to share externally, or distribute the zip directly.</p>
-<p>GitHub’s in-browser notebook view is <strong>not</strong> the interactive edition (no widgets). Run Jupyter locally.</p>
+<ul>
+<li>Landing: <a href="site/index.html"><code>site/index.html</code></a> · no-install archive slider: <a href="site/explore.html"><code>site/explore.html</code></a></li>
+<li>Quality gate (storyteller / typography / interaction / citation): <a href="QUALITY.md"><code>QUALITY.md</code></a></li>
+<li>Release artifact: download <code>threshold-reading-site.zip</code> from <a href="../../releases">Releases</a>, unzip, open <code>index.html</code> offline</li>
+<li>GitHub Pages (after deploy): <code>https://franklinzhang.github.io/multifrequency-phase-ranging/</code></li>
+</ul>
+<p>GitHub’s built-in notebook preview is not interactive. Prefer Binder or local Jupyter.</p>
 <h2 id="reproduce">Reproduce</h2>
 <div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
-python3<span class="w"> </span>site/build_site.py<span class="w">          </span><span class="c1"># optional: refresh HTML</span>
+python3<span class="w"> </span>site/build_site.py<span class="w">          </span><span class="c1"># refresh HTML + explore.html</span>
 jupyter<span class="w"> </span>notebook<span class="w"> </span>notes/threshold.ipynb
 </code></pre></div>
 <p>Canonical numbers live under <a href="../computation/data/"><code>computation/data/</code></a> (seed <strong>7</strong>). See <a href="../computation/README.md"><code>computation/README.md</code></a>. Do not silently overwrite the archive.</p>

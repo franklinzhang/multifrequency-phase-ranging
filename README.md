@@ -9,20 +9,21 @@ Research notes on the first threshold of coherent range estimation from wrapped 
 | | 中文 | English |
 | --- | --- | --- |
 | **Typeset HTML** | [site/zh.html](site/zh.html) | [site/en.html](site/en.html) |
-| **Jupyter (local)** | [notes/多频相位测距的门限.ipynb](notes/多频相位测距的门限.ipynb) | [notes/threshold.ipynb](notes/threshold.ipynb) |
+| **Binder Jupyter** | [launch 中文](https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb) | [launch English](https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2Fthreshold.ipynb) |
 | **Plain text** | [notes/门限问题的进展.md](notes/门限问题的进展.md) | this README |
 
-Landing page: [`site/index.html`](site/index.html). Rebuild with `python3 site/build_site.py`.
+- Landing: [`site/index.html`](site/index.html) · no-install archive slider: [`site/explore.html`](site/explore.html)
+- Quality gate (storyteller / typography / interaction / citation): [`QUALITY.md`](QUALITY.md)
+- Release artifact: download `threshold-reading-site.zip` from [Releases](../../releases), unzip, open `index.html` offline
+- GitHub Pages (after deploy): `https://franklinzhang.github.io/multifrequency-phase-ranging/`
 
-**GitHub Release:** download `threshold-reading-site.zip` from [Releases](../../releases), unzip, open `index.html` offline. That is the reliable reading path (OpenAI-style: ship a usable artifact on the Release, do not rely on private blob URLs). If the Release page 404s while logged out, the repository is still **private** — make it public to share externally, or distribute the zip directly.
-
-GitHub’s in-browser notebook view is **not** the interactive edition (no widgets). Run Jupyter locally.
+GitHub’s built-in notebook preview is not interactive. Prefer Binder or local Jupyter.
 
 ## Reproduce
 
 ```bash
 pip install -r requirements.txt
-python3 site/build_site.py          # optional: refresh HTML
+python3 site/build_site.py          # refresh HTML + explore.html
 jupyter notebook notes/threshold.ipynb
 ```
 
