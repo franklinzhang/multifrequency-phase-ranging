@@ -18,6 +18,8 @@ FIG_SRC = NOTES / "figures"
 FIG_DST = SITE / "figures"
 DATA_SRC = ROOT / "computation" / "data" / "results.json"
 DATA_DST = SITE / "data"
+REPO = "https://github.com/franklinzhang/multifrequency-phase-ranging"
+REPO_BLOB = f"{REPO}/blob/main"
 BINDER_BASE = (
     "https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0"
 )
@@ -71,6 +73,29 @@ def retarget_figures(html: str) -> str:
     html = html.replace("(figures/", "(figures/")
     # Markdown image paths like figures/fig02...
     html = html.replace('src="figures/', 'src="figures/')
+    return html
+
+
+def rewrite_repo_links(html: str) -> str:
+    """Point repository paths at GitHub so the Pages edition does not 404."""
+    replacements = [
+        ('href="../README.md"', f'href="{REPO_BLOB}/README.md"'),
+        ('href="../LICENSE"', f'href="{REPO_BLOB}/LICENSE"'),
+        ('href="../CITATION.cff"', f'href="{REPO_BLOB}/CITATION.cff"'),
+        ('href="../computation/README.md"', f'href="{REPO_BLOB}/computation/README.md"'),
+        ('href="../computation/data/"', f'href="{REPO_BLOB}/computation/data"'),
+        ('href="../computation/"', f'href="{REPO_BLOB}/computation"'),
+        ('href="../notes/', f'href="{REPO_BLOB}/notes/'),
+        ('href="README.md"', f'href="{REPO_BLOB}/README.md"'),
+        ('href="LICENSE"', f'href="{REPO_BLOB}/LICENSE"'),
+        ('href="CITATION.cff"', f'href="{REPO_BLOB}/CITATION.cff"'),
+        ('href="computation/README.md"', f'href="{REPO_BLOB}/computation/README.md"'),
+        ('href="computation/data/"', f'href="{REPO_BLOB}/computation/data"'),
+        ('href="computation/"', f'href="{REPO_BLOB}/computation"'),
+        ('href="notes/', f'href="{REPO_BLOB}/notes/'),
+    ]
+    for old, new in replacements:
+        html = html.replace(old, new)
     return html
 
 
@@ -295,12 +320,14 @@ def prepare_en_source(text: str) -> str:
         else:
             text = head
     text = "# The Threshold of Multi-Frequency Phase Ranging\n\n" + text.split("\n", 2)[-1]
-    # Remove duplicate H1 if README already starts with it after strip — handled above.
-    # Fix relative notebook links for site root.
-    text = text.replace("(notes/", "(../notes/")
-    text = text.replace("](LICENSE)", "](../LICENSE)")
-    text = text.replace("](CITATION.cff)", "](../CITATION.cff)")
-    text = text.replace("](computation/", "](../computation/")
+    # Drop the Read navigation table from the English reading body (landing covers it).
+    text = re.sub(
+        r"## Read\n\n.*?(?=\n## )",
+        "",
+        text,
+        count=1,
+        flags=re.S,
+    )
     return text
 
 
@@ -336,16 +363,14 @@ def main() -> None:
 
     zh_md = prepare_zh_source((NOTES / "门限问题的进展.md").read_text(encoding="utf-8"))
     en_md = prepare_en_source((ROOT / "README.md").read_text(encoding="utf-8"))
-    zh_body = retarget_figures(md_to_html(zh_md))
-    en_body = retarget_figures(md_to_html(en_md))
+    zh_body = rewrite_repo_links(retarget_figures(md_to_html(zh_md)))
+    en_body = rewrite_repo_links(retarget_figures(md_to_html(en_md)))
 
     # Force TOC generation by ensuring toc extension runs; markdown places toc where [TOC] is.
-    if '[TOC]' not in zh_md:
-        zh_body = md_to_html("[TOC]\n\n" + zh_md)
-        zh_body = retarget_figures(zh_body)
-    if '[TOC]' not in en_md:
-        en_body = md_to_html("[TOC]\n\n" + en_md)
-        en_body = retarget_figures(en_body)
+    if "[TOC]" not in zh_md:
+        zh_body = rewrite_repo_links(retarget_figures(md_to_html("[TOC]\n\n" + zh_md)))
+    if "[TOC]" not in en_md:
+        en_body = rewrite_repo_links(retarget_figures(md_to_html("[TOC]\n\n" + en_md)))
 
     zh_toc = extract_toc(zh_body)
     en_toc = extract_toc(en_body)

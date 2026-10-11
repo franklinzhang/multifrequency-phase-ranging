@@ -168,9 +168,8 @@ Preferred citation (also in [`CITATION.cff`](CITATION.cff)):
   author       = {Zhang, Franklin},
   title        = {Range Estimation from Wrapped Multi-Frequency Phase Observations},
   year         = {2026},
-  publisher    = {GitHub},
-  howpublished = {\url{https://github.com/franklinzhang/multifrequency-phase-ranging}},
-  note         = {Research notes and archived trials; licensed under CC BY 4.0}
+  howpublished = {\url{https://franklinzhang.github.io/multifrequency-phase-ranging/}},
+  note         = {Bilingual reading edition; source https://github.com/franklinzhang/multifrequency-phase-ranging; CC BY 4.0}
 }
 ```
 
