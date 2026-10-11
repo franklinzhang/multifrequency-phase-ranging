@@ -314,8 +314,8 @@ def prepare_zh_source(text: str) -> str:
         "](en.html)",
     )
     text = text.replace(
-        "https://franklinzhang.github.io/multifrequency-phase-ranging/",
-        "index.html",
+        "对外发布入口：https://franklinzhang.github.io/multifrequency-phase-ranging/ 。",
+        "对外发布入口：[阅读站首页](index.html)。",
     )
     return text
 
@@ -336,6 +336,14 @@ def prepare_en_source(text: str) -> str:
     text = re.sub(
         r"## Read\n\n.*?(?=\n## )",
         "",
+        text,
+        count=1,
+        flags=re.S,
+    )
+    # Drop the one-line nav under the H1; the site chrome already has Home/CN/EN.
+    text = re.sub(
+        r"\n\[\*\*Read online\*\*\].*?\n",
+        "\n",
         text,
         count=1,
         flags=re.S,
