@@ -1,0 +1,16 @@
+# Binder / local conda environment for the interactive notebooks
+name: threshold-notes
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - scipy
+  - matplotlib
+  - ipywidgets
+  - jupyter
+  - ipykernel
+  - pip:
+      - markdown>=3.5,<4
+      - pymdown-extensions>=10.0,<11

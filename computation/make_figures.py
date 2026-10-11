@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 """Figures for the multi-frequency phase-ranging note.
 
-Canvas width 2000 px. Main glyphs are at least 56 px, which embeds at about 13 pt
-when the image is placed 16 cm wide.
+All axis labels and legends are English. Canvas width 2000 px.
 """
 
 from __future__ import annotations
@@ -14,30 +13,22 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
-
-plt.rcParams["axes.unicode_minus"] = False
 import numpy as np
 from matplotlib import font_manager
 
 ROOT = Path(__file__).resolve().parent
 DATA = json.loads((ROOT / "data" / "results.json").read_text())
-FIG = ROOT / "figures"
-FIG.mkdir(exist_ok=True)
+FIG = ROOT.parent / "notes" / "figures"
+FIG.mkdir(parents=True, exist_ok=True)
 C = 299_792_458.0
 
-FONT_PATH = "/Users/zhangsumac/Library/Fonts/SourceHanSans.ttc"
-font_manager.fontManager.addfont(FONT_PATH)
-# Collection index 0 is the regular Source Han Sans SC face in this file.
-SANS = font_manager.FontProperties(fname=FONT_PATH, size=46)
+# Portable default face (English labels only).
+SANS = font_manager.FontProperties(size=46)
 
-# figsize inches * dpi = pixels. 20 in * 100 dpi = 2000 px.
-# Glyph px = pt * dpi / 72. 46 pt -> 63.9 px. Effective pt = 63.9 * 454 / 2000 = 14.5.
 DPI = 100
 MAIN = 46
 TICK = 42
 LEGEND = 40
-AUX = 28
-
 
 X_SIGMA = r"$\sigma\,/\,\sigma_{\mathrm{jump}}$"
 
@@ -83,7 +74,6 @@ def save(fig, name: str) -> None:
 
 
 def plot_cost(ax, delta, cost, y_cap: float, **kwargs):
-    """Drop the parts above y_cap so the trace does not ride the top spine."""
     shown = np.where(cost <= y_cap, cost, np.nan)
     ax.plot(delta, shown, **kwargs)
     ax.set_ylim(0, y_cap * 1.16)
@@ -114,104 +104,102 @@ def main() -> None:
     ratio_g = np.array(geo["sigma"]) / geo["sigma_jump"]
     floor = eq["floor_L2_12"]
 
-    # Fig 1. Equal-spacing cost, first metre. Cap so valleys stay readable.
     d, j = cost_curve(f_eq, 1.05, 1800)
     fig, ax = new_fig(11.2, top=0.86)
     plot_cost(ax, d, j, 2.0, color="#1f4e79", lw=3.6)
-    ax.axvline(eq["lambda_m"], color="#c45911", lw=2.6, ls="--", label="λ")
-    style_ax(ax, "距离差  /  m", "相位代价")
+    ax.axvline(eq["lambda_m"], color="#c45911", lw=2.6, ls="--", label=r"$\lambda$")
+    style_ax(ax, "Range offset / m", "Phase cost")
     legend(ax, above=True, ncol=1)
     ax.set_xlim(0, 1.05)
     save(fig, "fig01_equal_cost.png")
 
-    # Fig 2. Equal-spacing MSE.
     fig, ax = new_fig()
-    mse_ax(ax, ratio, eq["mse_coh"], "相干", "#1f4e79")
+    mse_ax(ax, ratio, eq["mse_coh"], "Coherent", "#1f4e79")
     ax.loglog(ratio, eq["hmse"], color="#222222", lw=3.0, ls="--", label="HMSE")
     ax.loglog(ratio, eq["mmse"], color="#555555", lw=3.0, ls="-.", label="MMSE")
-    ax.loglog(ratio, eq["zzb_half"]["zzb"], color="#2e7d32", lw=3.2, label="下界")
-    ax.axhline(floor, color="#8a8a8a", lw=2.6, ls=":", label="地板")
-    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="门限")
-    style_ax(ax, X_SIGMA, "均方误差  /  m²", math_x=True)
+    ax.loglog(ratio, eq["zzb_half"]["zzb"], color="#2e7d32", lw=3.2, label="Half-window bound")
+    ax.axhline(floor, color="#8a8a8a", lw=2.6, ls=":", label="Search-window floor")
+    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="Threshold")
+    style_ax(ax, X_SIGMA, r"MSE / m$^2$", math_x=True)
     legend(ax, loc="upper left")
     ax.set_xlim(0.08, 40)
     ax.set_ylim(2e-9, 200)
     save(fig, "fig02_equal_mse.png")
 
-    # Fig 3. Equal vs moment-matched cost.
     d, je = cost_curve(f_eq, 2.0, 2400)
     _, jm = cost_curve(f_md, 2.0, 2400)
     fig, ax = new_fig(11.2, top=0.86)
-    plot_cost(ax, d, je, 6.5, color="#1f4e79", lw=3.8, label="等间距")
-    plot_cost(ax, d, jm, 6.5, color="#c45911", lw=3.0, ls="--", label="矩匹配")
-    style_ax(ax, "距离差  /  m", "相位代价")
+    plot_cost(ax, d, je, 6.5, color="#1f4e79", lw=3.8, label="Equal spacing")
+    plot_cost(ax, d, jm, 6.5, color="#c45911", lw=3.0, ls="--", label="Moment-matched")
+    style_ax(ax, "Range offset / m", "Phase cost")
     legend(ax, above=True, ncol=2)
     ax.set_xlim(0, 2.0)
     save(fig, "fig03_matched_cost.png")
 
-    # Fig 4. Equal vs matched MSE.
     fig, ax = new_fig()
-    mse_ax(ax, ratio, eq["mse_coh"], "等间距", "#1f4e79")
-    mse_ax(ax, ratio, md["mse_coh"], "矩匹配", "#c45911", marker="s")
+    mse_ax(ax, ratio, eq["mse_coh"], "Equal spacing", "#1f4e79")
+    mse_ax(ax, ratio, md["mse_coh"], "Moment-matched", "#c45911", marker="s")
     ax.loglog(ratio, eq["hmse"], color="#222222", lw=3.0, ls="--", label="HMSE")
     ax.loglog(ratio, eq["mmse"], color="#555555", lw=3.0, ls="-.", label="MMSE")
-    ax.axhline(floor, color="#8a8a8a", lw=2.6, ls=":", label="地板")
-    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="门限")
-    style_ax(ax, X_SIGMA, "均方误差  /  m²", math_x=True)
+    ax.axhline(floor, color="#8a8a8a", lw=2.6, ls=":", label="Search-window floor")
+    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="Threshold")
+    style_ax(ax, X_SIGMA, r"MSE / m$^2$", math_x=True)
     legend(ax, loc="upper left")
     ax.set_xlim(0.08, 40)
     ax.set_ylim(2e-9, 200)
     save(fig, "fig04_matched_mse.png")
 
-    # Fig 5. Geometric cost out to the synthetic-wavelength cluster.
     d, jg = cost_curve(f_geo, 14.0, 4200)
     fig, ax = new_fig(11.2)
     plot_cost(ax, d, jg, 10.0, color="#1f4e79", lw=3.2)
-    ax.axvline(geo["lambda_m"], color="#c45911", lw=2.6, ls="--", label="λ")
+    ax.axvline(geo["lambda_m"], color="#c45911", lw=2.6, ls="--", label=r"$\lambda$")
     ax.axvline(6.211, color="#2e7d32", lw=2.6, ls="--", label="6.21 m")
-    style_ax(ax, "距离差  /  m", "相位代价")
-    # Open band between the clusters, around 4 m.
-    leg = ax.legend(loc="center", bbox_to_anchor=(0.20, 0.62), prop=SANS, fontsize=LEGEND,
-                    frameon=True, fancybox=False, edgecolor="#222222")
+    style_ax(ax, "Range offset / m", "Phase cost")
+    leg = ax.legend(
+        loc="center",
+        bbox_to_anchor=(0.20, 0.62),
+        prop=SANS,
+        fontsize=LEGEND,
+        frameon=True,
+        fancybox=False,
+        edgecolor="#222222",
+    )
     leg.get_frame().set_linewidth(1.6)
     ax.set_xlim(0, 14)
     save(fig, "fig05_geometric_cost.png")
 
-    # Fig 6. Geometric MSE in units of its own threshold.
     fig, ax = new_fig()
-    mse_ax(ax, ratio_g, geo["mse_coh"], "相干", "#1f4e79")
-    mse_ax(ax, ratio_g, geo["mse_inc"], "非相干", "#c45911", marker="s")
+    mse_ax(ax, ratio_g, geo["mse_coh"], "Coherent", "#1f4e79")
+    mse_ax(ax, ratio_g, geo["mse_inc"], "Incoherent", "#c45911", marker="s")
     ax.loglog(ratio_g, geo["hmse"], color="#222222", lw=3.0, ls="--", label="HMSE")
     ax.loglog(ratio_g, geo["mmse"], color="#555555", lw=3.0, ls="-.", label="MMSE")
-    ax.loglog(ratio_g, geo["zzb_half"]["zzb"], color="#2e7d32", lw=3.2, label="下界")
-    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="门限")
-    style_ax(ax, X_SIGMA, "均方误差  /  m²", math_x=True)
+    ax.loglog(ratio_g, geo["zzb_half"]["zzb"], color="#2e7d32", lw=3.2, label="Half-window bound")
+    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="Threshold")
+    style_ax(ax, X_SIGMA, r"MSE / m$^2$", math_x=True)
     legend(ax, loc="upper left")
     ax.set_xlim(0.015, 8)
     ax.set_ylim(1e-9, 200)
     save(fig, "fig06_geometric_mse.png")
 
-    # Fig 7. Coherent vs incoherent on the equal grid.
     fig, ax = new_fig()
-    mse_ax(ax, ratio, eq["mse_coh"], "相干", "#1f4e79")
-    mse_ax(ax, ratio, eq["mse_inc"], "非相干", "#c45911", marker="s")
+    mse_ax(ax, ratio, eq["mse_coh"], "Coherent", "#1f4e79")
+    mse_ax(ax, ratio, eq["mse_inc"], "Incoherent", "#c45911", marker="s")
     ax.loglog(ratio, eq["hmse"], color="#222222", lw=3.0, ls="--", label="HMSE")
     ax.loglog(ratio, eq["mmse"], color="#555555", lw=3.0, ls="-.", label="MMSE")
-    ax.axhline(floor, color="#8a8a8a", lw=2.6, ls=":", label="地板")
-    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="门限")
-    style_ax(ax, X_SIGMA, "均方误差  /  m²", math_x=True)
+    ax.axhline(floor, color="#8a8a8a", lw=2.6, ls=":", label="Search-window floor")
+    ax.axvline(1.0, color="#c45911", lw=2.4, ls="--", label="Threshold")
+    style_ax(ax, X_SIGMA, r"MSE / m$^2$", math_x=True)
     legend(ax, loc="upper left")
     ax.set_xlim(0.08, 40)
     ax.set_ylim(2e-9, 200)
     save(fig, "fig07_coherent_incoherent.png")
 
-    # Fig 8. Where the half-window integral accumulates, at the equal-spacing threshold.
     bound = json.loads((ROOT / "data" / "bound_valleys.json").read_text())
     fig, ax = new_fig(11.6, top=0.86)
     styles = (
-        ("equal", "等间距", "#1f4e79", "-", 4.0),
-        ("matched", "矩匹配", "#c45911", "--", 3.2),
-        ("geometric", "几何间隔", "#2e7d32", "-", 3.4),
+        ("equal", "Equal spacing", "#1f4e79", "-", 4.0),
+        ("matched", "Moment-matched", "#c45911", "--", 3.2),
+        ("geometric", "Geometric spacing", "#2e7d32", "-", 3.4),
     )
     for key, label, color, ls, lw in styles:
         block = bound["sets"][key]
@@ -219,7 +207,7 @@ def main() -> None:
         y = np.asarray(block["snap_cume_frac"], dtype=float)
         keep = x >= 0.03
         ax.semilogx(x[keep], y[keep], color=color, ls=ls, lw=lw, label=label)
-    style_ax(ax, "距离差  /  m", "累计占比")
+    style_ax(ax, "Range offset / m", "Cumulative fraction")
     legend(ax, ncol=3, above=True)
     ax.set_xlim(0.03, 15)
     ax.set_ylim(0.0, 1.18)

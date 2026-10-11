@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Threshold of Multi-Frequency Phase Ranging</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Noto+Serif+SC:wght@500;600&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" />
+  <link rel="stylesheet" href="assets/reading.css" />
+</head>
+<body>
+  <div class="shell">
+    <aside class="toc"><strong>Contents</strong><ul>
+<li><a href="#read">Read</a></li>
+<li><a href="#reproduce">Reproduce</a></li>
+<li><a href="#long-abstract-what-was-done-what-was-answered">Long abstract: what was done, what was answered</a></li>
+<li><a href="#observation-and-two-estimators">Observation and two estimators</a></li>
+<li><a href="#two-parallel-lines">Two parallel lines</a></li>
+<li><a href="#where-the-jump-sits">Where the jump sits</a></li>
+<li><a href="#what-the-bound-is">What the bound is</a></li>
+<li><a href="#three-design-quantities-not-substitutes">Three design quantities, not substitutes</a></li>
+<li><a href="#engineering-rules">Engineering rules</a></li>
+<li><a href="#closed-and-still-open">Closed and still open</a></li>
+<li><a href="#documents">Documents</a></li>
+<li><a href="#references">References</a></li>
+</ul></aside>
+    <main class="article">
+      <div class="topbar">
+        <div class="lang-switch">
+          <a href="zh.html" class="">中文</a>
+          <a href="en.html" class="active">English</a>
+        </div>
+        <div class="meta"><a href="index.html">Home</a> · <a href="../README.md">Repo README</a></div>
+      </div>
+      <h1 id="the-threshold-of-multi-frequency-phase-ranging">The Threshold of Multi-Frequency Phase Ranging</h1>
+<p><a href="#read">Read</a> · <a href="#reproduce">Reproduce</a> · <a href="#license-and-citation">Cite</a> · <a href="../LICENSE">License (CC BY 4.0)</a></p>
+<p>Research notes on the first threshold of coherent range estimation from wrapped multi-frequency phases: two parallel MSE lines, <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>, half-window Ziv–Zakai bounds, unequal spacing, and engineering budget rules. Figure labels are English. No PDF edition.</p>
+<h2 id="read">Read</h2>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>中文</th>
+<th>English</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Typeset HTML</strong></td>
+<td><a href="site/zh.html">site/zh.html</a></td>
+<td><a href="site/en.html">site/en.html</a></td>
+</tr>
+<tr>
+<td><strong>Binder Jupyter</strong></td>
+<td><a href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb">launch 中文</a></td>
+<td><a href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2Fthreshold.ipynb">launch English</a></td>
+</tr>
+<tr>
+<td><strong>Plain text</strong></td>
+<td><a href="../notes/门限问题的进展.md">notes/门限问题的进展.md</a></td>
+<td>this README</td>
+</tr>
+</tbody>
+</table>
+<ul>
+<li>Landing: <a href="site/index.html"><code>site/index.html</code></a> · no-install archive slider: <a href="site/explore.html"><code>site/explore.html</code></a></li>
+<li>Quality gate (storyteller / typography / interaction / citation): <a href="QUALITY.md"><code>QUALITY.md</code></a></li>
+<li>Release artifact: download <code>threshold-reading-site.zip</code> from <a href="../../releases">Releases</a>, unzip, open <code>index.html</code> offline</li>
+<li>GitHub Pages (after deploy): <code>https://franklinzhang.github.io/multifrequency-phase-ranging/</code></li>
+</ul>
+<p>GitHub’s built-in notebook preview is not interactive. Prefer Binder or local Jupyter.</p>
+<h2 id="reproduce">Reproduce</h2>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>-r<span class="w"> </span>requirements.txt
+python3<span class="w"> </span>site/build_site.py<span class="w">          </span><span class="c1"># refresh HTML + explore.html</span>
+jupyter<span class="w"> </span>notebook<span class="w"> </span>notes/threshold.ipynb
+</code></pre></div>
+<p>Canonical numbers live under <a href="../computation/data/"><code>computation/data/</code></a> (seed <strong>7</strong>). See <a href="../computation/README.md"><code>computation/README.md</code></a>. Do not silently overwrite the archive.</p>
+<h2 id="long-abstract-what-was-done-what-was-answered">Long abstract: what was done, what was answered</h2>
+<p>Wrapped phases at a finite set of frequencies determine a range only up to a lattice of aliases. For the coherent maximum-likelihood estimator, mean-square error on a log-log plot follows the carrier line, then jumps, at the same slope, onto the bandwidth line. The phase scale of that first threshold is</p>
+<div class="arithmatex">\[
+\sigma_{\mathrm{jump}} = \pi\sqrt{S}/\bar f,
+\]</div>
+<p>with <span class="arithmatex">\(S\)</span> the second moment of the tones about their mean <span class="arithmatex">\(\bar f\)</span>. On eight equal-spaced tones from 2400 to 2470 MHz in 10 MHz steps, <span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.0836\,\mathrm{rad}\)</span>. The mixture <span class="arithmatex">\((1-p)\,\mathrm{HMSE} + p\lambda^2\)</span> leaves the carrier line at <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span>. In 8000 trials the first slip appears at <span class="arithmatex">\(0.25\,\sigma_{\mathrm{jump}}\)</span>; from there to <span class="arithmatex">\(1.0\,\sigma_{\mathrm{jump}}\)</span> the sample mean square equals the slip rate times <span class="arithmatex">\(\lambda^2\)</span>, within 0.1 dB. At the threshold the slip rate is 0.344, the sample mean square −22.8 dB, and the bandwidth line −24.2 dB.</p>
+<p>The half-window Ziv–Zakai bound there is −27.6 dB: Bayes risk under a uniform prior on the half-window; the trials are conditional at the window center. The bound leaves before the trials. Local information does not jump. An incoherent estimator that never uses absolute carrier phase stays on the bandwidth line from the lowest trial noise, so <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> is not a threshold for every estimator.</p>
+<p>Holding <span class="arithmatex">\(N\)</span>, <span class="arithmatex">\(\bar f\)</span>, and <span class="arithmatex">\(S\)</span> fixed and only breaking equal spacing leaves the first threshold unchanged. A geometric progression with ratio 1.02 raises <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> to 0.403 rad; a valley at 6.211 m with cost equal to one mean wavelength removes the bandwidth shelf. At ten times the equal-grid threshold, valleys from 10.6 to 11.3 m lift the moment-matched bound about 1.4 dB above the equal-grid bound.</p>
+<p>With a phase reference, budget the carrier line only below about <span class="arithmatex">\(0.2\,\sigma_{\mathrm{jump}}\)</span>; from about <span class="arithmatex">\(0.5\,\sigma_{\mathrm{jump}}\)</span> until the phase model fails, budget the bandwidth line. Without a common phase, budget the bandwidth line directly. When placing tones, solve <span class="arithmatex">\(P_e(\delta)\,\delta^2 = \mathrm{HMSE}\)</span> at every deep valley and keep the earliest <span class="arithmatex">\(\sigma\)</span>. A longer unambiguous range does not postpone the first threshold.</p>
+<p>Five closable questions remain: worst-valley tone placement under integer-megahertz constraints; posterior-mean versus coherent ML under the bound’s prior; wrapped likelihood ratio only on the 10.6–11.3 m cluster; first-threshold check on complex observations; <span class="arithmatex">\(\delta^2\)</span> weighting past <span class="arithmatex">\(1.5\,\sigma_{\mathrm{jump}}\)</span>. Not worth doing: proving every estimator jumps at <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>, or using the Chinese remainder theorem to postpone the first threshold.</p>
+<h2 id="observation-and-two-estimators">Observation and two estimators</h2>
+<p>The observation at frequency <span class="arithmatex">\(f_i\)</span> is</p>
+<div class="arithmatex">\[
+\varphi_i = \mathrm{wrap}(2\pi f_i d/c + e_i), \qquad e_i \sim \mathcal{N}(0,\sigma^2),
+\]</div>
+<p>with independent phase errors and <span class="arithmatex">\(c = 299\,792\,458\,\mathrm{m/s}\)</span>. The wrap map folds the angle into <span class="arithmatex">\((-\pi,\pi]\)</span>: the true phase may differ by any multiple of <span class="arithmatex">\(2\pi\)</span>, and the reading keeps only the principal value. A finite set of phases therefore determines range only up to aliases.</p>
+<p>The coherent estimator minimizes the sum of squared wrapped residuals. It uses absolute phase relative to one local oscillator, so the carrier enters the range information. If every tone shares an unknown common phase, the estimator maximizes the modulus of the phase sum; the carrier drops out and only the spacings remain. That second estimator is the incoherent estimator below.</p>
+<p>This phase model is the high-SNR edge of complex observations <span class="arithmatex">\(y_i = \exp(\mathrm{j}\,2\pi f_i d/c) + n_i\)</span>. The first threshold derived below sits near <span class="arithmatex">\(0.08\,\mathrm{rad}\)</span> on the equal grid, where that edge is still valid. Phase noise of order <span class="arithmatex">\(1\,\mathrm{rad}\)</span> is a second threshold: the phase edge itself fails, and the budget returns to the complex observations.</p>
+<p>A round trip replaces <span class="arithmatex">\(c\)</span> by <span class="arithmatex">\(c/2\)</span>. Both mean squares divide by 4. <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> in radians is unchanged.</p>
+<h2 id="two-parallel-lines">Two parallel lines</h2>
+<p>With <span class="arithmatex">\(F = \sum_i f_i^2\)</span> and <span class="arithmatex">\(S = \sum_i (f_i-\bar f)^2\)</span>,</p>
+<div class="arithmatex">\[
+\mathrm{HMSE} = \frac{c^2\sigma^2}{4\pi^2 F}, \qquad \mathrm{MMSE} = \frac{c^2\sigma^2}{4\pi^2 S}.
+\]</div>
+<p>The ratio <span class="arithmatex">\(R = F/S\)</span> does not depend on <span class="arithmatex">\(\sigma\)</span>, so the lines are parallel. Li Wei and Qi Wangdong give these two heights (arXiv:1202.1424, equations 30 and 42) by perturbation. They do not write the noise level of the jump as a function of the frequency set.</p>
+<p>For <span class="arithmatex">\(N\)</span> equally spaced tones of bandwidth <span class="arithmatex">\(B\)</span>,</p>
+<div class="arithmatex">\[
+R = 1 + \frac{12(N-1)}{N+1}\left(\frac{\bar f}{B}\right)^2.
+\]</div>
+<p>The coefficient tends to 12 for large <span class="arithmatex">\(N\)</span>. That is the factor Weiss and Weinstein obtained for continuous-time delay estimation with a flat spectrum. The observation model is different; a discrete grid of wrapped phases is not that spectrum. At <span class="arithmatex">\(N = 8\)</span> the coefficient is 9.33, about 1.1 dB lower than the continuous-spectrum formula at the same <span class="arithmatex">\(\bar f/B\)</span>.</p>
+<p>On the equal grid used here, <span class="arithmatex">\(\bar f = 2435\,\mathrm{MHz}\)</span>, <span class="arithmatex">\(S = 4200\,\mathrm{MHz}^2\)</span>, <span class="arithmatex">\(R = 40.53\,\mathrm{dB}\)</span>, and <span class="arithmatex">\(\lambda = 0.12312\,\mathrm{m}\)</span>.</p>
+<h2 id="where-the-jump-sits">Where the jump sits</h2>
+<p>The phase scale of a one-wavelength error is</p>
+<div class="arithmatex">\[
+\sigma_{\mathrm{jump}} = \pi\sqrt{S}/\bar f.
+\]</div>
+<p>For the equal grid this is <span class="arithmatex">\(0.0836\,\mathrm{rad}\)</span>. A single phase sample is nowhere near <span class="arithmatex">\(\pm\pi\)</span> there. The wrap happens because the range hypothesis has crossed one carrier cycle.</p>
+<p>A Gaussian test between two range hypotheses separated by <span class="arithmatex">\(\delta\)</span> has error probability <span class="arithmatex">\(P_e(\delta) = Q(\sqrt{J(\delta)}/(2\sigma))\)</span>. At one mean wavelength the argument is <span class="arithmatex">\(\sigma_{\mathrm{jump}}/\sigma\)</span>. This <span class="arithmatex">\(P_e\)</span> is the Gaussian phase-vector test, not the fully wrapped likelihood ratio. Near the main lobe, where residuals are far below <span class="arithmatex">\(\pi\)</span>, the two are close.</p>
+<p>The mixture <span class="arithmatex">\((1-p)\,\mathrm{HMSE} + p\lambda^2\)</span> with <span class="arithmatex">\(p = 2Q(\sigma_{\mathrm{jump}}/\sigma)\)</span> leaves the carrier line where <span class="arithmatex">\(p\lambda^2 = \mathrm{HMSE}\)</span>. On the equal grid that solution is <span class="arithmatex">\(0.0170\,\mathrm{rad}\)</span>, or <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span>. It is the solution of the mixture equation, not a turning point read off the measured curve. In 8000 trials one expects a first slip near <span class="arithmatex">\(0.26\,\sigma_{\mathrm{jump}}\)</span>; the observed first slip is at <span class="arithmatex">\(0.25\,\sigma_{\mathrm{jump}}\)</span>, and the sample mean square there equals one wavelength error in 8000 trials. From <span class="arithmatex">\(0.25\)</span> to <span class="arithmatex">\(1.0\,\sigma_{\mathrm{jump}}\)</span> the sample mean square equals the slip rate times <span class="arithmatex">\(\lambda^2\)</span>, within 0.1 dB. At the threshold, <span class="arithmatex">\(\lambda^2 = 4\,\mathrm{MMSE}\)</span>, so <span class="arithmatex">\(p = 2Q(1) = 0.317\)</span> predicts +1.0 dB above the bandwidth line. The measured slip rate is 0.344 and the sample mean square is −22.8 dB against a bandwidth line of −24.2 dB (+1.4 dB).</p>
+<p>Local Fisher information of a wrapped-normal phase is smooth in <span class="arithmatex">\(\sigma\)</span>. The local Cramér–Rao bound for range follows the carrier line and does not jump; on this equal grid it stays within 0.03 dB of the carrier line out to <span class="arithmatex">\(\sigma = 0.84\,\mathrm{rad}\)</span>. The jump is the global estimator leaving the main lobe. The same skeleton appears in single-tone frequency estimation (Rife and Boorstyn): high-SNR variance tracks the Cramér–Rao bound, then leaves it when the estimator locks onto a wrong spectral peak. There the parameter is frequency and the observations are not wrapped phases.</p>
+<p>An estimator that does not use absolute carrier phase never sees this jump. The incoherent estimator lies on the bandwidth line from the lowest noise in the trial (−44.4 dB against a line of −44.2 dB).</p>
+<h2 id="what-the-bound-is">What the bound is</h2>
+<p>The half-window Ziv–Zakai bound, with the Gaussian phase-vector <span class="arithmatex">\(P_e\)</span> and valley fill, returns to the carrier line at high SNR. The identity <span class="arithmatex">\(\int_0^\infty u\,Q(u)\,\mathrm{d}u = 1/4\)</span> makes the numerical difference 0.00 dB. The bound is the Bayes risk of a uniform prior on a window of half-length 14.990 m. The trials are conditional at the window center. At the equal-grid threshold the bound is −27.6 dB, the bandwidth line is −24.2 dB, and the coherent trial is −22.8 dB. The bound rises before the trials do. It constrains mean square; it is not the turning point of the trial curve.</p>
+<p>The half-window prior variance is 12.7 dB. The trial floor is the variance of the full search window, 18.74 dB. At <span class="arithmatex">\(\sigma = 2.34\,\mathrm{rad}\)</span> the equal-grid bound is still 8.1 dB, below its own prior variance. The full-period bound is inflated by a replica valley and is not the curve reported here.</p>
+<p>A right-to-left running high of <span class="arithmatex">\((L-\delta)P_e(\delta)\)</span> accounts for the segment from the previous higher point to itself. If the left edge meets the main lobe, that edge is <span class="arithmatex">\(\sqrt{J}/\beta\)</span>. On the equal grid at its own threshold the three contributing pieces are one, two, and three wavelengths: −29.2, −32.9, and −43.0 dB, summing to the stored integral −27.6 dB.</p>
+<h2 id="three-design-quantities-not-substitutes">Three design quantities, not substitutes</h2>
+<p><span class="arithmatex">\(S/\bar f^2\)</span> sets the phase scale of the first threshold and the gap between the lines. Spreading the tones shortens the jump and moves it to a larger phase noise.</p>
+<p>Each deep valley’s cost <span class="arithmatex">\(J(\delta)\)</span> and its squared distance <span class="arithmatex">\(\delta^2\)</span> decide whether a bandwidth shelf exists, and whether a blunder costs one wavelength squared or several metres squared. A valley with <span class="arithmatex">\(J(\delta)\approx J(\lambda)\)</span> is as easy to slip into as a one-wavelength error.</p>
+<p>The greatest common divisor of the tones sets the exact period on which every phase returns to an integer cycle, which is the unambiguous range. A coprime or Chinese-remainder layout moves only that period. It does not postpone the first threshold.</p>
+<p>Keeping <span class="arithmatex">\(N\)</span>, <span class="arithmatex">\(\bar f\)</span>, and <span class="arithmatex">\(S\)</span> fixed, and only breaking the equal spacing onto integer megahertz, leaves the first threshold where it was. At <span class="arithmatex">\(\sigma = 0.0836\,\mathrm{rad}\)</span> the half-window bound splits into the same pieces as the equal grid. The two designs diverge only at larger noise.</p>
+<p>A geometric progression with ratio 1.02, centered near 2435 MHz, has <span class="arithmatex">\(R = 26.87\,\mathrm{dB}\)</span> and <span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.403\,\mathrm{rad}\)</span>. The valley at 6.211 m has the same cost as one mean wavelength, <span class="arithmatex">\(J = 0.650\)</span>, and phase residuals no larger than 0.44 rad. The squared error is about 34 dB worse than one wavelength. That valley does not fill all the way back to the main lobe, because the prior weight <span class="arithmatex">\((L-\delta)\)</span> is smaller there. It accounts for the segment from one wavelength out to 6.211 m, and that segment is 96% of the half-window integral. The probability mass is spread along the segment: half of it lies beyond 4.3 m, and nine tenths lie inside 5.9 m. It is not a spike at 6.211 m. At the equal-grid threshold, which is only 0.21 of the geometric threshold, the half-window bound is already −51 dB while the carrier line is still −64.8 dB. The bandwidth shelf is gone.</p>
+<p>At <span class="arithmatex">\(\sigma = 0.836\,\mathrm{rad}\)</span>, ten times the equal-grid threshold, the moment-matched bound is −2.4 dB and the equal-grid bound is −3.8 dB. A cluster of valleys from 10.6 to 11.3 m, with cost about 14 against about 25 on the equal grid, accounts for the gap. The right-to-left high at 10.65 m carries 29% of the matched integral. Removing that segment drops the bound from −2.4 dB to about −3.9 dB. Those valleys are not exact integer-cycle aliases.</p>
+<h2 id="engineering-rules">Engineering rules</h2>
+<p>With a phase reference, budget the carrier line only below about <span class="arithmatex">\(0.2\,\sigma_{\mathrm{jump}}\)</span>. On this equal grid that is a phase standard deviation of about one degree (0.017 rad). Between about <span class="arithmatex">\(0.5\,\sigma_{\mathrm{jump}}\)</span> and the onset of phase wrap, budget the bandwidth line, which is 40.53 dB worse here. Without a common phase, budget the bandwidth line directly. A far valley with <span class="arithmatex">\(J\approx J(\lambda)\)</span> still lifts the error after the carrier line has been removed.</p>
+<p>When placing tones, solve <span class="arithmatex">\(P_e(\delta)\,\delta^2 = \mathrm{HMSE}\)</span> at every deep valley and keep the earliest <span class="arithmatex">\(\sigma\)</span>. Quoting only <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> misses the 6.211 m valley. Do not use a longer unambiguous range to push the first threshold back.</p>
+<p>On this equal grid <span class="arithmatex">\(\sigma_{\mathrm{jump}} = 0.0836\,\mathrm{rad}\)</span>. Phase noise of order 1 rad is the second threshold: return the budget to complex observations. Do not mix the two thresholds.</p>
+<h2 id="closed-and-still-open">Closed and still open</h2>
+<p>What is closed: the two line heights; <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> as the phase scale of a one-wavelength Gaussian test; the mixture leaving point at <span class="arithmatex">\(0.204\,\sigma_{\mathrm{jump}}\)</span> and the trial first slip at <span class="arithmatex">\(0.25\,\sigma_{\mathrm{jump}}\)</span> on the equal grid; local information that does not jump; the incoherent counterexample; the half-window bound as prior risk, not a trial turning point; the fact that moment-matched unequal spacing does not cancel the first jump, while a far valley with <span class="arithmatex">\(J\approx J(\lambda)\)</span> removes the shelf; the separation of unambiguous range from the first threshold.</p>
+<p>There is no closed form for the global wrapped least-squares mean square at finite <span class="arithmatex">\(N\)</span>. The numbers in the notes are the archived trials in <code>computation/</code>.</p>
+<p>Five questions are ready to be closed. Each has a completion test.</p>
+<ol>
+<li>Place tones under a band limit, a fixed <span class="arithmatex">\(N\)</span>, and an integer-megahertz synthesizer step so that the earliest leaving noise is as large as possible, and no valley with <span class="arithmatex">\(J(\delta)\approx J(\lambda)\)</span> sits at <span class="arithmatex">\(\delta\gg\lambda\)</span>. Done when a design beats the equal grid’s first threshold and has no such valley. Shuffling gaps at fixed <span class="arithmatex">\(S\)</span> does not.</li>
+<li>Compute the posterior-mean mean square under the same uniform prior as the bound, and compare it with coherent maximum likelihood. Done when the two curves, on that prior, attribute the roughly 5 dB gap at the threshold (−27.6 against −22.8 dB) either to a loose bound or to a suboptimal estimator.</li>
+<li>Replace the Gaussian-vector <span class="arithmatex">\(P_e\)</span> by the wrapped likelihood ratio only on the 10.6–11.3 m cluster, where residuals reach about 2.5 rad. Done when it is clear whether the 1.4 dB gap at <span class="arithmatex">\(\sigma = 0.836\,\mathrm{rad}\)</span> moves.</li>
+<li>Repeat the coherent estimator on the complex observations, and only check the first threshold. The prediction is that the first jump stays and the floor moves.</li>
+<li>Past about <span class="arithmatex">\(1.5\,\sigma_{\mathrm{jump}}\)</span>, weight the right-to-left high segments by <span class="arithmatex">\(\delta^2\)</span> instead of charging every slip as <span class="arithmatex">\(\lambda^2\)</span>. Done when that weighting tracks the sample mean square more closely on that side of the threshold, with the remaining gap stated.</li>
+</ol>
+<p>Two tasks are not worth the effort. One is a proof that every estimator jumps at <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span>. The incoherent estimator already does not. The other is using the Chinese remainder theorem to postpone the first threshold. That theorem moves the unambiguous range.</p>
+<h2 id="documents">Documents</h2>
+<ul>
+<li><strong>中文交互:</strong> <a href="../notes/多频相位测距的门限.ipynb"><code>notes/多频相位测距的门限.ipynb</code></a></li>
+<li><strong>English interactive:</strong> <a href="../notes/threshold.ipynb"><code>notes/threshold.ipynb</code></a></li>
+<li><strong>Chinese plain text:</strong> <a href="../notes/门限问题的进展.md"><code>notes/门限问题的进展.md</code></a></li>
+<li><strong>Figures</strong> (English labels): <a href="../notes/figures/"><code>notes/figures/</code></a></li>
+<li><strong>Archived trials:</strong> <a href="../computation/"><code>computation/</code></a> — see <a href="../computation/README.md"><code>computation/README.md</code></a>. A later run is not a substitute for those numbers unless the difference is stated.</li>
+</ul>
+<h2 id="references">References</h2>
+<p>Wei Li and Wangdong Qi, Optimization in Multi-Frequency Interferometry Ranging: Theory and Experiment, arXiv:1202.1424, 2012. Used in the two-line heights; no <span class="arithmatex">\(\sigma_{\mathrm{jump}}\)</span> as a function of the frequency set.</p>
+<p>A. Weiss and E. Weinstein, Fundamental Limitations in Passive Time-Delay Estimation — Part I, IEEE Transactions on Acoustics, Speech, and Signal Processing, 1983; Part II, 1984. Used at the large-<span class="arithmatex">\(N\)</span> limit of equal-grid <span class="arithmatex">\(R\)</span>; different observation model.</p>
+<p>J. Ziv and M. Zakai, Some Lower Bounds on Signal Parameter Estimation, IEEE Transactions on Information Theory, 1969. Used for the half-window bound with valley fill.</p>
+<p>D. C. Rife and R. R. Boorstyn, Single-Tone Parameter Estimation from Discrete-Time Observations, IEEE Transactions on Information Theory, vol. 20, no. 5, pp. 591–598, 1974. Used to mark the same local-bound / global-jump skeleton for a different parameter.</p>
+      <div class="footnote-bar">
+        CC BY 4.0 · Archived numbers in <code>computation/data/</code> · Interactive notebooks remain available in <code>notes/</code>
+      </div>
+    </main>
+  </div>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {
+      delimiters: [
+        {left: '$$', right: '$$', display: true},
+        {left: '$', right: '$', display: false},
+        {left: '\\(', right: '\\)', display: false},
+        {left: '\\[', right: '\\]', display: true}
+      ],
+      throwOnError: false
+    });"></script>
+</body>
+</html>
