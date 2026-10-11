@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 """Multi-frequency phase ranging: ambiguity, MSE, and a Ziv–Zakai integral.
 
-Writes note/data/results.json and note/data/curves.npz.
+Writes computation/data/results.json and computation/data/curves.npz.
+
+Archived files under computation/data/ are authoritative for the notes.
+Do not silently overwrite them; if you re-run, state any numerical differences.
 """
 
 from __future__ import annotations

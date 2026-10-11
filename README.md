@@ -1,6 +1,6 @@
 # Range Estimation from Wrapped Multi-Frequency Phase Observations
 
-The Chinese note *多频相位测距的门限* (`notes/门限问题的进展.md`) is the full account. This page is the English digest: what was established, what the numbers say, what to budget, and what remains open.
+The Chinese note *多频相位测距的门限* is the full account. **Interactive canonical form:** [`notes/多频相位测距的门限.ipynb`](notes/多频相位测距的门限.ipynb) (Jupyter: narrative plus archived curves and a noise-ratio control). Plain-text twin: [`notes/门限问题的进展.md`](notes/门限问题的进展.md). This page is the English digest. There is no PDF edition.
 
 **License:** [CC BY 4.0](LICENSE). **Cite this repository** via [`CITATION.cff`](CITATION.cff) (GitHub “Cite this repository”, or the BibTeX below).
 
@@ -124,13 +124,16 @@ Two tasks are not worth the effort. One is a proof that every estimator jumps at
 
 ## Documents
 
-The derivation, with the cost surfaces and both estimators drawn separately, is the note *多频相位测距的平行门限*. The consolidation of the conclusions, the engineering rules, and the open questions is *多频相位测距的门限*, stored as Markdown at `notes/门限问题的进展.md`. The three curves in the consolidation are the equal-spacing mean square, the cumulative fraction of the half-window bound at \(0.0836\,\mathrm{rad}\), and the geometric-spacing mean square.
+- **Interactive consolidation (canonical):** [`notes/多频相位测距的门限.ipynb`](notes/多频相位测距的门限.ipynb) — same narrative as the Markdown twin, with plots and a \(\sigma/\sigma_{\mathrm{jump}}\) control driven by archived trials.
+- **Plain-text twin:** [`notes/门限问题的进展.md`](notes/门限问题的进展.md) — for diff and reading without Jupyter.
+- **Figures** used by the Markdown twin: [`notes/figures/`](notes/figures/) (equal-spacing MSE, half-window cumulative fraction, geometric-spacing MSE).
+- **Archived trials:** [`computation/`](computation/) — see [`computation/README.md`](computation/README.md). A later run is not a substitute for those numbers unless the difference is stated.
 
-The computation directory holds the frozen trials behind those curves and the programs that produced them. A later run is not a substitute for those numbers unless the difference is stated.
+An older parallel derivation PDF is not shipped. The interactive notebook and the Markdown twin are the published consolidation.
 
 ## License and citation
 
-This repository is licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (`CC BY 4.0`). You may share and adapt the notes, figures, PDFs, and archived computation, including commercially, if you give appropriate credit, link the license, and note changes.
+This repository is licensed under [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/) (`CC BY 4.0`). You may share and adapt the notes, notebook, figures, and archived computation, including commercially, if you give appropriate credit, link the license, and note changes.
 
 Preferred citation (also in [`CITATION.cff`](CITATION.cff)):
 

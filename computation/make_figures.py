@@ -21,14 +21,33 @@ from matplotlib import font_manager
 
 ROOT = Path(__file__).resolve().parent
 DATA = json.loads((ROOT / "data" / "results.json").read_text())
-FIG = ROOT / "figures"
-FIG.mkdir(exist_ok=True)
+# Publish into notes/figures/ (canonical PNGs for the Markdown twin).
+FIG = ROOT.parent / "notes" / "figures"
+FIG.mkdir(parents=True, exist_ok=True)
 C = 299_792_458.0
 
-FONT_PATH = "/Users/zhangsumac/Library/Fonts/SourceHanSans.ttc"
-font_manager.fontManager.addfont(FONT_PATH)
-# Collection index 0 is the regular Source Han Sans SC face in this file.
-SANS = font_manager.FontProperties(fname=FONT_PATH, size=46)
+
+def _sans_font(size: float = 46) -> font_manager.FontProperties:
+    """Prefer a CJK-capable face when present; otherwise fall back portably."""
+    candidates = [
+        Path("/Users/zhangsumac/Library/Fonts/SourceHanSans.ttc"),
+        Path("/System/Library/Fonts/PingFang.ttc"),
+        Path("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc"),
+        Path("/usr/share/fonts/truetype/noto/NotoSansCJK-Regular.ttc"),
+        Path("/usr/share/fonts/truetype/wqy/wqy-microhei.ttc"),
+    ]
+    for path in candidates:
+        if path.is_file():
+            try:
+                font_manager.fontManager.addfont(str(path))
+                return font_manager.FontProperties(fname=str(path), size=size)
+            except (OSError, RuntimeError, ValueError):
+                continue
+    # DejaVu / default: Chinese labels may miss glyphs, but figures still render.
+    return font_manager.FontProperties(size=size)
+
+
+SANS = _sans_font(46)
 
 # figsize inches * dpi = pixels. 20 in * 100 dpi = 2000 px.
 # Glyph px = pt * dpi / 72. 46 pt -> 63.9 px. Effective pt = 63.9 * 454 / 2000 = 14.5.
