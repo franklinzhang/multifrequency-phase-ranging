@@ -2,7 +2,9 @@
 
 Wrapped phases at a finite set of frequencies determine a range only up to a lattice of aliases. The coherent maximum-likelihood estimator uses those phases against one common phase reference. On a log-log plot its mean-square error follows the carrier line, then jumps, at the same slope, onto the bandwidth line.
 
-The Chinese notes in this repository are the full account. This page states the model, the two lines, the first threshold, what unequal spacing actually changes, and what the bound does not claim.
+**Start here:** the short story [*The jump between two rulers*](article/en.md) ([中文](article/README.md)) — four acts, one budget card, no textbook required. Full derivations and experiments: [deep.en.md](article/deep.en.md) / [deep.zh.md](article/deep.zh.md). Code: `computation/mfpr`, `computation/experiments/e01`–`e09`, `computation/run_all.sh`.
+
+The Chinese notes in this repository are the original account. This page states the model, the two lines, the first threshold, what unequal spacing actually changes, and what the bound does not claim.
 
 ## Model
 
@@ -72,7 +74,7 @@ At \(\sigma = 0.836\,\mathrm{rad}\), ten times the equal-grid threshold, the mom
 
 ## What the bound is
 
-The half-window Ziv–Zakai bound, with the Gaussian phase-vector \(P_e\) and valley fill, returns to the carrier line at high SNR. The identity \(\int_0^\infty u\,Q(u)\,\mathrm{d}u = 1/4\) makes the numerical difference 0.00 dB. The bound is the Bayes risk of a uniform prior on a window of half-length 14.990 m. The trials are conditional at the window center. At the equal-grid threshold the bound is −27.6 dB, the bandwidth line is −24.2 dB, and the coherent trial is −22.8 dB. The bound rises before the trials do. It is not the knee.
+The half-window Ziv–Zakai bound, with the Gaussian phase-vector \(P_e\) and valley fill, returns to the carrier line at high SNR. The identity \(\int_0^\infty u\,Q(u)\,\mathrm{d}u = 1/4\) makes the numerical difference 0.00 dB. The bound is the Bayes risk of a uniform prior on a window of length 14.990 m. The trials are conditional at the window center. At the equal-grid threshold the bound is −27.6 dB, the bandwidth line is −24.2 dB, and the coherent trial is −22.8 dB. The bound rises before the trials do. It is not the knee.
 
 The half-window prior variance is 12.7 dB. The trial floor is the variance of the full search window, 18.74 dB. At \(\sigma = 2.34\,\mathrm{rad}\) the equal-grid bound is still 8.1 dB, below its own prior variance. The full-period bound is inflated by a replica valley and is not the curve reported here.
 
