@@ -14,8 +14,8 @@ Measure a phase at a few frequencies and turn those phases into a range. That is
 
 This article settles three things.
 
-1. **Where the jump is, and how high, has a closed form.** One number, $R$, sets the gap between the two lines (40.5 dB here). The jump is centred at a total SNR of about $R_{\mathrm{dB}} - 13$ dB, and its foot is at about $R_{\mathrm{dB}} + 1$ dB. A one-dimensional rounding model gives the S-shaped curve in between. It agrees with Monte Carlo within 0.2 dB, checked down to slip probabilities of order $10^{-5}$.
-2. **The jump can be split into an estimator account and an information account.** At the threshold, coherent maximum likelihood is 1.1 dB above the bandwidth line. The posterior mean recovers 1.2 dB. The remaining 3.2 dB to the Ziv–Zakai bound is looseness of the bound.
+1. **Where the jump is, and how high, has a closed form.** One number, $R$, sets the gap between the two lines (40.5 dB here). The jump is centred at a total SNR of about $R_{\mathrm{dB}} - 13$ dB, and its foot is at about $R_{\mathrm{dB}} + 1$ dB (the latter only for $R\approx40$–45 dB; in general see the $x(R)$ table in §3.3 of the [math note](math.zh.md), in Chinese). A one-dimensional rounding model gives the S-shaped curve in between. It agrees with Monte Carlo within 0.2 dB, checked down to slip probabilities of order $10^{-5}$.
+2. **The jump can be split into an estimator account and an information account.** At the threshold, coherent maximum likelihood is 1.1 dB above the bandwidth line. The posterior mean recovers 1.2 dB. The remaining 3.2 dB to the Ziv–Zakai bound is looseness of the bound, and about 2.5 dB of it belongs to the Ziv–Zakai bound itself: a single-test-point Weiss–Weinstein bound is only about 0.7 dB below the posterior mean ([math note](math.zh.md) §2.5, §5).
 3. **It turns directly into engineering rules.** Group delay does not move the threshold. A phase offset common to all tones does move it, by less than 1 dB within 20°. Multipath makes the integer decision wrong deterministically. For tone placement, the first threshold depends almost only on the second moment of the frequencies, while distant deep valleys decide whether an error jumps from centimetres to metres. Equal spacing is not optimal: one eight-tone set is never worse from 35 dB down to 10 dB per tone, and strictly better from 29 dB down.
 
 The article is written for engineers and for estimation theorists. The mathematics sits in separate boxes and appendices; skipping them does not hide any conclusion.
@@ -134,13 +134,13 @@ This is exactly the integer-ambiguity view of GNSS. Here there is only one integ
 | Slip probability at the centre | $2Q(1)$ | 0.317 |
 | Overshoot at the centre | above the bandwidth line | +1.14 dB |
 | Foot (leaving the carrier line) | $8x^2 Q(x) = 1/R$, $\sigma = \sigma_{\mathrm{jump}}/x$ | $x = 4.908$, 32.4 dB per tone |
-| Safe rule | total SNR $\gtrsim R_{\mathrm{dB}} + 1$ dB | $\gtrsim$ 32.5 dB per tone |
+| Safe rule | total SNR $\gtrsim R_{\mathrm{dB}} - 12.95 + 20\log_{10}x(R)$; about $R_{\mathrm{dB}} + 1$ dB for $R\approx40$–45 dB (other $R$: [math note](math.zh.md) §3.3 table) | $\gtrsim$ 32.5 dB per tone |
 | Shelf below the threshold | $\mathrm{MMSE} + \lambda^2/12$ | — |
 
 Some remarks:
 
 - **The centre of the jump** is where the RMS error of the coarse ruler equals half a wavelength. This statement is exact: at $\sigma = \sigma_{\mathrm{jump}}$, $\sqrt{\mathrm{MMSE}} = \lambda/2$.
-- **The foot** is where the slip contribution equals the carrier line, $20\log_{10}4.908 = 13.8$ dB above the centre. Above the foot, the carrier line is a safe budget.
+- **The foot** is where the slip contribution equals the carrier line, $20\log_{10}4.908 = 13.8$ dB above the centre. Above the foot, the carrier line is a safe budget. 4.908 is this example's $x(R)$; $x$ varies logarithmically with $R$ (3.75–5.78 for $R$ = 20–60 dB), so the foot-to-centre distance is not a fixed 13.8 dB (Section 12.1).
 - **The jump is about 14 dB wide** (from foot to centre), while the two lines are 40 dB apart. That is why the curve looks nearly vertical.
 - The 1.14 dB overshoot comes from slips. At the threshold 32% of trials are off by at least one wavelength, and each slip costs $\lambda^2$, which is exactly 4 times the MMSE.
 
@@ -200,7 +200,7 @@ At the threshold $u = 1$ (in dB·m²):
 So the accounts separate cleanly.
 
 - **1.2 dB** is the price of maximum likelihood's hard decision. At the threshold it picks the wrong tooth with probability 32%; the posterior mean averages neighbouring teeth and pays less. The lattice model predicts the posterior mean as well (−24.22 dB), within 0.1 dB.
-- **3.2 dB** is looseness of the bound. Under this prior no estimator beats the posterior mean, and the posterior mean is still 3.2 dB above the bound. A bound that is a few dB loose in the threshold region is not unusual; how much a tighter global bound (Weiss–Weinstein, or Bell's extended form) would recover is an open question.
+- **3.2 dB** is looseness of the bound. Under this prior no estimator beats the posterior mean, and the posterior mean is still 3.2 dB above the bound. About 2.5 dB of this belongs to the Ziv–Zakai bound itself: a single-test-point Weiss–Weinstein bound with its test point on the $1\lambda$ grid valley is −24.96 dB·m², only 0.65 dB below the posterior mean; the multi-test-point form closes the gap at the threshold to 0.28 dB ([math note](math.zh.md) §2.5–2.6, §5). On the downslope of the threshold (about 25–29 dB per tone) the Ziv–Zakai bound is still the tightest and sits about 4.8 dB below the posterior mean; multi-test-point WWB does not recover that part.
 
 Two useful consequences for engineering:
 
@@ -266,6 +266,8 @@ $$
 
 When slips are rare this equals the classical valley sum; when they are frequent it is still a proper mixture. Against Monte Carlo it is within about 1 dB near the foot and conservative (too high) by 1–4.5 dB deep in the transition. The sum of pairwise probabilities overestimates the chance of being beaten by some valley, which is where the conservatism comes from.
 
+> The later [math note](math.zh.md) §4.6 replaces it with a **linearised multi-valley model**: project $g$ out of each valley's residual vector, and the competition between valleys becomes jointly Gaussian linear statistics of the same phase noise. On the geometric and two-cluster designs of this section it is within 0.15 dB and 0.6 dB of Monte Carlo, inside the Monte Carlo 95% band everywhere. The valley-mixture numbers in this article are kept as the historical search proxy.
+
 ### 9.2 Two clusters: a staircase
 
 ![Two clusters](figures/en/f11_cluster.png)
@@ -320,7 +322,7 @@ The idea is simple. Put most tones at the edges to make $S$ large, and put two t
 | Question | Answer |
 | --- | --- |
 | How far apart are the two lines? | $R = F/S$. Equal spacing: $R \approx 1 + 9.3\,(\bar f/B)^2$ for $N = 8$. |
-| What SNR allows a carrier-line budget? | Total SNR $\gtrsim R_{\mathrm{dB}} + 1$ dB (foot: $8x^2Q(x) = 1/R$). |
+| What SNR allows a carrier-line budget? | Total SNR $\gtrsim R_{\mathrm{dB}} - 12.95 + 20\log_{10}x(R)$ (foot: $8x^2Q(x) = 1/R$); about $R_{\mathrm{dB}} + 1$ dB for $R\approx40$–45 dB, other $R$ in the [math note](math.zh.md) §3.3 table. |
 | Where is the centre of the jump? | Total SNR $= (R-1)/2\pi^2$, about $R_{\mathrm{dB}} - 13$ dB; there the coarse error is $\lambda/2$ and the slip probability 0.317. |
 | What budget below the threshold? | Bandwidth line plus $\lambda^2/12$ (equal spacing); +1.1 dB overshoot at the centre. |
 | When is even the bandwidth line lost? | Total SNR below about 8–12 dB (second threshold); analyse complex observations. |
@@ -357,12 +359,14 @@ Numbers for $N = 8$, $\Delta f = 10$ MHz:
 
 | $f_0$ | $\bar f$ | $R$ | $\sigma_{\mathrm{jump}}$ | threshold / tone | foot / tone | carrier RMS @ 35 dB |
 | --- | --- | --- | --- | --- | --- | --- |
-| 900 MHz | 935 | 32.2 dB | 0.218 rad | 10.2 dB | 24.0 dB | 0.23 mm |
+| 900 MHz | 935 | 32.2 dB | 0.218 rad | 10.2 dB | 23.3 dB | 0.23 mm |
 | 2400 MHz | 2435 | 40.5 dB | 0.084 rad | 18.5 dB | 32.4 dB | 0.09 mm |
-| 5800 MHz | 5835 | 48.1 dB | 0.035 rad | 26.1 dB | 40.0 dB | 0.04 mm |
-| 24 GHz | 24035 | 60.4 dB | 0.0085 rad | 38.4 dB | 52.2 dB | 0.009 mm |
+| 5800 MHz | 5835 | 48.1 dB | 0.035 rad | 26.1 dB | 40.6 dB | 0.04 mm |
+| 24 GHz | 24035 | 60.4 dB | 0.0085 rad | 38.4 dB | 53.7 dB | 0.009 mm |
 
-Moving from 2.4 GHz to 5.8 GHz with the same 8×10 MHz raises the threshold centre from 18.5 to 26.1 dB per tone and the foot from 32.4 to 40.0 dB. The absolute precision of the bandwidth line is unchanged (9.3 mm RMS at 35 dB), but keeping the finer carrier ruler costs about 8 dB more SNR. At 24 GHz the threshold itself is 38 dB — the fine ruler is almost unusable.
+The foot column uses each row's own $x(R)$ (4.48 / 4.91 / 5.27 / 5.80), i.e. threshold $+\,20\log_{10}x(R)$, not a fixed +13.8 dB (numbers from `computation/verify_math_idents.py`).
+
+Moving from 2.4 GHz to 5.8 GHz with the same 8×10 MHz raises the threshold centre from 18.5 to 26.1 dB per tone and the foot from 32.4 to 40.6 dB. The absolute precision of the bandwidth line is unchanged (9.3 mm RMS at 35 dB), but keeping the finer carrier ruler costs about 8 dB more SNR. At 24 GHz the threshold itself is 38 dB — the fine ruler is almost unusable.
 
 > If what you hold fixed is the **relative** bandwidth $B/\bar f$ rather than the absolute spacing, then $R$ and the threshold SNR stay put. The effect above comes from “absolute spacing fixed, carrier up → relative bandwidth down”.
 
@@ -384,10 +388,12 @@ Numbers for 8 tones from 2400–2470 MHz at 1 MHz steps ($M = 71$):
 
 | Design | $\sigma$ at leaving the carrier line | predicted MSE at $\sigma = 0.2$ rad | shallowest off-$k\lambda$ valley |
 | --- | --- | --- | --- |
-| Uniform random (median) | 0.014 | −11.6 dB·m² | usually present |
-| Equal spacing | 0.017 | −13.4 dB·m² | **none** (all deep valleys on $k\lambda$) |
-| Front, lowest shelf (`2400,2401,2402,2409,2450,2468,2469,2470`) | 0.024 | −16.4 dB·m² | **none** (first deep valleys still on $k\lambda$) |
+| Uniform random (median) | 0.014 | −11.7 dB·m² | usually present |
+| Equal spacing | 0.017 | −13.4 dB·m² | 5.73 m, $J \approx 672\,J(\lambda)$ (all shallow valleys on $k\lambda$) |
+| Front, lowest shelf (`2400,2401,2402,2409,2450,2468,2469,2470`) | 0.024 | −16.4 dB·m² | 4.74 m, $J \approx 63\,J(\lambda)$ (first deep valleys still on $k\lambda$) |
 | Four at each edge | 0.025 | +13.5 dB·m² | 4.49 m, $J \approx 1.5\,J(\lambda)$ |
+
+(“Predicted MSE” is the valley mixture. The linearised multi-valley model gives values 2.4–3.2 dB lower with the same ordering; see the [math note](math.zh.md) §4.6 and §6.6.)
 
 The key point: the front design **keeps the $1\lambda$ ambiguity scale**, postpones the threshold by 3 dB relative to equal spacing, and lowers the shelf by 2–3 dB. Monte Carlo confirms it from 29 dB per tone downward. Uniform random is worse than equal spacing at the median on both numerical objectives; about 12% of samples beat equal spacing on both, but random samples almost never sit on the Pareto front.
 
@@ -399,7 +405,7 @@ When $N \ll M$, a random draw is even less likely to hit a “no shallow far val
 
 Dense edges make $S$ large (later threshold). Edges alone have a cost: near the synthetic wavelength $c/\Delta F$ of the cluster-centre gap $\Delta F$, a far valley appears almost as deep as $J(\lambda)$ — each cluster is phase-aligned inside itself and the total cost is nearly zero. For clusters at 2400 and 2470 MHz, $\Delta F = 70$ MHz and the danger zone is around $c/70\,\mathrm{MHz} \approx 4.28$ m (numerically the shallowest often sits near 4.5 m).
 
-**A middle anchor is not another ruler; it is there to fill that far valley.** At the far valley the edge residuals are near zero, while a middle frequency is generally off an integer cycle and can contribute up to $\pi^2 \approx 10$ alone. In our eight-tone example, 4+4 edges with no anchor give $J \approx 1.5\,J(\lambda)$ at 4.49 m; one anchor at 2435 MHz lifts that to about $150\,J(\lambda)$. The far valley goes from “as easy as a $1\lambda$ slip” to practically unreachable. The threshold barely moves (still set by $S$); the shelf is kept. That is the construction behind designs like `2400,2401,2402,2409,2450,2468,2469,2470`: edges own $S$, one or two middles own the valley fill.
+**A middle anchor is not another ruler; it is there to fill that far valley.** At the far valley the edge residuals are near zero, while a middle frequency is generally off an integer cycle and can contribute up to $\pi^2 \approx 10$ alone. In our eight-tone example, 4+4 edges with no anchor give $J \approx 1.5\,J(\lambda)$ at 4.49 m; one anchor at 2435 MHz lifts the 4.49 m valley to about $150\,J(\lambda)$, practically unreachable. But a midpoint anchor is in phase with both edges at twice that range (aliasing): the shallowest valley of the window moves to 8.99 m and is only $6.0\,J(\lambda)$. A single anchor works best about a quarter of the way in from either edge (2419 or 2451 MHz, about $39\,J(\lambda)$; [math note](math.zh.md) §6.4). The threshold barely moves (still set by $S$); the shelf is kept. That is the construction behind designs like `2400,2401,2402,2409,2450,2468,2469,2470`: edges own $S$, one or two middles own the valley fill.
 
 #### Many tones at the edges and only one in the middle — drowned by noise?
 
@@ -415,16 +421,18 @@ Collapsing each edge to a single exact frequency (the most extreme “edges”) 
 
 | tones per edge | $K=0$ | $K=1$ | $K=2$ | $K=4$ | $K=8$ |
 | --- | --- | --- | --- | --- | --- |
-| 4 | $J_{\mathrm{far}}/J(\lambda) = 0.02$ | 2.7 | 6.0 | **156** | 388 |
-| 64 | 0.02 | 0.21 | 0.40 | **10** | 25 |
-| 256 | 0.02 | 0.07 | 0.12 | 2.5 | 6.4 |
-| 512 (~1000 at the two edges) | 0.02 | 0.04 | 0.07 | 1.3 | 3.2 |
+| 4 | $J_{\mathrm{far}}/J(\lambda) = 0.021$ | 0.184 | 0.021 | **210** | 318 |
+| 64 | 0.021 | 0.184 | 0.021 | **15.0** | 24.8 |
+| 256 | 0.021 | 0.184 | 0.021 | 3.81 | 6.29 |
+| 512 (~1000 at the two edges) | 0.021 | 0.184 | 0.021 | 1.92 | 3.16 |
+
+(An earlier version of this table had no generating script and its $K=1,2,4$ columns were wrong; the values are now recomputed by `computation/verify_math_idents.py`, and the [math note](math.zh.md) §6.4 is authoritative.)
 
 How to read it:
 
 - **No anchors**: the far valley is essentially zero; one slip costs metres.
-- **$K=1,2$**: the valley moves; the lift is only $O(0.2)$–$O(0.4)$. Once the edges are thick, $J_{\mathrm{far}}$ is immediately shallow relative to $J(\lambda)$. About 1000 edge tones with one middle tone gives a ratio of 0.04 — the anchor is essentially wasted.
-- **$K \ge 4$ with anchors spread out**: the valley cannot dodge every anchor at once, and the lift reaches the $\pi^2$ scale. But $J(\lambda)\propto N$, so thicker edges still need $K$ to grow in proportion.
+- **$K=1,2$**: evenly placed anchors sit at 1/2, or 1/3 and 2/3, of the way between the edges. At one synthetic order (2 or 3 times $c/\Delta F$) they are in phase with all edge tones, so that order's far valley is not filled at all: the ratio stays at 0.184 and 0.021 whatever the edge thickness. This is geometric aliasing, not noise.
+- **$K \ge 3$ away from those rational positions**: every far order is covered and the lift reaches the $\pi^2$ scale. But $J(\lambda)\propto N$, so thicker edges still need $K$ to grow in proportion: with 512 tones per edge even $K=8$ gives only 3.2.
 
 The rule is simple:
 
@@ -480,10 +488,10 @@ There is also a technical reason. The Cramér–Rao bound is useless here (it do
 
 ## 14 Limits and open questions
 
-- **Scope of the lattice model.** It requires errors to occur only at whole mean wavelengths (equal spacing, moment-matched designs, and generally designs without distant deep valleys), and it holds before the second threshold. Designs like the geometric one need the valley mixture, which is only accurate to 1–4.5 dB.
-- **Noise model.** We assume independent, equal-variance Gaussian phase noise on each tone. With unequal per-tone SNR (fading) the lattice formulas still hold in their weighted form (Appendix A), but we have not validated that systematically. Correlated phase noise from a shared oscillator is not considered.
-- **Tightness of the bound.** The Ziv–Zakai bound is 3.2 dB loose in the threshold region. Weiss–Weinstein or Bell's extended bound may be tighter; we have not computed them.
-- **Tone placement.** The search in Section 10 is restricted to eight integer-MHz tones within 2400–2470 MHz, with the valley mixture as objective and Monte Carlo as the final check. For other bands, tone counts, or with Bluetooth channel restrictions, the search has to be redone (the code can be reused as is).
+- **Scope of the lattice model.** It requires errors to occur only at whole mean wavelengths (equal spacing, moment-matched designs, and generally designs without distant deep valleys), and it holds before the second threshold. Designs like the geometric one need a multi-valley model: the valley mixture used here is only accurate to 1–4.5 dB, while the linearised multi-valley model of the [math note](math.zh.md) §4.6 is within 0.6 dB of Monte Carlo on the geometric and two-cluster designs.
+- **Noise model.** We assume independent, equal-variance Gaussian phase noise on each tone. With unequal per-tone SNR (fading) the lattice formulas still hold in their weighted form (Appendix A); a small Monte Carlo with the two edge tones 6 dB down and matched weights stays within 0.11 dB of the lattice ([math note](math.zh.md) §7). Correlated phase noise from a shared oscillator is not considered.
+- **Tightness of the bound.** At the threshold the Ziv–Zakai bound is 3.2 dB below the posterior mean; a single-test-point Weiss–Weinstein bound closes that to about 0.7 dB and the multi-test-point form to 0.28 dB ([math note](math.zh.md) §2.5–2.6). On the downslope the Ziv–Zakai bound is still the tightest, about 4.8 dB below the posterior mean.
+- **Tone placement.** The search in Section 10 is restricted to eight integer-MHz tones within 2400–2470 MHz, with the valley mixture as objective (about 2.5–3 dB pessimistic at $\sigma = 0.2$ rad, but it does not change the ranking of designs) and Monte Carlo as the final check. For other bands, tone counts, or with Bluetooth channel restrictions, the search has to be redone (the code can be reused as is).
 - **Multipath.** We studied a single reflection only. Statistics over several reflections, and using the lattice model to detect multipath, are worthwhile next steps.
 
 ---
@@ -530,7 +538,8 @@ Setting it to 1 (total MSE twice the carrier line) gives $8x^2Q(x) = 1/R$.
 cd computation
 pip install -r requirements.txt
 ./run_all.sh                 # tests, nine experiments, all figures, numbers.md; about an hour on four cores
-python3 -m pytest -q tests   # 11 regression tests covering the main closed forms
+python3 -m pytest -q tests   # 20 regression tests covering the main closed forms of this article and the math note
+python3 verify_math_idents.py   # every check of the math note; read-only on the archive, about 45 s
 ```
 
 | File | Contents |
@@ -538,7 +547,9 @@ python3 -m pytest -q tests   # 11 regression tests covering the main closed form
 | `mfpr/core.py` | tone sets, moments, the two lines, phase cost |
 | `mfpr/lattice.py` | lattice model (with offsets, mismatched weights, posterior mean) |
 | `mfpr/estimators.py` | coherent / incoherent / complex ML, posterior mean |
-| `mfpr/bounds.py` | Ziv–Zakai bound with refined valleys, valley attribution, valley mixture |
+| `mfpr/bounds.py` | Ziv–Zakai bound with refined valleys, valley attribution, valley mixture, single-test-point Weiss–Weinstein bound |
+| `mfpr/multivalley.py` | linearised multi-valley model (math note §4.6) |
+| `mfpr/design.py` | grid / non-grid valleys, near-zone length, the cap on leaving the carrier line (math note §6) |
 | `experiments/e01`–`e09` | bounds, lattice validation, collapse, Bayes, complex tones, biases, layered ambiguity, tone placement, Pareto |
 | `figures_article.py` | every figure of this article, in Chinese and English |
 | `article_numbers.py` | every number quoted in this article |

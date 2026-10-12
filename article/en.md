@@ -24,7 +24,7 @@ You do not need a book on parameter estimation or signal processing. Every formu
 | --- | --- |
 | [I. Two rulers](#act-i-two-rulers) | Carrier is the fine ruler, bandwidth the coarse one; when the fine ruler picks the wrong tick, error jumps onto the coarse line. |
 | [II. The falling-out](#act-ii-the-falling-out) | Falling out = the estimator miscounts whole cycles; miscounting is rounding a Gaussian to an integer. |
-| [III. One budget card](#act-iii-one-budget-card) | Threshold centre ≈ total SNR $R_{\mathrm{dB}}-13$; safe zone ≈ $R_{\mathrm{dB}}+1$. |
+| [III. One budget card](#act-iii-one-budget-card) | Threshold centre ≈ total SNR $R_{\mathrm{dB}}-13$; safe zone ≈ $R_{\mathrm{dB}}+1$ (for $R\approx40$ dB). |
 | [IV. How you place tones](#act-iv-how-you-place-tones) | Equal spacing minimizes ambiguity scale; to postpone the threshold, use edges plus enough anchors. |
 
 ---
@@ -97,7 +97,7 @@ Finish the rounding and engineering is a few rows. For any tone set, compute $R$
 
 | What you want | Answer (total SNR) | Eight tones, 70 MHz (per tone) |
 | --- | --- | --- |
-| Safe zone: budget the fine ruler | $\gtrsim R_{\mathrm{dB}} + 1$ | $\gtrsim 32.5\,\mathrm{dB}$ |
+| Safe zone: budget the fine ruler | $\gtrsim R_{\mathrm{dB}} + 1$ (only for $R\approx40$–45 dB; in general $R_{\mathrm{dB}}-12.95+20\log_{10}x(R)$, see the [math note](math.zh.md) §3.3, in Chinese) | $\gtrsim 32.5\,\mathrm{dB}$ |
 | Centre of the falling-out | $\approx R_{\mathrm{dB}} - 13$ | $18.5\,\mathrm{dB}$ |
 | What the centre is physically | coarse RMS error $= \lambda/2$ | 6.2 cm |
 | Chance of the wrong tick there | about 32% | — |
@@ -154,14 +154,14 @@ Multi-frequency phase ranging is not a small problem, yet “where the jump is, 
 
 What we filled in is the middle piece: **write the falling-out as rounding, then fold SNR, calibration, and tone placement into one card.**
 
-Limits, stated plainly: designs with shallow far valleys need another approximation; several multipaths and correlated phase noise are not yet systematic; tighter global bounds are not computed. Details, the complex-observation check, and the Bayes split (1.2 dB for hard decisions at the threshold, 3.2 dB of bound looseness) live in the [deep dive](deep.en.md).
+Limits, stated plainly: designs with shallow far valleys need another approximation; several multipaths and correlated phase noise are not yet systematic; a tighter global bound for the downslope of the threshold is still missing. Details, the complex-observation check, and the Bayes split (1.2 dB for hard decisions at the threshold; 3.2 dB of Ziv–Zakai looseness, 2.5 dB of which a single-test-point Weiss–Weinstein bound recovers) live in the [deep dive](deep.en.md) and the [math note](math.zh.md).
 
 ---
 
 ## If you will spend two more minutes
 
 1. Compute your $R$.  
-2. Safe budget: total SNR $\gtrsim R_{\mathrm{dB}}+1$; centre $\approx R_{\mathrm{dB}}-13$.  
+2. Safe budget: total SNR $\gtrsim R_{\mathrm{dB}}+1$ (valid for $R\approx40$–45 dB; for other $R$ use the $x(R)$ table in §3.3 of the [math note](math.zh.md)); centre $\approx R_{\mathrm{dB}}-13$.  
 3. Leave about 20° for common phase; treat multipath as “will the two rulers point at different ticks”, not only as a noise margin.  
 4. Placement: equal spacing = smallest ambiguity scale; later threshold → edges + anchors in proportion.  
 

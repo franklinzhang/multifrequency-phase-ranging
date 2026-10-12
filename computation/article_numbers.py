@@ -42,8 +42,9 @@ def equal_grid():
         "envelope_std_at_threshold_over_lambda": math.sqrt(core.mmse(f, sj)) / m["lambda_m"],
         "foot_x": foot, "foot_sigma_over_sigma_jump": 1 / foot,
         "foot_snr_per_tone_db": snr_db(sj / foot),
-        "safe_rule_total_db": m["R_db"] + 1.0,
-        "safe_rule_per_tone_db": m["R_db"] + 1.0 - 10 * math.log10(m["n"]),
+        "safe_rule_total_db": m["R_db"] - 10 * math.log10(2 * math.pi**2) + 20 * math.log10(foot) + 10 * math.log10(1 - 1 / R),
+        "safe_rule_per_tone_db": m["R_db"] - 10 * math.log10(2 * math.pi**2) + 20 * math.log10(foot) + 10 * math.log10(1 - 1 / R) - 10 * math.log10(m["n"]),
+        "safe_rule_rdb_plus_1_total_db": m["R_db"] + 1.0,
         "overshoot_at_threshold_db": over,
         "shelf_lambda2_over_12_m2": m["lambda_m"] ** 2 / 12,
     }

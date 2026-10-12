@@ -1,0 +1,14 @@
+{
+ "git": "c09f375",
+ "files": [
+  "wwb_multi.json",
+  "o2_multivalley.json",
+  "o1_prune.json",
+  "zzb_nongrid.json",
+  "unequal_snr.json"
+ ],
+ "wwb_multi_legal": true,
+ "o2_equal_undominated_3d_mv": true,
+ "o1_gap_to_cap_db": 0.036187328,
+ "unequal_max_abs_gap_db": 0.10511615
+}
