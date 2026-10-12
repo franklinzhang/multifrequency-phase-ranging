@@ -4,9 +4,10 @@
 
 **数字来源标记。**
 〔N〕＝[`numbers.json`](numbers.json)（由 `computation/article_numbers.py` 从归档算出）；
-〔V2:eXX〕＝`computation/data/v2/eXX_*.json`；
-〔VER〕＝本文新增的核验脚本 [`computation/verify_math_idents.py`](../computation/verify_math_idents.py) 的输出：它只读归档与库函数，不写任何文件；运行 `python3 computation/verify_math_idents.py`，全部 PASS 约 45 s（4 进程）。
-本文用到的新库函数：`mfpr/bounds.py` 的 `wwb`（2.5 节）、`mfpr/multivalley.py`（4.6 节）、`mfpr/design.py`（格点/非格点谷、近区、O1 上界，第 6 节）；回归测试在 `computation/tests/test_models.py`（`pytest computation/tests -q`）。
+〔V2:eXX〕＝`computation/data/v2/eXX_*.json`（冻结归档，不重写）；
+〔V2D〕＝`computation/data/v2_derived/*.json`（本文收口项：`python3 computation/derive_remaining.py`）；
+〔VER〕＝核验脚本 [`computation/verify_math_idents.py`](../computation/verify_math_idents.py)：只读归档、派生文件与库函数，不写任何文件。运行 `computation/run_all.sh`（pytest → derive → numbers → verify）。
+本文用到的新库函数：`mfpr/bounds.py` 的 `wwb` / `wwb_multi`（2.5–2.6 节）、`zzb_owned_valleys`（2.4 节）、`mfpr/multivalley.py`（4.6 节）、`mfpr/design.py`（格点/非格点谷、近区、O1 上界，第 6 节）；回归测试在 `computation/tests/test_models.py`（`pytest computation/tests -q`）。
 与已有文字不一致之处在文中用 **〔不一致〕** 标出；已在 deep 中改正的标 **〔已修〕**。
 
 ---
@@ -177,6 +178,16 @@ $$
 
 *物理意义：* 下界本身也有“两条直线”的结构，只是它的过渡被抹宽了，按 $1/u$ 的速度从下方回到带宽直线。$u=5$ 时 $0.853$（渐近式给 $0.84$），$u=10$ 时 $0.923$（渐近式给 $0.920$）〔VER〕。
 
+**非格点的记录谷形式。** 把 $k\lambda_{\mathrm{eff}}$ 换成 $(T-\delta)P_e$ 的右至左记录谷 $\delta_v$（填高 $G(\delta)$ 在这段上取成该谷的值）：
+
+$$
+\mathrm{ZZB}\approx\mathrm{HMSE}+\sum_v\frac{T-\delta_v}{2T}\,(\delta_v^2-\delta_{v-1}^2)\,Q\!\left(\frac{\sqrt{J_v}}{2\sigma}\right).
+$$
+
+$\delta_v\ll T$ 且记录谷就是格点齿时，$(T-\delta_v)/T\to1$，回到上式。实现见 `bounds.zzb_owned_valleys`。与数值谷填充 ZZB 的最大差〔V2D:zzb_nongrid〕〔VER〕：等间距 0.06 dB，front_lo 0.08 dB，两簇 0.07 dB，几何间隔 0.006 dB。
+
+若只用 **$J$-记录**（更浅的远谷）并丢掉 $(T-\delta)/T$——开放项里那条“推广形式”——则等间距/front_lo/两簇在 $u\le1.5$ 仍好（$\le0.11$ dB），几何间隔差 2.3–4.7 dB：6.21 m 的远谷与 $1\lambda$ 一样浅，但 $(T-D)P_e$ 填不满它左边的整段，所以它不是填高的记录。格点闭式在几何间隔上差约 30 dB（看不见远谷）；在 front_lo 上直到 $u=2$ 仍好到 0.11 dB（远谷还没接管填高）。多谷模型是估计量的预测，不是下界，它比 ZZB 高 2–9 dB（ML 相对界的空隙），方向对。
+
 ### 2.5 单测试点 Weiss–Weinstein 界（新）
 
 **定义。** 先验仍为 $d\sim U[0,T]$。对测试点 $h>0$ 和指数 $\nu\in(0,1)$，令
@@ -219,7 +230,34 @@ $$
 
 WWB 在 $u>0.542$ 时超过 ZZB〔VER〕；每个 $u$ 上 WWB ≤ PM〔VER〕。
 
-*物理意义：* ZZB 只做二元检验，滑周的“代价”只积到 $\int_0^\lambda h\,dh=\lambda^2/2$（5.5 节），在门限上因此偏松 3.3 dB。WWB 把 $h=\lambda_{\mathrm{eff}}$ 这个滑周距离直接放进分子 $h^2$，在门限及其上方几乎贴住带宽直线。代价在分子的 $e^{2\eta}$：滑周稀少时它是 Bhattacharyya 系数的**平方** $e^{-J/4\sigma^2}$，而 ZZB 的 $Q(\sqrt J/2\sigma)$ 只衰减 $e^{-J/8\sigma^2}$。所以在脚上单测试点 WWB 比 ZZB 低几个数量级。两种界各管一段；$u\approx0.3$–0.5 处 PM 与两者中较大者仍差约 4.8 dB，这个缺口两者都没填上（第 7 节）。
+*物理意义：* ZZB 只做二元检验，滑周的“代价”只积到 $\int_0^\lambda h\,dh=\lambda^2/2$（5.5 节），在门限上因此偏松 3.3 dB。WWB 把 $h=\lambda_{\mathrm{eff}}$ 这个滑周距离直接放进分子 $h^2$，在门限及其上方几乎贴住带宽直线。代价在分子的 $e^{2\eta}$：滑周稀少时它是 Bhattacharyya 系数的**平方** $e^{-J/4\sigma^2}$，而 ZZB 的 $Q(\sqrt J/2\sigma)$ 只衰减 $e^{-J/8\sigma^2}$。所以在脚上单测试点 WWB 比 ZZB 低几个数量级。两种界各管一段；$u\approx0.3$–0.5 处 PM 与两者中较大者仍差约 4.8 dB。多测试点 WWB（2.6 节）在门限上把 0.74 dB 收到 0.28 dB，但填不上这段下坡。
+
+### 2.6 多测试点 Weiss–Weinstein 界（新）
+
+单测试点用 $\zeta=L^{1/2}(h)-L^{1/2}(-h)$。把测试点收成 $\{h_k=k\lambda_{\mathrm{eff}}\}_{k=1}^{K}$，$\zeta$ 收成向量，Cauchy–Schwarz 给出 $\mathrm{WWB}_K=v^\top\Psi^{-1}v$，其中 $v_k=h_k\,e^{\eta(1/2,h_k)}$，
+
+$$
+\Psi_{ij}=2a_{ij}e^{-J(|h_i-h_j|)/8\sigma^2}-2b_{ij}e^{-J(h_i+h_j)/8\sigma^2},
+$$
+
+$a_{ij}=(T-\max(h_i,h_j))/T$，$b_{ij}=(T-h_i-h_j)_+/T$。$K=1$ 回到 2.5 节。实现 `bounds.wwb_multi`；格点闭式 `wwb_multi_lattice`。$\Psi$ 非正定时从大 $k$ 往下丢，直到 $\mathrm{cond}(\Psi)\le10^{10}$。
+
+数值〔VER〕〔V2D:wwb_multi〕：在 $u\in[0.15,5]$ 上 $\mathrm{WWB}_K\le$ 格点 PM（合法）。最紧已知界改为 $\max(\mathrm{ZZB},\mathrm{WWB}_1,\mathrm{WWB}_K)$（dB，相对 MMSE）：
+
+| $u$ | 0.2 | 0.3 | 0.5 | 0.7 | 1.0 | 1.5 | 2.0 | 3.0 | 5.0 |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ZZB | −39.88 | −20.17 | −7.37 | −4.68 | −3.29 | −2.26 | −1.74 | −1.23 | −0.87 |
+| WWB$_1$ | −40.53 | −34.82 | −8.37 | −2.72 | −0.74 | −0.20 | −0.14 | −0.19 | −0.28 |
+| WWB$_K$ | —† | −34.82 | −8.30 | −2.32 | **−0.28** | −0.09 | −0.11 | −0.14 | −0.23 |
+| PM | −38.75 | −15.30 | −2.61 | −0.35 | −0.00 | −0.00 | −0.00 | −0.00 | −0.00 |
+| PM − max | 1.12 | 4.87 | 4.76 | **1.97** | **0.28** | 0.09 | 0.11 | 0.14 | 0.23 |
+| 最紧 | ZZB | ZZB | ZZB | WWB$_K$ | WWB$_K$ | WWB$_K$ | WWB$_K$ | WWB$_K$ | WWB$_K$ |
+
+† $u\le0.2$ 时格点测试点的 $\mathrm{WWB}_K$ 指数小到毫无用处，最紧的是主瓣上的 $\mathrm{WWB}_1$ 或 ZZB（二者都回到 HMSE）。
+
+$K=4$ 在 $u=1$ 已收到 −0.30 dB，$K=8$ 收到 −0.28 dB，再加到 16 没有好处。
+
+*停因。* 下坡段 $u\approx0.3$–0.5 仍是 ZZB 最紧，空隙仍约 4.8 dB。WWB 的 Chernoff 指数是 ZZB 的 2 倍；把测试点加密到 24–40 个、或改用谷底，都不能越过 ZZB，有的还把界算低。把 ZZB 被积式整体乘 2（“双侧”）会在 $u\gtrsim2$ 处超过 PM，不是合法的界。Bell 的自由门限 / 二元 MMSE 核没有采用。
 
 ---
 
@@ -279,7 +317,7 @@ $$
 
 〔VER〕
 
-**〔已修〕** deep §4.2 和 §11 的“安全规则：总 SNR $\gtrsim R_{\mathrm{dB}}+1$ dB”只在 $R\approx40$–45 dB 时成立。一般情形应当用上表，或直接用上式 $R_{\mathrm{dB}}-12.95+20\log_{10}x(R)$；deep 与 README 现已加注指向本表。
+**〔已修〕** deep §4.2 和 §11 的“安全规则：总 SNR $\gtrsim R_{\mathrm{dB}}+1$ dB”只在 $R\approx40$–45 dB 时成立。一般情形应当用上表，或直接用上式 $R_{\mathrm{dB}}-12.95+20\log_{10}x(R)$（`numbers.json` 的 `safe_rule_total_db` 就是这个式子，即脚的总 SNR；$R_{\mathrm{dB}}+1$ 另存为 `safe_rule_rdb_plus_1_total_db`）；deep 与 README 现已加注指向本表。
 
 *物理意义：* 脚就是“一次滑周的概率 × 代价 $\lambda^2$”追上细尺方差的地方。由于 $\lambda^2/\mathrm{HMSE}\propto R$，而 Q 的尾部极陡，$R$ 只能通过对数影响 $x$。从脚到中心是 $20\log_{10}x=13.8$ dB，而两条直线高差 40.5 dB，所以曲线看起来几乎垂直。
 
@@ -416,21 +454,23 @@ $P(\hat v=v)$ 是高斯多面体概率。谷底处 $\partial J/\partial\delta=2g
 
 ---
 
-## 5 分账：ML − PM ≈ 1.2 dB，PM − 最紧已知界 ≈ 0.7 dB（门限上）
+## 5 分账：ML − PM ≈ 1.2 dB，PM − 最紧已知界 ≈ 0.28 dB（门限上，多测试点 WWB）
 
 ### 5.1 门限上的数字（$u=1$，同一均匀先验）
 
-| | 蒙特卡洛 / 数值界〔N〕〔VER〕 | 格点闭式〔VER〕 |
+| | 蒙特卡洛 / 数值界〔N〕〔VER〕〔V2D〕 | 格点闭式〔VER〕 |
 | --- | --- | --- |
 | 相干 ML | −23.0859 dB·m²（MMSE +1.13） | MMSE +1.145 |
 | 后验均值 PM | −24.3104 | MMSE −0.004 |
 | 非相干 | −24.2951 | （＝MMSE，见 5.2） |
+| WWB$_K$（$K=8$，2.6 节） | −24.498 | MMSE −0.284 |
 | WWB（单测试点，2.5 节） | −24.957 | MMSE −0.743 |
 | ZZB | −27.502 | MMSE −3.30 |
 | MMSE | −24.2142 | — |
 | **ML − PM** | **1.2245 dB** | 1.149 dB |
-| **PM − WWB** | **0.647 dB** | 0.738 dB |
-| WWB − ZZB | 2.545 dB | 2.556 dB |
+| **PM − WWB$_K$** | **0.188 dB** | 0.280 dB |
+| PM − WWB$_1$ | 0.647 dB | 0.738 dB |
+| WWB$_1$ − ZZB | 2.545 dB | 2.556 dB |
 | PM − ZZB（旧账） | 3.1916 dB | 3.295 dB |
 
 ### 5.2 为什么 PM 就是带宽直线
@@ -473,7 +513,7 @@ $$
 \frac{\mathrm{WWB}}{\mathrm{MMSE}}\Big|_{u=1}\approx\Bigl(1-\frac1R\Bigr)\frac{1}{\sinh 1}\Rightarrow-0.70\ \mathrm{dB}\quad(T\to\infty;\ T=14.99\ \mathrm m\ \text{时}-0.743\ \mathrm{dB}).
 $$
 
-所以门限上 PM 与最紧已知界只差 0.65 dB（蒙特卡洛 PM）或 0.74 dB（格点 PM）。原来的 3.2 dB 中有 2.5 dB 是 ZZB 自己的松弛：二元检验在 $(0,\lambda]$ 上只积到 $\lambda^2/2$（5.5 节第 2 条），而 WWB 直接以 $h^2=\lambda_{\mathrm{eff}}^2$ 计价。
+所以门限上单测试点 WWB 把 PM 与界的差收到 0.65 dB（蒙特卡洛 PM）或 0.74 dB（格点 PM）。多测试点 WWB$_K$（$K=8$）再收到 **0.19 dB**（蒙特卡洛 PM）或 **0.28 dB**（格点 PM）〔V2D:wwb_multi〕。原来的 3.2 dB 中有 2.5 dB 是 ZZB 自己的松弛：二元检验在 $(0,\lambda]$ 上只积到 $\lambda^2/2$（5.5 节第 2 条），而 WWB 直接以 $h^2=\lambda_{\mathrm{eff}}^2$ 计价；剩下的 0.46 dB 是“只用一个滑周尺度”的代价，用 $\{k\lambda_{\mathrm{eff}}\}$ 联合测试点拿回。
 
 ### 5.5 滑周项的逐段比例
 
@@ -491,14 +531,14 @@ $$
 1. ML 在 $\pm$ 两侧都会滑周（概率 $2Q$），而 ZZB 只做一次二元检验（概率 $Q$）；
 2. ML 每次滑周付 $\lambda^2$，而 ZZB 在 $(0,\lambda]$ 上只积到 $\int_0^\lambda h\,dh=\lambda^2/2$。
 
-改用最紧已知界 $\max(\mathrm{ZZB},\mathrm{WWB})$ 时，PM 与它的差（全 MSE，dB；2.5 节表）〔VER〕：
+改用最紧已知界 $\max(\mathrm{ZZB},\mathrm{WWB}_1,\mathrm{WWB}_K)$ 时，PM 与它的差（全 MSE，dB；2.6 节表）〔VER〕〔V2D〕：
 
 | $u$ | 0.2 | 0.3 | 0.5 | 0.7 | 1.0 | 2.0 |
 | --- | --- | --- | --- | --- | --- | --- |
-| PM − max(ZZB, WWB) | 1.12 | 4.87 | 4.76 | 2.37 | 0.74 | 0.14 |
-| 最紧的界 | ZZB | ZZB | ZZB | WWB | WWB | WWB |
+| PM − max(ZZB, WWB$_1$, WWB$_K$) | 1.12 | 4.87 | 4.76 | 1.97 | **0.28** | 0.11 |
+| 最紧的界 | ZZB | ZZB | ZZB | WWB$_K$ | WWB$_K$ | WWB$_K$ |
 
-*结论：* ML 与 PM 的差是**估计量**的账，最大约 1.3–1.4 dB。PM 与最紧已知界的差是**界**的账：门限上约 0.7 dB（WWB），$u\ge2$ 时不到 0.3 dB；但在 $u\approx0.3$–0.5 的下坡段仍有约 4.8 dB。那里最紧的仍是 ZZB，滑周项因子约 3。拐点位置不受这两笔账影响，最多差 0.56 dB（3.4 节）。
+*结论：* ML 与 PM 的差是**估计量**的账，最大约 1.3–1.4 dB。PM 与最紧已知界的差是**界**的账：门限上约 0.28 dB（多测试点 WWB），$u\ge1.5$ 时不到 0.15 dB；但在 $u\approx0.3$–0.5 的下坡段仍有约 4.8 dB。那里最紧的仍是 ZZB，滑周项因子约 3。拐点位置不受这两笔账影响，最多差 0.56 dB（3.4 节）。
 
 ---
 
@@ -558,7 +598,7 @@ $$
 格点区内 $\sigma_{\mathrm{leave}}=\sigma_{\mathrm{jump}}/x(R)=\pi\sqrt S/(\bar f\,x(R))$。它随 $S$ 单调增；$x$ 只对数地依赖 $R$，而 $R$ 随 $S$ 增大而变小，所以还有一点额外收益。
 
 - **上限：** 给定 $B$ 和 $N$（偶数），$S\le NB^2/4$（一半频点放在每一端）。与等间距相比 $S_{\max}/S_{\mathrm{eq}}=3(N-1)/(N+1)=7/3$，即 $\sigma_{\mathrm{jump}}$ 最多 +3.68 dB〔VER〕。
-- **整数 MHz 下的两端：** 2400–2403 / 2467–2470 的 $S=8988\ \mathrm{MHz}^2$（2.14 倍），$\sigma_{\mathrm{leave}}$ +3.17 dB；e08 搜到的最优设计 +3.56 dB〔V2:e08〕〔N〕。
+- **整数 MHz 下的两端：** 2400–2403 / 2467–2470 的 $S=8988\ \mathrm{MHz}^2$（2.14 倍），$\sigma_{\mathrm{leave}}$ +3.17 dB；e08 搜到的最优设计 +3.56 dB〔V2:e08〕〔N〕。用命题 6.2 的剪枝 $\sigma_{\mathrm{leave}}\le\sigma_{\mathrm{jump}}/x(R)$：任何能达到 e08 的设计，频点只能落在 2400–2404 与 2466–2470（$W=5$，$\binom{10}{8}=45$）。其中 `leave_cap` 过线的只有 3 组；最好的是 2400–03,2466,68–70，+3.566 dB，比 e08 多 0.001 dB（谷和插值噪声），离全局上界 **0.036 dB**。O1 在这个约束下已经收口到 0.04 dB〔V2D:o1_prune〕〔VER〕。
 
 > **命题 6.2（O1 上界）。** 令 $\sigma_{\mathrm{cap}}(\mathcal F)$ 为方程 $2Q\bigl(\sqrt{J(\lambda_{\mathrm{eff}})}/2\sigma\bigr)\lambda_{\mathrm{eff}}^2=\mathrm{HMSE}(\sigma)$ 的根，即只由 $k=\pm1$ 格点谷决定的脚（`design.leave_cap`）。则对频段内任意排布，
 > $$\sigma_{\mathrm{leave}}(\mathcal F)\ \le\ \sigma_{\mathrm{cap}}(\mathcal F)\ \approx\ \frac{\sigma_{\mathrm{jump}}}{x(R)}\ \le\ \sigma_{\mathrm{cap}}(\text{4+4 两端})=\sigma_{\mathrm{leave}}^{\mathrm{equal}}\cdot10^{3.60/20}.$$
@@ -568,7 +608,7 @@ $$
 数值〔VER〕：
 
 - 4+4 两端的上界是 +3.602 dB（数值求根与 $\sigma_{\mathrm{jump}}/x(R)$ 一致）。两端自己只有 +3.17 dB，因为 4.49 m 的非格点谷（$\rho_{\mathrm{ng}}=1.51$）把脚拉早了。
-- e08 最优设计 +3.565 dB，它自己的上界 +3.568 dB，离全局上界只差 **0.037 dB**。
+- e08 最优设计 +3.565 dB，它自己的上界 +3.568 dB，离全局上界只差 **0.037 dB**。剪枝穷举后的最好一组 +3.566 dB，离全局上界 **0.036 dB**（上条）。
 - 表 6.6 的四个前沿点都恰好落在各自的上界上（+2.95、+2.98、+3.33、+3.50 dB）。
 - 归档中全部 4527 组设计都满足 $\sigma_{\mathrm{leave}}\le\sigma_{\mathrm{cap}}$（最大比值 $1-6\times10^{-8}$），也都不超过全局上界。
 
@@ -692,11 +732,11 @@ $P=c/\gcd(\mathcal F)$ 只决定 $J$ 在哪里**精确**回到 0。等间距 $P=
 
 **读表：**
 
-1. **(O1, O2) 平面。** 等间距被 front_lo 和 2419/2463 组严格支配；用多谷模型的 $\mathrm{MSE}_{\mathrm{ref}}$ 也一样（−18.84、−18.58 对 −16.38）。按归档的谷混合 O2，3000 组随机设计中有 12.2% 也支配等间距〔VER〕。随机设计 $\sigma_{\mathrm{leave}}$ 的中位数为 0.0141，$\mathrm{MSE}_{\mathrm{ref}}$ 的中位数为 −11.7 dB·m²〔VER〕。**〔已修〕** deep §12.2 原写 −11.6；本文按 e09 云图取中位数再换算成 dB。
+1. **(O1, O2) 平面。** 等间距被 front_lo 和 2419/2463 组严格支配；用多谷模型的 $\mathrm{MSE}_{\mathrm{ref}}$ 也一样（−18.85、−18.59 对 −16.39）〔V2D:o2_multivalley〕。在 e09 归档 3018 组互不相同的设计上，谷混合代理下 380 组支配等间距，多谷重算后是 **377 组**；前沿四个点的排序不变（front_lo < 2419 组 < front_mid < front_hi）。按归档的谷混合 O2，3000 组随机设计中有 12.2% 也支配等间距〔VER〕。随机设计 $\sigma_{\mathrm{leave}}$ 的中位数为 0.0141，$\mathrm{MSE}_{\mathrm{ref}}$ 的中位数为 −11.7 dB·m²〔VER〕。**〔已修〕** deep §12.2 原写 −11.6；本文按 e09 云图取中位数再换算成 dB。
 2. **前沿就是 O1 与 $\rho_{\mathrm{ng}}$ 的交换。** 前沿设计的最浅远谷都是非格点谷（$\rho_{\mathrm{far}}=\rho_{\mathrm{ng}}$）。沿前沿，$\sigma_{\mathrm{leave}}$ 从 +2.95 dB 走到 +3.50 dB，每一点都贴着自己的上界；$\rho_{\mathrm{ng}}$ 则从 62.6 掉到 2.91。最后约 0.5 dB 的门限推迟，是把锚点挪到两端换来的，代价是非格点远谷。O2 的好坏完全由 $u_{\mathrm{far}}$ 与 $u_{\mathrm{ref}}$ 的大小关系预测：$u_{\mathrm{far}}>u_{\mathrm{ref}}$ 的组（等间距、front_lo、2419 组）平台好，其余平台差（6.3 节）。
 3. **(O1, O2, O3) 空间：重判。** 在 e09 归档的 3017 组互不相同的设计上〔VER〕：
    - **旧 O3（$\rho_{\mathrm{far}}$）下，等间距被 61 组支配。** 2317 组的 $\rho_{\mathrm{far}}\ge324$，因为等间距的 324 只是 $k=18$ 格点齿（6.0 节）。例如 2407,14,15,26,38,52,69,70：$\sigma_{\mathrm{leave}}=0.01739$，归档 $\mathrm{MSE}_{\mathrm{ref}}=-13.63$，$\rho_{\mathrm{far}}=400$ 是 2.46 m 处 $k=20$ 的格点齿，而它的 $\rho_{\mathrm{ng}}=409<672$。**本文初稿“等间距的 $\rho_{\mathrm{far}}$ 最大、不被支配”的说法不成立。**
-   - **新 O3（$\rho_{\mathrm{ng}}$）下，0 组支配等间距。** 更强的是：没有任何设计在 $(\sigma_{\mathrm{leave}},\rho_{\mathrm{ng}})$ 两项上同时不差于等间距。所以这个结论与 O2 用哪个代理（归档谷混合或多谷模型）无关。
+   - **新 O3（$\rho_{\mathrm{ng}}$）下，0 组支配等间距。** 更强的是：没有任何设计在 $(\sigma_{\mathrm{leave}},\rho_{\mathrm{ng}})$ 两项上同时不差于等间距。把 O2 换成多谷模型重算全部 3020 组（云+退火+前沿+e08 最优+两端）之后仍是 0 组〔V2D:o2_multivalley〕〔VER〕。所以这个结论与 O2 用哪个代理无关。
    - **等间距不是 $\rho_{\mathrm{ng}}$ 的全局最大者。** 1005 组（33%）的 $\rho_{\mathrm{ng}}\ge672$，但它们都是窄带设计（$B$ 中位数 50 MHz），$\sigma_{\mathrm{leave}}$ 都比等间距低至少 0.6 dB。在 (O1, O2) 上胜过等间距的 380 组中，$\rho_{\mathrm{ng}}$ 最大只有 518（10.59 m）。
    - **近区长度 $L$。** 推论 2 是固定 $B$ 的结论：所有非等间距设计都有 $L<c(N-1)/(2B)$。不固定 $B$ 时，紧凑设计的 $L$ 可达 29.98 m；但在 $\sigma_{\mathrm{leave}}\ge$ 等间距的设计中，$L$ 最大只有 11.53 m，不到等间距的 14.99 m。
 
@@ -725,12 +765,12 @@ $P=c/\gcd(\mathcal F)$ 只决定 $J$ 在哪里**精确**回到 0。等间距 $P=
 
 ## 7 仍开放（研究缺口）
 
-1. **下坡段的界缺口。** 门限上已由单测试点 WWB 收到 0.7 dB（2.5 节），$u\ge1.5$ 时不到 0.3 dB。没收回的是 $u\approx0.3$–0.5 处的约 4.8 dB：那里 ZZB 最紧，单测试点 WWB 因指数翻倍而无用。候选是多测试点 WWB（以 $\{\pm k\lambda_{\mathrm{eff}}\}$ 为联合测试点的矩阵形式），以及 Bell 扩展 ZZB 或多元假设版本的 ZZB。5.5 节把因子 4 拆成“双侧”和“$\int h\,dh$”两个因子 2：后一个正是 WWB 在门限上修掉的，前一个需要双侧或多元检验。
-2. **非格点设计的逐谷 ZZB 闭式。** 推广形式 $\mathrm{ZZB}\approx\mathrm{HMSE}+\sum_v\tfrac12(\delta_v^2-\delta_{v-1}^2)\,Q(\sqrt{J_v}/2\sigma)$（$v$ 取记录谷）尚未在几何间隔、两簇设计上验证。
-3. **多谷模型的解析误差界与快速近似。** 多谷线性化模型（4.6 节）已取代谷混合，在 e07/e09 上都落在 MC 带内；但它的误差只有经验核验，没有解析界（线性化在残差接近 $\pm\pi$ 时和第二道门限附近失效）。它目前靠重要性抽样，每个点约 $10^5$ 个样本，当搜索目标太慢，需要确定性近似（例如成对相关修正的 Bonferroni 型界或 Genz 积分）。用它当 O2 重跑 e08/e09 前沿也还没做：因为 $\sigma_{\mathrm{ref}}$ 上的排序不变，预期前沿成员基本不变，只是 O2 整体下移约 2.5–3 dB。
-4. **(O1, O3) 前沿的证明。** 在 $\rho_{\mathrm{ng}}$ 下，等间距在 3017 组归档设计上不被支配（6.6 节），但这只是归档上的结论。“$\sigma_{\mathrm{leave}}\ge\sigma_{\mathrm{leave}}^{\mathrm{equal}}\Rightarrow\rho_{\mathrm{ng}}<\rho_{\mathrm{ng}}^{\mathrm{equal}}$”对全部组合是否成立，没有证明。在给定 $(N,B,T)$ 下 $\max_{\mathcal F}\rho_{\mathrm{ng}}$ 的结构也未知；窄带设计说明它不由等间距达到。
-5. **精确组合最优。** $\binom{71}{8}\approx1.06\times10^{10}$ 种组合。近区引理和 O1 上界（命题 6.2：$\sigma_{\mathrm{leave}}\le\sigma_{\mathrm{cap}}$，只依赖 $(S,\bar f)$）都可以用来剪枝。还要加入蓝牙信道约束、其他 $N$ 与 $B$，以及三目标或四目标的完整前沿。
-6. **相关相位噪声与不等 SNR。** 共用本振时 $\Sigma$ 非对角，衰落时权重不等。`lattice.params` 已支持三明治形式，但没有蒙特卡洛验证；加权情形下近区引理的条件 $J_W<\pi^2/4\cdot\min w_i$ 也需要重新推导。
+1. **下坡段的界缺口（部分收口）。** 门限上多测试点 WWB 把 PM − 界从 0.74 dB 收到 0.28 dB（2.6 节）；$u\ge1.5$ 时不到 0.15 dB。**没收回的仍是 $u\approx0.3$–0.5 处的约 4.8 dB：** 那里 ZZB 最紧，WWB$_K$ 因 Chernoff 指数翻倍而无用；加密测试点不能越过 ZZB。把 ZZB 被积式乘 2 会在 $u\gtrsim2$ 处超过 PM。剩下的候选是 Bell 扩展 ZZB（二元 MMSE 核 / 自由门限），需要单独证明不超 PM。
+2. **非格点逐谷 ZZB（已收口到填高记录）。** 正确形式是 $\mathrm{HMSE}+\sum_v\frac{T-\delta_v}{2T}(\delta_v^2-\delta_{v-1}^2)Q$（$v$ 取 $(T-\delta)P_e$ 的右至左记录），与数值 ZZB 在几何/两簇/front_lo/等间距上差 $\le0.08$ dB（2.4 节）。只按 $J$-记录并丢掉 $(T-\delta)/T$ 的那条在几何间隔上差 2–5 dB，不再使用。
+3. **多谷模型的解析误差界与快速近似。** 多谷线性化已在 e09 云上重跑 O2（6.6 节）：(O1, O2) 上仍有 377 组支配等间距，前沿四个点排序不变，加上 $\rho_{\mathrm{ng}}$ 后等间距仍不被支配。误差仍只有经验核验，没有解析界；搜索仍靠重要性抽样。
+4. **(O1, O3) 前沿的证明。** 在 $\rho_{\mathrm{ng}}$ 下，等间距在 3020 组（归档+两端+e08）上不被支配（6.6 节），但这只是归档上的结论。“$\sigma_{\mathrm{leave}}\ge\sigma_{\mathrm{leave}}^{\mathrm{equal}}\Rightarrow\rho_{\mathrm{ng}}<\rho_{\mathrm{ng}}^{\mathrm{equal}}$”对全部组合是否成立，没有证明。在给定 $(N,B,T)$ 下 $\max_{\mathcal F}\rho_{\mathrm{ng}}$ 的结构也未知；窄带设计说明它不由等间距达到。
+5. **精确组合最优（O1 已剪枝收口）。** $\binom{71}{8}\approx1.06\times10^{10}$。O1 用 $\sigma_{\mathrm{leave}}\le\sigma_{\mathrm{cap}}$ 剪到两端各 5 MHz、45 种组合，最好的离上界 0.036 dB（6.2 节），**无需无剪枝穷举**。还没做的是蓝牙信道约束、其他 $N$ 与 $B$，以及 $(\mathrm{O1},\mathrm{O2}_{\mathrm{mv}},\rho_{\mathrm{ng}})$ 在剪枝后的完整前沿。
+6. **相关相位噪声与不等 SNR（不等 SNR 已核对）。** 等间距两端低 6 dB、匹配权 $w_i=1/\sigma_i^2$：相干 ML 与 `lattice.params` 加权格点在 $u=0.5$–$2$ 上最大差 0.11 dB〔V2D:unequal_snr〕〔VER〕。**相关噪声不做：** `lattice.params` 是对角 $\Sigma$；公共项将是 $\tilde a^\top W\Sigma W\tilde a/(\tilde a^\top W\tilde a)^2$，需要指定 $\Sigma$，并且加权近区引理的条件 $J_W<\pi^2/4\cdot\min w_i$ 还没推。
 7. **多条多径。** 单反射下 $\beta(\Delta)$ 已有闭式；多条反射、时变多径下 $P(|\beta|>\tfrac12)$ 的统计，以及以此为目标的排频，都还没做。
 8. **第二道门限的统一模型。** 用复观测把 Rife–Boorstyn 门限与格点模型接成一条曲线（目前相位模型在每频点低于约 6 dB 时失效，deep §7）。
 9. **先验依赖。** 本文全部贝叶斯数字都用 $T=P/2$。当 $T>P/2$ 时会出现周期混叠；先验非均匀时 PM ≈ MMSE 的结论需要重新检查。

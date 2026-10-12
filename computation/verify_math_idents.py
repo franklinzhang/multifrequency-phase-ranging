@@ -193,19 +193,34 @@ def main() -> None:
     for u in (3.0, 5.0):
         ww = bounds.wwb(surf, u * sj, wrapped=True, detail=True)
         report(f"u={u}: wrapped − Gaussian WWB [dB], test point [m]", (float(f"{db(ww['wwb'] / ww['wwb_gauss']):.2e}"), round(ww["h_m"], 4)))
-    rows, worst_valid = [], -np.inf
+    rows, rows_k, worst_valid, worst_k = [], [], -np.inf, -np.inf
     for u in (0.15, 0.2, 0.3, 0.4, 0.5, 0.7, 1.0, 1.5, 2.0, 3.0, 5.0):
         sg = u * sj
         mm, pp = core.mmse(f, sg), lattice.params(f, sg)
         z_, w_ = bounds.zzb(surf, sg), bounds.wwb(surf, sg)
+        wk = bounds.wwb_multi(surf, sg, k_grid=8)
         pm_, ml_ = lattice.pm_mse(pp)["mse"], lattice.ml_mse(pp)["mse"]
         worst_valid = max(worst_valid, db(w_ / pm_))
+        worst_k = max(worst_k, db(wk / pm_) if wk > 0 else -np.inf)
         rows.append((u, round(db(z_ / mm), 2), round(db(w_ / mm), 2), round(db(pm_ / mm), 2), round(db(ml_ / mm), 2),
                      round(db(pm_ / max(z_, w_)), 2)))
+        tight = max(z_, w_, wk)
+        which = "zzb" if tight == z_ else ("wwb1" if tight == w_ else "wwb_k")
+        rows_k.append((u, round(db(z_ / mm), 2), round(db(w_ / mm), 2), round(db(max(wk, 1e-300) / mm), 2),
+                       round(db(pm_ / mm), 2), round(db(pm_ / tight), 2), which))
     report("(u, ZZB, WWB, PM_lat, ML_lat [dB re MMSE], PM − max(ZZB,WWB) [dB])", rows)
+    report("(u, ZZB, WWB_1, WWB_K, PM [dB re MMSE], PM − max(ZZB,WWB_1,WWB_K) [dB], which)", rows_k)
     check("WWB ≤ PM (lattice) at every u above [max dB]", float(worst_valid <= 0.0), 1.0, 0)
+    check("WWB_K ≤ PM (lattice) at every u above [max dB]", float(worst_k <= 0.0), 1.0, 0)
     u_x = brentq(lambda u: db(bounds.wwb(surf, u * sj) / bounds.zzb(surf, u * sj)), 0.5, 0.7, xtol=1e-3)
     report("u where WWB overtakes ZZB", round(u_x, 3))
+    w1u = bounds.wwb(surf, sj)
+    wku = bounds.wwb_multi(surf, sj, k_grid=8)
+    pmu = lattice.pm_mse(lattice.params(f, sj))["mse"]
+    check("at u=1 WWB_K is at least 0.3 dB above WWB_1", float(db(wku / w1u) > 0.3), 1.0, 0)
+    check("at u=1 PM − WWB_K is below 0.4 dB", float(db(pmu / wku) < 0.4), 1.0, 0)
+    check("at u=0.3 ZZB is still tighter than WWB_K",
+          float(bounds.zzb(surf, 0.3 * sj) > bounds.wwb_multi(surf, 0.3 * sj, k_grid=8)), 1.0, 0)
 
     print("== §3 knee: foot / center / overshoot")
     snr_total_c = N / (2 * sj**2)
@@ -532,6 +547,59 @@ def main() -> None:
     report("front (σ_leave ↑): (MHz, ρ_far, ρ_nongrid @ δ, L)",
            [(list(map(int, p_["mhz"])), round(r_["rho_far"], 2), f"{r_['rho_nongrid']:.2f}@{r_['delta_nongrid_m']:.2f}", round(r_["L_m"], 2))
             for p_, r_ in sorted(((p_, _ratios(p_["mhz"])) for p_ in d09["front"]), key=lambda t: t[0]["sigma_leave"])])
+
+    print("== §2.6 / §6.2 / §6.6 derived files (v2_derived, not the v2 archive)")
+    der = ROOT / "computation" / "data" / "v2_derived"
+    wwb_d = json.loads((der / "wwb_multi.json").read_text())
+    o2_d = json.loads((der / "o2_multivalley.json").read_text())
+    o1_d = json.loads((der / "o1_prune.json").read_text())
+    zng = json.loads((der / "zzb_nongrid.json").read_text())
+    uneq = json.loads((der / "unequal_snr.json").read_text())
+    check("WWB_K is a legal bound vs lattice PM on the derived grid", float(wwb_d["legal_vs_pm"]), 1.0, 0)
+    check("WWB_K does not overtake ZZB on the downslope u≤0.5", float(not wwb_d["downslope_wwb_beats_zzb"]), 1.0, 0)
+    check("at u=1 PM − WWB_K [dB] (derived)", wwb_d["at_u1"]["pm_minus_wwb_k_db"], 0.28, 0.05)
+    u1live = next(r for r in rows_k if r[0] == 1.0)
+    check("derived WWB_K at u=1 matches live [dB re MMSE]", wwb_d["at_u1"]["wwb_k_db_re_mmse"], u1live[3], 0.02)
+    check("equal undominated in (O1, O2_mv, ρ_nongrid) on the e09 archive",
+          float(o2_d["equal_undominated_3d_mv"]), 1.0, 0)
+    check("no archived design matches equal on O1 and ρ_nongrid together",
+          o2_d["n_at_least_equal_on_o1_and_rho_nongrid"], 0, 0)
+    check("O2_mv still has designs dominating equal on (O1, O2) alone",
+          float(o2_d["n_dominate_equal_o1o2_mv"] > 300), 1.0, 0)
+    report("O2_mv: n_designs, n_dom (O1,O2_mv), n_dom 3d, front size, equal on 2d front",
+           (o2_d["n_designs"], o2_d["n_dominate_equal_o1o2_mv"], o2_d["n_dominate_equal_3d_mv"],
+            len(o2_d["front_mv"]), o2_d["equal_on_front_o1o2_mv"]))
+    for lab in ("equal", "front_lo", "front_mid", "front_hi"):
+        got = o2_d["named"][lab]["mse_mv_db"]
+        report(f"O2_mv {lab} MSE_ref [dB m²]", round(got, 2))
+    check("front_lo still beats equal on O2_mv",
+          float(o2_d["named"]["front_lo"]["mse_mv_db"] < o2_d["named"]["equal"]["mse_mv_db"]), 1.0, 0)
+    check("S-prune window is 5 MHz at each edge (C(10,8)=45)", o1_d["n_combinations"], 45, 0)
+    check("only 3 designs have leave_cap ≥ e08 σ_leave", o1_d["n_cap_pass"], 3, 0)
+    check("best σ_leave after prune is within 0.04 dB of the 4+4 cap",
+          float(o1_d["closed_to_0p04_db"]), 1.0, 0)
+    check("gap from pruned best to global cap [dB]", o1_d["gap_best_to_cap_db"], 0.036, 0.01)
+    report("O1 prune: e08 gain, pruned-best gain, cap, Δ(best,e08) [dB]",
+           (round(o1_d["e08_best"]["gain_db"], 3), round(o1_d["pruned_best"]["gain_db"], 3),
+            round(o1_d["global_cap_gain_db"], 3), round(o1_d["new_best_vs_e08_db"], 4)))
+    for name, d in zng["designs"].items():
+        check(f"fill-record ZZB vs numeric on {name}, max |dB|", d["max_abs_owned_minus_zzb_db"], 0.0, 0.12)
+        report(f"ZZB nongrid {name}: owned, J-record, lattice max |dB| vs numeric",
+               (round(d["max_abs_owned_minus_zzb_db"], 3), round(d["max_abs_record_minus_zzb_db"], 3),
+                round(d["max_abs_lattice_minus_zzb_db"], 3)))
+    check("geometric: J-record formula is more than 2 dB off (far valley as shallow as 1λ)",
+          float(zng["designs"]["geometric"]["max_abs_record_minus_zzb_db"] > 2.0), 1.0, 0)
+    check("unequal-SNR matched lattice vs ML, max |dB| over 5 u", uneq["max_abs_gap_db"], 0.0, 0.3)
+    report("unequal SNR (edges −6 dB) MC − lattice [dB] per u",
+           [(r["u_inner"], round(r["gap_db"], 3)) for r in uneq["rows"]])
+    report("correlated noise", uneq["correlated_noise"][:80])
+
+    print("== safe_rule in numbers.json matches math §3.3 (foot total SNR, not R_dB+1)")
+    foot = eg["foot_x"]
+    safe = eg["R_db"] - db(2 * math.pi**2) + 20 * math.log10(foot) + db(1 - 1 / R)
+    check("safe_rule_total_db = R_dB − 10log10(2π²) + 20log10 x(R) + 10log10(1−1/R)",
+          eg["safe_rule_total_db"], safe, 1e-3)
+    check("legacy R_dB+1 is still stored separately", eg["safe_rule_rdb_plus_1_total_db"], eg["R_db"] + 1.0, 1e-4)
 
     print("== deep §12.1: foot per tone from x(R) (not threshold + 13.8 dB)")
     rows = []
