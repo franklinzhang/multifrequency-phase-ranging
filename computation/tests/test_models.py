@@ -123,6 +123,8 @@ def test_zzb_record_valleys_matches_lattice_on_the_equal_grid():
         sg = u * SJ
         rec = bounds.zzb_record_valleys(F, sg, SURF.valleys, T)
         assert abs(core.db(rec / zzb_lat(sg))) < 0.15
+        own = bounds.zzb_owned_valleys(F, sg, SURF.valleys, T)
+        assert abs(core.db(own / bounds.zzb(SURF, sg))) < 0.1
 
 
 def test_leave_cap_bounds_every_archived_design():

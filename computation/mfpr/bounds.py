@@ -428,6 +428,35 @@ def zzb_record_valleys(f_hz, sigma: float, valleys, T: float) -> float:
     return float(m["hmse_factor"] * sigma**2 + slip)
 
 
+def zzb_owned_valleys(f_hz, sigma: float, valleys, T: float) -> float:
+    """HMSE + Σ_v (T−δ_v)/(2T) (δ_v²−δ_{v−1}²) Q(√J_v/2σ) on right-to-left fill-records.
+
+    A valley is a fill-record at this σ if (T−δ)P_e is a right-to-left record; G(δ) is then
+    taken as constant on the owned segment. On a grid with δ ≪ T this is the lattice formula
+    of §2.4 (math). J-records (zzb_record_valleys) drop (T−δ)/T and ignore that a far valley
+    as shallow as 1λ may not own the fill — that fails on the geometric grid.
+    """
+    m = moments(f_hz)
+    v = np.asarray(valleys, dtype=float).reshape(-1, 2)
+    v = v[v[:, 0] > 0.25 * m["lambda_m"]]
+    if v.size == 0:
+        return float(m["hmse_factor"] * sigma**2)
+    order = np.argsort(v[:, 0])
+    d, J = v[order, 0], v[order, 1]
+    pe = q_func(np.sqrt(np.maximum(J, 0.0)) / (2.0 * sigma))
+    w = (T - d) * pe
+    rec, best = [], -1.0
+    for i in range(d.size - 1, -1, -1):
+        if w[i] > best:
+            best = float(w[i])
+            rec.append(i)
+    rec = rec[::-1]
+    dd, ww = d[rec], w[rec]
+    prev = np.concatenate([[0.0], dd[:-1]])
+    slip = float(np.sum(ww * 0.5 * (dd**2 - prev**2)) / T)
+    return float(m["hmse_factor"] * sigma**2 + slip)
+
+
 def wwb_lattice(s_lat: float, lam_eff: float, T: float | None = None, k: int = 1) -> float:
     """WWB at the grid test point h = kλ_eff, s = ½: J(kλ_eff) = k²J₁ and J₁/σ² = 1/s_lat².
 
