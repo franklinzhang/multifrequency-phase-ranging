@@ -1,0 +1,116 @@
+{
+ "git": "c09f375",
+ "window_W": 5,
+ "band_left": [
+  2400,
+  2401,
+  2402,
+  2403,
+  2404
+ ],
+ "band_right": [
+  2466,
+  2467,
+  2468,
+  2469,
+  2470
+ ],
+ "n_combinations": 45,
+ "n_cap_pass": 3,
+ "n_leave_evaluated": 3,
+ "equal_sigma_leave": 0.017032929,
+ "e08_best": {
+  "mhz": [
+   2400,
+   2401,
+   2402,
+   2404,
+   2467,
+   2468,
+   2469,
+   2470
+  ],
+  "sigma_leave": 0.025676071,
+  "gain_db": 3.5647848
+ },
+ "edges": {
+  "mhz": [
+   2400,
+   2401,
+   2402,
+   2403,
+   2467,
+   2468,
+   2469,
+   2470
+  ],
+  "sigma_leave": 0.024548824,
+  "cap_gain_db": 3.6019763
+ },
+ "pruned_best": {
+  "mhz": [
+   2400,
+   2401,
+   2402,
+   2403,
+   2466,
+   2468,
+   2469,
+   2470
+  ],
+  "sigma_leave": 0.02567904,
+  "gain_db": 3.565789
+ },
+ "global_cap_gain_db": 3.6019763,
+ "gap_best_to_cap_db": 0.036187328,
+ "closed_to_0p04_db": true,
+ "new_best_vs_e08_db": 0.0010041834,
+ "top": [
+  {
+   "mhz": [
+    2400,
+    2401,
+    2402,
+    2403,
+    2466,
+    2468,
+    2469,
+    2470
+   ],
+   "sigma_leave": 0.02567904,
+   "gain_db": 3.565789,
+   "cap_gain_db": 3.5690036
+  },
+  {
+   "mhz": [
+    2400,
+    2401,
+    2402,
+    2404,
+    2467,
+    2468,
+    2469,
+    2470
+   ],
+   "sigma_leave": 0.025676071,
+   "gain_db": 3.5647848,
+   "cap_gain_db": 3.5680288
+  },
+  {
+   "mhz": [
+    2400,
+    2401,
+    2402,
+    2403,
+    2467,
+    2468,
+    2469,
+    2470
+   ],
+   "sigma_leave": 0.024548824,
+   "gain_db": 3.1748272,
+   "cap_gain_db": 3.6019763
+  }
+ ],
+ "note": "Enumerate every 8-subset in the two edge windows that are the only places a design can have leave_cap ≥ e08's σ_leave. σ_leave uses e08's valley-sum definition."
+}

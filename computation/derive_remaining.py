@@ -390,37 +390,42 @@ def derive_zzb_nongrid() -> dict:
         sj = m["sigma_jump"]
         us = (0.3, 0.5, 0.7, 1.0, 1.5, 2.0)
         rows = []
-        rec_err, lat_err, mv_err = [], [], []
+        rec_err, own_err, lat_err, mv_err = [], [], [], []
         for u in us:
             sg = u * sj
             z = bounds.zzb(surf, sg)
             rec = bounds.zzb_record_valleys(f, sg, surf.valleys, T)
+            own = bounds.zzb_owned_valleys(f, sg, surf.valleys, T)
             lat = _zzb_lat(f, sg)
             mv = multivalley.mse(f, sg, surf, n=80_000, seed=11, T=T)["mse"]
             rows.append({
                 "u": u, "sigma": sg,
-                "zzb_db": db(z), "record_db": db(max(rec, 1e-300)), "lattice_db": db(max(lat, 1e-300)),
-                "multivalley_db": db(mv),
-                "record_minus_zzb_db": db(rec / z), "lattice_minus_zzb_db": db(lat / z),
-                "mv_minus_zzb_db": db(mv / z),
+                "zzb_db": db(z), "record_db": db(max(rec, 1e-300)), "owned_db": db(max(own, 1e-300)),
+                "lattice_db": db(max(lat, 1e-300)), "multivalley_db": db(mv),
+                "record_minus_zzb_db": db(rec / z), "owned_minus_zzb_db": db(own / z),
+                "lattice_minus_zzb_db": db(lat / z), "mv_minus_zzb_db": db(mv / z),
             })
             rec_err.append(abs(db(rec / z)))
+            own_err.append(abs(db(own / z)))
             lat_err.append(abs(db(lat / z)))
             mv_err.append(abs(db(mv / z)))
         out[name] = {
             "sigma_jump": sj, "R_db": m["R_db"],
             "rows": rows,
             "max_abs_record_minus_zzb_db": max(rec_err),
+            "max_abs_owned_minus_zzb_db": max(own_err),
             "max_abs_lattice_minus_zzb_db": max(lat_err),
             "max_abs_mv_minus_zzb_db": max(mv_err),
         }
     return {
         "T_m": T,
         "note": (
-            "Numeric valley-filled ZZB vs the J-record formula "
-            "HMSE+Σ ½(δ_v²−δ_{v−1}²)Q(√J_v/2σ) and vs the grid-only lattice formula. "
-            "On the equal grid both match ZZB to <0.15 dB. On geometric/cluster/front_lo the "
-            "record formula tracks ZZB; the lattice formula misses far non-grid valleys."
+            "Numeric valley-filled ZZB vs (i) J-record formula HMSE+Σ ½(δ²−δ_prev²)Q, "
+            "(ii) fill-record formula HMSE+Σ (T−δ_v)/(2T)(δ_v²−δ_prev²)Q, "
+            "(iii) grid-only lattice formula, (iv) multi-valley MSE (an estimator, not a bound). "
+            "Fill-records track ZZB to ≲0.1 dB on equal/cluster/front_lo and 0.01 dB on geometric. "
+            "J-records equal the lattice form when every farther valley is deeper; they fail on "
+            "geometric (far valley as shallow as 1λ, δ comparable to T). Lattice misses far non-grid valleys."
         ),
         "designs": out,
     }

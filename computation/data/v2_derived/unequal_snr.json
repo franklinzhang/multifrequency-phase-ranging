@@ -1,0 +1,79 @@
+{
+ "git": "c09f375",
+ "setup": "Equal 2400:10:2470 grid; endpoint tones 2400 and 2470 MHz have SNR 6 dB below the inner six (σ_edge = 2 σ_inner). Receiver uses matched weights w_i = 1/σ_i². Coherent ML vs lattice.ml_mse(lattice.params(f, σ_vec)).",
+ "n_per_u": 8000,
+ "rows": [
+  {
+   "u_inner": 0.5,
+   "sigma_inner": 0.041806668,
+   "n": 8000,
+   "mc_mse": 0.0019795071,
+   "mc_mse_db": -27.034429,
+   "lattice_mse": 0.0020256791,
+   "lattice_mse_db": -26.934294,
+   "gap_db": -0.10013575,
+   "lattice_s": 0.33334355,
+   "lattice_hmse": 1.0323688e-07,
+   "slip_mc": 0.130625,
+   "slip_lat": 0.13362631
+  },
+  {
+   "u_inner": 0.8,
+   "sigma_inner": 0.066890669,
+   "n": 8000,
+   "mc_mse": 0.0055305419,
+   "mc_mse_db": -22.572323,
+   "lattice_mse": 0.0055062286,
+   "lattice_mse_db": -22.591458,
+   "gap_db": 0.019134522,
+   "lattice_s": 0.53334968,
+   "lattice_hmse": 2.6428641e-07,
+   "slip_mc": 0.348375,
+   "slip_lat": 0.3485162
+  },
+  {
+   "u_inner": 1.0,
+   "sigma_inner": 0.083613336,
+   "n": 8000,
+   "mc_mse": 0.0081914051,
+   "mc_mse_db": -20.866416,
+   "lattice_mse": 0.0079955213,
+   "lattice_mse_db": -20.971532,
+   "gap_db": 0.10511615,
+   "lattice_s": 0.6666871,
+   "lattice_hmse": 4.1294752e-07,
+   "slip_mc": 0.4635,
+   "slip_lat": 0.45326855
+  },
+  {
+   "u_inner": 1.5,
+   "sigma_inner": 0.12542,
+   "n": 8000,
+   "mc_mse": 0.016708043,
+   "mc_mse_db": -17.770744,
+   "lattice_mse": 0.016421071,
+   "lattice_mse_db": -17.845985,
+   "gap_db": 0.075241085,
+   "lattice_s": 1.0000306,
+   "lattice_hmse": 9.2913193e-07,
+   "slip_mc": 0.61775,
+   "slip_lat": 0.61708587
+  },
+  {
+   "u_inner": 2.0,
+   "sigma_inner": 0.16722667,
+   "n": 8000,
+   "mc_mse": 0.027634926,
+   "mc_mse_db": -15.585417,
+   "lattice_mse": 0.028210669,
+   "lattice_mse_db": -15.495866,
+   "gap_db": -0.089550924,
+   "lattice_s": 1.3333742,
+   "lattice_hmse": 1.6517901e-06,
+   "slip_mc": 0.711625,
+   "slip_lat": 0.70766901
+  }
+ ],
+ "max_abs_gap_db": 0.10511615,
+ "correlated_noise": "Not done. lattice.params is diagonal (independent but unequal σ_i); a correlated public term would be ũᵀ W Σ W ũ / (ũᵀ W ũ)² and needs a specified Σ plus a legality check of the near-zone lemma under J_W. No canonical Σ in this article."
+}
