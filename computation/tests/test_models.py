@@ -76,6 +76,55 @@ def test_grid_and_nongrid_valleys():
     assert lo["rho_nongrid"] == pytest.approx(62.6, abs=0.1)
 
 
+def test_wwb_multi_reduces_to_single_point_at_k1():
+    lam_eff = M["lambda_m"] * (1.0 - 1.0 / M["R"])
+    w1 = bounds.wwb(SURF, SJ)
+    wk = bounds.wwb_multi(SURF, SJ, h=np.array([lam_eff]))
+    assert core.db(wk / w1) == pytest.approx(0.0, abs=1e-6)
+    p = lattice.params(F, SJ)
+    closed = bounds.wwb_multi_lattice(p["s"], p["lambda_eff_m"], T, k_max=1)
+    assert core.db(closed["wwb"] / w1) == pytest.approx(0.0, abs=1e-4)
+
+
+def test_wwb_multi_is_legal_and_tightens_at_threshold():
+    p = lattice.params(F, SJ)
+    pm = lattice.pm_mse(p)["mse"]
+    w1 = bounds.wwb(SURF, SJ)
+    wk = bounds.wwb_multi(SURF, SJ, k_grid=8)
+    assert wk <= pm
+    assert wk >= w1 * 0.999
+    assert core.db(pm / wk) < 0.4
+    assert core.db(pm / w1) > 0.6
+    t = bounds.tightest_bound(SURF, SJ)
+    assert t["which"] == "wwb_k"
+    assert t["bound"] == pytest.approx(wk, rel=1e-12)
+
+
+def test_wwb_multi_does_not_beat_zzb_on_the_downslope():
+    """u ≈ 0.3–0.5: extra test points stay exponentially weaker than the ZZB integral."""
+    for u in (0.3, 0.5):
+        sg = u * SJ
+        z = bounds.zzb(SURF, sg)
+        wk = bounds.wwb_multi(SURF, sg, k_grid=8)
+        pm = lattice.pm_mse(lattice.params(F, sg))["mse"]
+        assert wk <= pm
+        assert z > wk
+        t = bounds.tightest_bound(SURF, sg)
+        assert t["which"] == "zzb"
+
+
+def test_zzb_record_valleys_matches_lattice_on_the_equal_grid():
+    def zzb_lat(sigma):
+        p = lattice.params(F, sigma)
+        k = np.arange(1, 400)
+        return p["hmse"] + 0.5 * p["lambda_eff_m"] ** 2 * float(np.sum((2 * k - 1) * core.q_func(k / (2 * p["s"]))))
+
+    for u in (0.3, 1.0, 2.0):
+        sg = u * SJ
+        rec = bounds.zzb_record_valleys(F, sg, SURF.valleys, T)
+        assert abs(core.db(rec / zzb_lat(sg))) < 0.15
+
+
 def test_leave_cap_bounds_every_archived_design():
     d08 = sim.load("e08_design")
     assert design.leave_cap(F) == pytest.approx(d08["refs"]["equal"]["sigma_leave"], rel=2e-3)
@@ -85,3 +134,15 @@ def test_leave_cap_bounds_every_archived_design():
     assert gain == pytest.approx(3.60, abs=0.01)
     for r in d08["random"][:300] + [d08["best"]]:
         assert r["sigma_leave"] <= design.leave_cap(np.asarray(r["mhz"]) * 1e6) * (1 + 2e-3)
+
+
+def test_lattice_matched_weights_equal_sigma_matches_scalar():
+    p0 = lattice.params(F, SJ)
+    p1 = lattice.params(F, np.full(F.size, SJ))
+    assert p1["s"] == pytest.approx(p0["s"], rel=1e-12)
+    assert p1["hmse"] == pytest.approx(p0["hmse"], rel=1e-12)
+    sig = np.full(F.size, SJ)
+    sig[0] = sig[-1] = 2.0 * SJ
+    pw = lattice.params(F, sig)
+    assert pw["s"] != pytest.approx(p0["s"], rel=1e-3)
+    assert pw["hmse"] > p0["hmse"]

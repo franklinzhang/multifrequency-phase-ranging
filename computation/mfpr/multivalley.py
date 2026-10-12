@@ -54,15 +54,19 @@ def competitors(f_hz, valleys) -> Competitors:
 
 
 def mse(f_hz, sigma: float, surface: CostSurface | None = None, T: float = 15.0, n: int = 200_000,
-        seed: int = 0, chunk: int = 20_000, defensive: float = 0.2, rel_cut: float = 1e-6) -> dict:
+        seed: int = 0, chunk: int = 20_000, defensive: float = 0.2, rel_cut: float = 1e-6,
+        valleys=None) -> dict:
     """MSE of coherent ML under the linearised multi-valley model at per-tone phase std sigma.
 
     Competitors whose union-bound share Q(‖ã‖/2σ)·max D² is below rel_cut·HMSE are dropped.
     Returns mse, slip probability, the standard error of the slip term, and win probabilities.
+    Pass valleys=(δ, J) to skip building a CostSurface (used when ranking many designs).
     """
     f = np.asarray(f_hz, dtype=float)
-    surf = surface if surface is not None else CostSurface.build(f, T)
-    comp = competitors(f, surf.valleys)
+    if valleys is None:
+        surf = surface if surface is not None else CostSurface.build(f, T)
+        valleys = surf.valleys
+    comp = competitors(f, valleys)
     hm = comp.hmse_factor * sigma**2
     ub = q_func(np.sqrt(comp.sq) / (2.0 * sigma))
     keep = ub * float(np.max(comp.d**2, initial=0.0)) >= rel_cut * hm
