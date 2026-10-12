@@ -1,11 +1,14 @@
 # Quality notes (internal)
 
-Public reading path (2026-10-11):
+Public reading path:
 
-1. Observation model first (wrapped multi-frequency phases + coherent / incoherent)
-2. Then the phenomenon with Figure 1 (two parallel lines and the jump)
-3. Then σ_jump, bounds, unequal spacing, rules
+1. Observation model (wrapped multi-frequency phase, coherent / incoherent)
+2. Two Cramér–Rao lines, derived from the linear Gaussian model (carrier line, bandwidth line)
+3. The coherent estimator's jump, then σ_jump, the one-wavelength mixture, and the bandwidth line after the landing
+4. The half-window Ziv–Zakai bound, and what it does not say about that jump
+5. Tone placement and the start of the band
+6. Closed forms collected, then open calculations
 
-Tone: exhaust existing math / stats / parameter-estimation tools to clean the problem — do not invent new theory, do not open with packaging.
+Definitions and derivations stand on the phase model. Li and Qi are acknowledged in the opening and the references; the two lines agree with their high-SNR and moderate-SNR expressions. Do not route a definition through their equation numbers.
 
 Canonical URL: https://franklinzhang.github.io/multifrequency-phase-ranging/
