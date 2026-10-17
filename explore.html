@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>交互式图表实验室 · Interactive Figure Laboratory</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/reading.css" />
+  <style>
+    .explore-wrap { max-width: 64rem; margin: 0 auto; padding: 1.75rem 1rem 4rem; }
+  </style>
+</head>
+<body>
+  <div class="explore-wrap">
+    <div class="topbar">
+      <div class="lang-switch">
+        <button type="button" class="active" data-lab-lang="zh">中文</button>
+        <button type="button" data-lab-lang="en">English</button>
+      </div>
+      <div class="meta">
+        <a href="index.html">Home</a> · <a href="zh.html">中文全文</a> · <a href="en.html">English Text</a> · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a>
+      </div>
+    </div>
+    <div class="article" style="padding: 1.75rem 2rem 2.25rem;">
+      <h1 id="lab-title" style="margin-bottom:0.3rem;">多频相位测距 · 交互式图表实验室</h1>
+      <p class="lede" id="lab-sub" style="margin-bottom:1.5rem;">基于 <code>computation/data/</code> 归档试验（随机种子 7）与闭式理论公式的 4 组实时交互图表。点击右上角「中文 / English」可一键实时切换全页语言。</p>
+      <div class="ifig-card" data-ifig="overview" data-lang="zh"></div>
+      <div class="ifig-card" data-ifig="synthesizer" data-lang="zh"></div>
+      <div class="ifig-card" data-ifig="bayes" data-lang="zh"></div>
+      <div class="ifig-card" data-ifig="valleys" data-lang="zh"></div>
+    </div>
+  </div>
+  <script src="assets/interactive.js"></script>
+  <script>
+    (function () {
+      const btns = document.querySelectorAll("[data-lab-lang]");
+      btns.forEach(btn => {
+        btn.addEventListener("click", () => {
+          const lang = btn.getAttribute("data-lab-lang");
+          btns.forEach(b => b.classList.toggle("active", b === btn));
+          document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+          document.getElementById("lab-title").textContent = lang === "zh"
+            ? "多频相位测距 · 交互式图表实验室"
+            : "Multi-Frequency Phase Ranging · Interactive Figure Lab";
+          document.getElementById("lab-sub").innerHTML = lang === "zh"
+            ? "基于 <code>computation/data/</code> 归档试验（随机种子 7）与闭式理论公式的 4 组实时交互图表。点击右上角「中文 / English」可一键实时切换全页语言。"
+            : "Four live interactive figures driven by the archived trials in <code>computation/data/</code> (seed 7) and closed-form theory. Click 中文 / English above to switch language instantly.";
+          document.querySelectorAll("[data-ifig]").forEach(el => el.setAttribute("data-lang", lang));
+          // Re-dispatch DOMContentLoaded or re-boot interactive figures
+          window.dispatchEvent(new Event("DOMContentLoaded"));
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
