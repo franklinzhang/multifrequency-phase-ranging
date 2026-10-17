@@ -1,11 +1,11 @@
-name: Deploy reading site
+name: Deploy reading site & publish release
 
 on:
   push:
     branches: [main]
   workflow_dispatch:
 
-# Publishes the public bilingual reading edition to gh-pages.
+# Publishes the public bilingual reading edition to gh-pages and updates GitHub Release v0.2.0.
 # Live URL: https://franklinzhang.github.io/multifrequency-phase-ranging/
 
 permissions:
@@ -31,9 +31,21 @@ jobs:
           cp -a site/index.html site/zh.html site/en.html site/explore.html \
                 site/assets site/figures site/data /tmp/pages-out/
           touch /tmp/pages-out/.nojekyll
+          cd /tmp/pages-out && zip -r /tmp/threshold-reading-site.zip .
       - name: Publish gh-pages branch
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: /tmp/pages-out
           force_orphan: true
+      - name: Create or update GitHub Release v0.2.0
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view v0.2.0 >/dev/null 2>&1; then
+            gh release upload v0.2.0 /tmp/threshold-reading-site.zip --clobber
+          else
+            gh release create v0.2.0 /tmp/threshold-reading-site.zip \
+              --title "v0.2.0 — Master Edition: Complete Closed Account & Interactive Figures" \
+              --notes-file CHANGELOG.md
+          fi

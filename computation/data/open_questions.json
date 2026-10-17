@@ -1,0 +1,335 @@
+{
+  "q8_1_tone_placement": {
+    "equal_baseline_leave_rad": 0.01703,
+    "extreme_bimodal_70mhz": {
+      "freqs_mhz": [
+        2400,
+        2401,
+        2402,
+        2403,
+        2467,
+        2468,
+        2469,
+        2470
+      ],
+      "S_mhz2": 8988,
+      "sigma_jump_rad": 0.122316,
+      "J_lambda": 0.059845,
+      "first_valley_leave_rad": 0.025786,
+      "earliest_leave_rad": 0.024824,
+      "earliest_leave_delta_m": 4.4938,
+      "far_min_J": 0.090173,
+      "far_min_J_over_J_lambda": 1.5068
+    },
+    "best_unconstrained_70mhz": {
+      "freqs_mhz": [
+        2400,
+        2401,
+        2402,
+        2404,
+        2466,
+        2468,
+        2469,
+        2470
+      ],
+      "offsets_mhz": [
+        -35,
+        -34,
+        -33,
+        -31,
+        31,
+        33,
+        34,
+        35
+      ],
+      "S_mhz2": 8862,
+      "sigma_jump_rad": 0.121455,
+      "J_lambda": 0.059006,
+      "earliest_leave_rad": 0.025588,
+      "earliest_leave_delta_m": 0.12309,
+      "far_earliest_leave_rad": 0.033171,
+      "far_min_J": 0.156033,
+      "far_min_J_over_J_lambda": 2.6444,
+      "far_min_delta_m": 4.49381
+    },
+    "best_harmonic_clean_70mhz": {
+      "freqs_mhz": [
+        2400,
+        2401,
+        2402,
+        2405,
+        2465,
+        2468,
+        2469,
+        2470
+      ],
+      "offsets_mhz": [
+        -35,
+        -34,
+        -33,
+        -30,
+        30,
+        33,
+        34,
+        35
+      ],
+      "S_mhz2": 8740,
+      "sigma_jump_rad": 0.120616,
+      "J_lambda": 0.058193,
+      "earliest_leave_rad": 0.025395,
+      "earliest_leave_delta_m": 0.12309,
+      "far_earliest_leave_rad": 0.043236,
+      "far_min_J": 0.23273,
+      "far_min_J_over_J_lambda": 3.9993,
+      "far_min_delta_m": 0.24619
+    }
+  },
+  "q8_2_bayesian_mmse": {
+    "at_threshold_sigma_0p0836": {
+      "zzb_half_db": -27.6,
+      "mmse_line_db": -24.21,
+      "bayes_collinear_expected_db": -24.22,
+      "bayes_halfwin_mc_db": -24.29,
+      "mle_collinear_expected_db": -23.07,
+      "mle_halfwin_mc_db": -23.02,
+      "mle_center_trials_db": -22.78,
+      "attribution_of_4p82db_gap": {
+        "prior_boundary_vs_center_db": 0.24,
+        "estimator_mle_vs_bayes_db": 1.2,
+        "bound_zzb_vs_bayes_db": 3.38
+      }
+    },
+    "curve": [
+      {
+        "ratio_sj": 0.1,
+        "sigma_rad": 0.008361,
+        "hmse_db": -84.743,
+        "mmse_db": -44.214,
+        "expected_mle_collinear_db": -84.743,
+        "expected_bayes_collinear_db": -84.743,
+        "mle_minus_bayes_db": 0.0,
+        "trial_mle_center_db": -84.391
+      },
+      {
+        "ratio_sj": 0.16,
+        "sigma_rad": 0.013378,
+        "hmse_db": -80.661,
+        "mmse_db": -40.132,
+        "expected_mle_collinear_db": -80.657,
+        "expected_bayes_collinear_db": -80.658,
+        "mle_minus_bayes_db": 0.001,
+        "trial_mle_center_db": -80.825
+      },
+      {
+        "ratio_sj": 0.22,
+        "sigma_rad": 0.018395,
+        "hmse_db": -77.894,
+        "mmse_db": -37.366,
+        "expected_mle_collinear_db": -70.028,
+        "expected_bayes_collinear_db": -70.924,
+        "mle_minus_bayes_db": 0.896,
+        "trial_mle_center_db": -77.776
+      },
+      {
+        "ratio_sj": 0.25,
+        "sigma_rad": 0.020903,
+        "hmse_db": -76.784,
+        "mmse_db": -36.255,
+        "expected_mle_collinear_db": -60.088,
+        "expected_bayes_collinear_db": -61.161,
+        "mle_minus_bayes_db": 1.073,
+        "trial_mle_center_db": -57.183
+      },
+      {
+        "ratio_sj": 0.28,
+        "sigma_rad": 0.023412,
+        "hmse_db": -75.8,
+        "mmse_db": -35.271,
+        "expected_mle_collinear_db": -52.664,
+        "expected_bayes_collinear_db": -53.781,
+        "mle_minus_bayes_db": 1.118,
+        "trial_mle_center_db": -57.171
+      },
+      {
+        "ratio_sj": 0.32,
+        "sigma_rad": 0.026756,
+        "hmse_db": -74.64,
+        "mmse_db": -34.111,
+        "expected_mle_collinear_db": -45.686,
+        "expected_bayes_collinear_db": -46.823,
+        "mle_minus_bayes_db": 1.137,
+        "trial_mle_center_db": -47.216
+      },
+      {
+        "ratio_sj": 0.4,
+        "sigma_rad": 0.033445,
+        "hmse_db": -72.702,
+        "mmse_db": -32.173,
+        "expected_mle_collinear_db": -37.252,
+        "expected_bayes_collinear_db": -38.426,
+        "mle_minus_bayes_db": 1.174,
+        "trial_mle_center_db": -36.693
+      },
+      {
+        "ratio_sj": 0.5,
+        "sigma_rad": 0.041807,
+        "hmse_db": -70.764,
+        "mmse_db": -30.235,
+        "expected_mle_collinear_db": -31.609,
+        "expected_bayes_collinear_db": -32.84,
+        "mle_minus_bayes_db": 1.231,
+        "trial_mle_center_db": -31.846
+      },
+      {
+        "ratio_sj": 0.65,
+        "sigma_rad": 0.054349,
+        "hmse_db": -68.485,
+        "mmse_db": -27.956,
+        "expected_mle_collinear_db": -27.261,
+        "expected_bayes_collinear_db": -28.564,
+        "mle_minus_bayes_db": 1.303,
+        "trial_mle_center_db": -26.832
+      },
+      {
+        "ratio_sj": 0.85,
+        "sigma_rad": 0.071071,
+        "hmse_db": -66.155,
+        "mmse_db": -25.626,
+        "expected_mle_collinear_db": -24.377,
+        "expected_bayes_collinear_db": -25.675,
+        "mle_minus_bayes_db": 1.298,
+        "trial_mle_center_db": -24.423
+      },
+      {
+        "ratio_sj": 1.0,
+        "sigma_rad": 0.083613,
+        "hmse_db": -64.743,
+        "mmse_db": -24.214,
+        "expected_mle_collinear_db": -23.068,
+        "expected_bayes_collinear_db": -24.218,
+        "mle_minus_bayes_db": 1.15,
+        "trial_mle_center_db": -22.777
+      },
+      {
+        "ratio_sj": 1.5,
+        "sigma_rad": 0.12542,
+        "hmse_db": -61.221,
+        "mmse_db": -20.692,
+        "expected_mle_collinear_db": -20.089,
+        "expected_bayes_collinear_db": -20.692,
+        "mle_minus_bayes_db": 0.603,
+        "trial_mle_center_db": -20.059
+      },
+      {
+        "ratio_sj": 2.2,
+        "sigma_rad": 0.183949,
+        "hmse_db": -57.894,
+        "mmse_db": -17.366,
+        "expected_mle_collinear_db": -17.075,
+        "expected_bayes_collinear_db": -17.365,
+        "mle_minus_bayes_db": 0.29,
+        "trial_mle_center_db": -17.029
+      },
+      {
+        "ratio_sj": 3.5,
+        "sigma_rad": 0.292647,
+        "hmse_db": -53.862,
+        "mmse_db": -13.333,
+        "expected_mle_collinear_db": -13.217,
+        "expected_bayes_collinear_db": -13.332,
+        "mle_minus_bayes_db": 0.115,
+        "trial_mle_center_db": -13.283
+      },
+      {
+        "ratio_sj": 6.0,
+        "sigma_rad": 0.50168,
+        "hmse_db": -49.18,
+        "mmse_db": -8.651,
+        "expected_mle_collinear_db": -8.611,
+        "expected_bayes_collinear_db": -8.651,
+        "mle_minus_bayes_db": 0.04,
+        "trial_mle_center_db": -8.537
+      },
+      {
+        "ratio_sj": 10.0,
+        "sigma_rad": 0.836133,
+        "hmse_db": -44.743,
+        "mmse_db": -4.214,
+        "expected_mle_collinear_db": -4.2,
+        "expected_bayes_collinear_db": -4.214,
+        "mle_minus_bayes_db": 0.014,
+        "trial_mle_center_db": 7.798
+      },
+      {
+        "ratio_sj": 16.0,
+        "sigma_rad": 1.337813,
+        "hmse_db": -40.661,
+        "mmse_db": -0.132,
+        "expected_mle_collinear_db": -0.126,
+        "expected_bayes_collinear_db": -0.131,
+        "mle_minus_bayes_db": 0.006,
+        "trial_mle_center_db": 16.814
+      },
+      {
+        "ratio_sj": 28.0,
+        "sigma_rad": 2.341173,
+        "hmse_db": -35.8,
+        "mmse_db": 4.729,
+        "expected_mle_collinear_db": 4.731,
+        "expected_bayes_collinear_db": 4.624,
+        "mle_minus_bayes_db": 0.107,
+        "trial_mle_center_db": 18.735
+      }
+    ]
+  },
+  "q8_3_exact_wrapped_lrt": {
+    "sigma_rad": 0.836133,
+    "equal": {
+      "zzb_gaussian_db": -3.797,
+      "zzb_exact_cluster_10p6_11p3_db": -3.756,
+      "zzb_exact_all_valleys_db": -3.17
+    },
+    "matched": {
+      "zzb_gaussian_db": -2.422,
+      "zzb_exact_cluster_10p6_11p3_db": -2.053,
+      "zzb_exact_all_valleys_db": -1.83
+    },
+    "gap_matched_minus_equal_db": {
+      "gaussian_db": 1.375,
+      "exact_cluster_only_db": 1.703,
+      "exact_all_valleys_db": 1.34
+    }
+  },
+  "q8_4_complex_observations_summary": {
+    "first_threshold_unchanged_up_to_ratio": 3.5,
+    "at_threshold_1p0_sj": {
+      "snr_db": 18.54,
+      "wn_coh_db": -22.78,
+      "complex_coh_db": -23.03,
+      "phase_only_from_complex_db": -23.03
+    },
+    "at_6p0_sj": {
+      "snr_db": 2.98,
+      "wn_coh_db": -8.54,
+      "complex_coh_db": -6.27,
+      "phase_only_from_complex_db": -0.9
+    },
+    "at_10p0_sj": {
+      "snr_db": -1.46,
+      "wn_coh_db": 7.8,
+      "complex_coh_db": 10.11,
+      "phase_only_from_complex_db": 12.6
+    }
+  },
+  "q8_5_multi_valley_second_moment_summary": {
+    "collinear_voronoi_formula": "(1 - 2*Q(sj/sigma))*HMSE + 2*lambda^2 * sum_{k>=1} (2k-1)*Q((2k-1)*sj/sigma)",
+    "equal_grid_voronoi_max_abs_error_db_on_1p5_to_6_sj": 0.07,
+    "matched_voronoi_max_abs_error_db_on_1p5_to_3p5_sj": 0.21,
+    "pairwise_record_asymptotic_overprediction_db_on_collinear": 8.25,
+    "geometric_pairwise_record_error_db_at_0p31_to_0p73_sj": [
+      -0.96,
+      0.33,
+      -0.56
+    ]
+  }
+}

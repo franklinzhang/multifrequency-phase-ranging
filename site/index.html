@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>The Threshold of Multi-Frequency Phase Ranging</title>
-  <meta name="description" content="Coherent range estimation from wrapped multi-frequency phases: the first threshold σ_jump = π√S/f̄, the half-window Ziv–Zakai bound, unequal spacing, and engineering rules. In Chinese and English." />
-  <meta property="og:title" content="The Threshold of Multi-Frequency Phase Ranging" />
-  <meta property="og:description" content="Coherent range estimation from wrapped multi-frequency phases: σ_jump, the half-window Ziv–Zakai bound, unequal spacing, and engineering rules." />
-  <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
+  <title>多频相位测距的门限 · The Threshold of Multi-Frequency Phase Ranging</title>
+  <meta name="description" content="Coherent range estimation from wrapped multi-frequency phases: the first threshold σ_jump = π√S/f̄, collinear Voronoi series, half-window Ziv–Zakai bound, piecewise-parabolic Bayesian risk, and worst-valley tone placement. In Chinese and English." />
   <link rel="canonical" href="https://franklinzhang.github.io/multifrequency-phase-ranging/" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -18,33 +14,69 @@
 <body>
   <div class="home">
     <div class="home-card">
-      <p class="edition-label">多频相位测距的门限</p>
-      <h1>The Threshold of Multi-Frequency Phase Ranging</h1>
-      <p class="lede">Start from the wrapped multi-frequency phase model, then the two-line jump of coherent mean-square error. The note applies the usual tools of parameter estimation until each has nothing further to say about this problem.</p>
+      <div class="topbar" style="position:static;margin-bottom:1.25rem;">
+        <div class="lang-switch">
+          <button type="button" class="active" data-set-lang="zh">中文</button>
+          <button type="button" data-set-lang="en">English</button>
+        </div>
+        <div class="meta"><a href="explore.html" data-i18n-zh="交互实验室 (4 组交互图)" data-i18n-en="Interactive Lab (4 Figures)">交互实验室 (4 组交互图)</a> · <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a></div>
+      </div>
+      <p class="edition-label" data-i18n-zh="多频相位测距的门限 · 双语定本" data-i18n-en="The Threshold of Multi-Frequency Phase Ranging · Bilingual Monograph">多频相位测距的门限 · 双语定本</p>
+      <h1 data-i18n-zh="多频相位测距的门限" data-i18n-en="The Threshold of Multi-Frequency Phase Ranging">多频相位测距的门限</h1>
+      <p class="lede" data-i18n-zh="从包裹多频相位观测模型出发，用参数估计的经典数学工具将双对数图上的平行双线、第一道门限尺度 σ_jump = π√S/f̄、共线多波长 Voronoi 级数、半窗谷填充 Ziv–Zakai 下界、分段抛物线贝叶斯风险与同带宽最坏谷排频彻底算穿。" data-i18n-en="Starting from wrapped multi-frequency phase observations, this monograph applies classical parameter-estimation tools to completely resolve the parallel carrier/bandwidth lines, the first threshold scale σ_jump = π√S/f̄, the collinear Voronoi series, the half-window Ziv–Zakai bound, piecewise-parabolic Bayesian risk, and worst-valley tone placement.">从包裹多频相位观测模型出发，用参数估计的经典数学工具将双对数图上的平行双线、第一道门限尺度 σ_jump = π√S/f̄、共线多波长 Voronoi 级数、半窗谷填充 Ziv–Zakai 下界、分段抛物线贝叶斯风险与同带宽最坏谷排频彻底算穿。</p>
+
+      <div class="contrib-grid">
+        <div class="contrib-item">
+          <strong data-i18n-zh="1. 纵横尺度锁定律" data-i18n-en="1. Vertical–Horizontal Coupling">1. 纵横尺度锁定律</strong>
+          <span data-i18n-zh="导出门限相位尺度 σ_jump = π√S/f̄，证明其与两线落差 R = F/S 由同一无量纲矩锁定：R = 1 + Nπ²/σ_jump²。" data-i18n-en="Derives σ_jump = π√S/f̄ and proves it is locked to the vertical gap R = F/S via R = 1 + Nπ²/σ_jump².">导出门限相位尺度 σ_jump = π√S/f̄，证明其与两线落差 R = F/S 由同一无量纲矩锁定：R = 1 + Nπ²/σ_jump²。</span>
+        </div>
+        <div class="contrib-item">
+          <strong data-i18n-zh="2. 共线 Voronoi 级数" data-i18n-en="2. Collinear Voronoi Bridge">2. 共线 Voronoi 级数</strong>
+          <span data-i18n-zh="证明近处 kλ 谷沿 f_i − f̄ 共线，Voronoi 级数在带宽平台上误差 ≤ 0.07 dB，黎曼和解析收敛于 MMSE。" data-i18n-en="Proves near kλ valleys are collinear along f_i − f̄; their Voronoi series matches the plateau within 0.07 dB and converges to MMSE.">证明近处 kλ 谷沿 f_i − f̄ 共线，Voronoi 级数在带宽平台上误差 ≤ 0.07 dB，黎曼和解析收敛于 MMSE。</span>
+        </div>
+        <div class="contrib-item">
+          <strong data-i18n-zh="3. 门限 4.82 dB 三方拆解" data-i18n-en="3. 4.82 dB Three-Way Split">3. 门限 4.82 dB 三方拆解</strong>
+          <span data-i18n-zh="利用等曲率分段抛物线算出精确贝叶斯后验均值，拆清先验截断 (0.24 dB)、MLE 硬取整过冲 (1.20 dB) 与 ZZB 松弛 (3.38 dB)。" data-i18n-en="Uses exact piecewise-parabolic quadrature to split the 4.82 dB gap into prior truncation (0.24 dB), MLE overshoot (1.20 dB), and ZZB slack (3.38 dB).">利用等曲率分段抛物线算出精确贝叶斯后验均值，拆清先验截断 (0.24 dB)、MLE 硬取整过冲 (1.20 dB) 与 ZZB 松弛 (3.38 dB)。</span>
+        </div>
+        <div class="contrib-item">
+          <strong data-i18n-zh="4. 同带宽最坏谷排频 (+49.1%)" data-i18n-en="4. Worst-Valley Tone Placement (+49.1%)">4. 同带宽最坏谷排频 (+49.1%)</strong>
+          <span data-i18n-zh="揭示极端双簇的拍频远谷陷阱，给出内侧微错开 2 MHz 的穷举最优解，推迟门限 49.1% 且消除拍频远谷。" data-i18n-en="Exposes the bimodal beat trap and proves a 2 MHz inner stagger delays σ_leave by 49.1% while keeping all far valleys ≥ 4 J(λ).">揭示极端双簇的拍频远谷陷阱，给出内侧微错开 2 MHz 的穷举最优解，推迟门限 49.1% 且消除拍频远谷。</span>
+        </div>
+      </div>
+
       <div class="choices">
         <a class="choice primary" href="zh.html">
-          <strong>中文</strong>
-          <span>观测模型 · 两条平行直线与一跳 · 门限尺度 · 下界 · 非等间隔 · 工程规则</span>
+          <strong data-i18n-zh="阅读中文版全文 (含 4 组交互图)" data-i18n-en="Read Chinese Edition (with 4 Interactive Figures)">阅读中文版全文 (含 4 组交互图)</strong>
+          <span data-i18n-zh="长摘要总览图 · 自包含数学推导 · 三组频点归档试验 · 完整闭环定本" data-i18n-en="Annotated Master Abstract · Self-Contained Derivations · Archived Trials">长摘要总览图 · 自包含数学推导 · 三组频点归档试验 · 完整闭环定本</span>
         </a>
         <a class="choice primary" href="en.html">
-          <strong>English</strong>
-          <span>Observation model · two parallel lines and a jump · threshold scale · bound · unequal spacing · engineering rules</span>
+          <strong data-i18n-zh="阅读英文版全文 (English Edition)" data-i18n-en="Read English Edition (with 4 Interactive Figures)">阅读英文版全文 (English Edition)</strong>
+          <span data-i18n-zh="Extended Abstract · Self-Contained Mathematical Tools · Complete Closed Account" data-i18n-en="Extended Abstract · Self-Contained Mathematical Tools · Complete Closed Account">Extended Abstract · Self-Contained Mathematical Tools · Complete Closed Account</span>
         </a>
         <a class="choice" href="explore.html">
-          <strong>Equal-grid curves</strong>
-          <span>Step through the 18 archived noise levels: trial MSE, slip rate, carrier and bandwidth lines, half-window bound, mixture</span>
+          <strong data-i18n-zh="交互式图表实验室 (Interactive Lab)" data-i18n-en="Interactive Figure Laboratory">交互式图表实验室 (Interactive Lab)</strong>
+          <span data-i18n-zh="集中体验全部 4 组交互式图表：双对数四区解剖、八频点排频合成器、贝叶斯软硬阶梯、谷填充与包裹似然比" data-i18n-en="Explore all 4 interactive figures: Log-Log Anatomy, 8-Tone Synthesizer Lab, Bayes vs MLE Staircase & Valley-Fill LRT">集中体验全部 4 组交互式图表：双对数四区解剖、八频点排频合成器、贝叶斯软硬阶梯、谷填充与包裹似然比</span>
         </a>
-        <a class="choice" href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb">
-          <strong>中文 notebook</strong>
-          <span>在 Binder 上运行；图由归档试验重绘，带噪声点滑块</span>
-        </a>
-        <a class="choice" href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/v0.1.0?labpath=notes%2Fthreshold.ipynb">
-          <strong>English notebook</strong>
-          <span>Runs on Binder; figures redrawn from the archived trials, with a noise-level slider</span>
+        <a class="choice" href="https://mybinder.org/v2/gh/franklinzhang/multifrequency-phase-ranging/main?labpath=notes%2F%E5%A4%9A%E9%A2%91%E7%9B%B8%E4%BD%8D%E6%B5%8B%E8%B7%9D%E7%9A%84%E9%97%A8%E9%99%90.ipynb">
+          <strong data-i18n-zh="Jupyter 交互式笔记本 (Binder)" data-i18n-en="Jupyter Notebooks on Binder">Jupyter 交互式笔记本 (Binder)</strong>
+          <span data-i18n-zh="在浏览器中直接运行归档数据与复现脚本（中英双语 Notebook）" data-i18n-en="Run the archived trials and reproduction scripts live in your browser">在浏览器中直接运行归档数据与复现脚本（中英双语 Notebook）</span>
         </a>
       </div>
-      <div class="footnote-bar">CC BY 4.0 · Cite <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Source <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a> · Offline copy <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/releases/tag/v0.1.0">v0.1.0</a></div>
+      <div class="footnote-bar">CC BY 4.0 · Cite <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/blob/main/CITATION.cff">CITATION.cff</a> · Source <a href="https://github.com/franklinzhang/multifrequency-phase-ranging">GitHub</a> · Release <a href="https://github.com/franklinzhang/multifrequency-phase-ranging/releases">Releases</a></div>
     </div>
   </div>
+  <script>
+    (function () {
+      const btns = document.querySelectorAll("[data-set-lang]");
+      function applyLang(lang) {
+        document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+        btns.forEach(b => b.classList.toggle("active", b.getAttribute("data-set-lang") === lang));
+        document.querySelectorAll("[data-i18n-zh]").forEach(el => {
+          el.textContent = el.getAttribute(lang === "zh" ? "data-i18n-zh" : "data-i18n-en");
+        });
+      }
+      btns.forEach(b => b.addEventListener("click", () => applyLang(b.getAttribute("data-set-lang"))));
+    })();
+  </script>
 </body>
 </html>
